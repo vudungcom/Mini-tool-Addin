@@ -108,7 +108,7 @@ namespace OpenCadDrawingAddin
                 RibbonTab tab = ribbon.RibbonTabs[tabId];
                 string panelId = "id_Panel_OpenCadTools_" + ribbonName;
                 RibbonPanel panel = null;
-                try { panel = tab.RibbonPanels.Add("CAD Drawing", panelId, panelGuid); }
+                try { panel = tab.RibbonPanels.Add("Mini Tool", panelId, panelGuid); }
                 catch { try { panel = tab.RibbonPanels[panelId]; } catch { } }
 
                 if (panel == null) return;
@@ -306,7 +306,7 @@ namespace OpenCadDrawingAddin
                 string exp = licInfo.ExpirationDate;
                 if (!string.IsNullOrEmpty(exp) && DateTime.TryParse(exp, out DateTime dt)) exp += (dt >= DateTime.Now) ? $" ({LanguageManager.L("ABOUT_TIME_LEFT", LicenseHelper.FormatTimeLeft((int)(dt - DateTime.Now).TotalMinutes, StandardAddInServer.IsVietnamese))})" : $" ({LanguageManager.L("ABOUT_EXPIRED")})";
 
-                lblInfo.Text = $"OPEN CAD DRAWING ADD-IN\n{LanguageManager.L("ABOUT_VERSION", version)}\n--------------------\n{LanguageManager.L("ABOUT_HWID", hwId)}\n{LanguageManager.L("ABOUT_STATUS", status)}\n{LanguageManager.L("ABOUT_EXPIRES", exp)}";
+                lblInfo.Text = $"Mini-Tool Add-in\n{LanguageManager.L("ABOUT_VERSION", version)}\n--------------------\n{LanguageManager.L("ABOUT_HWID", hwId)}\n{LanguageManager.L("ABOUT_STATUS", status)}\n{LanguageManager.L("ABOUT_EXPIRES", exp)}";
 
                 if (upInfo != null && upInfo.HasUpdate)
                 {
