@@ -281,7 +281,7 @@ namespace OpenCadDrawingAddin
                     string newName = doc.FullFileName.Substring(doc.FullFileName.LastIndexOf("\\") + 1);
                     newName = newName.Substring(0, newName.LastIndexOf("."));
                     doc.DisplayName = newName;
-                    MessageBox.Show("Name updated: " + newName, "Name Update",
+                    MessageBox.Show(LanguageManager.L("MSG_NAME_UPDATED", newName), LanguageManager.L("TITLE_NAME_UPDATE"),
                         MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
                 else if (activeDoc.DocumentType == DocumentTypeEnum.kAssemblyDocumentObject)
@@ -289,19 +289,19 @@ namespace OpenCadDrawingAddin
                     // Assembly: cập nhật tên tất cả occurrences đệ quy
                     AssemblyDocument adoc = (AssemblyDocument)activeDoc;
                     NameUpdateReplace(adoc.ComponentDefinition.Occurrences);
-                    MessageBox.Show("Name update completed for all occurrences.", "Name Update",
+                    MessageBox.Show(LanguageManager.L("MSG_NAME_UPDATE_ALL_DONE"), LanguageManager.L("TITLE_NAME_UPDATE"),
                         MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
                 else
                 {
-                    MessageBox.Show("Name Update only supports Part or Assembly documents.", "Name Update",
+                    MessageBox.Show(LanguageManager.L("MSG_NAME_UPDATE_UNSUPPORTED"), LanguageManager.L("TITLE_NAME_UPDATE"),
                         MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 }
             }
             catch (Exception ex)
             {
                 LicenseHelper.WriteLog("Error running Name Update", ex);
-                MessageBox.Show("Error: " + ex.Message, "Name Update", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(LanguageManager.L("MSG_PROCESSING_ERROR") + ex.Message, LanguageManager.L("TITLE_ERROR"), MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -366,7 +366,7 @@ namespace OpenCadDrawingAddin
 
                 if (activeDoc.DocumentType != DocumentTypeEnum.kDrawingDocumentObject)
                 {
-                    MessageBox.Show("Save IDW only works on Drawing documents.", "Save IDW",
+                    MessageBox.Show(LanguageManager.L("MSG_SAVE_IDW_DRAWING_ONLY"), LanguageManager.L("TITLE_SAVE_IDW"),
                         MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
@@ -386,7 +386,7 @@ namespace OpenCadDrawingAddin
                 }
                 catch
                 {
-                    MessageBox.Show("Could not get model reference.", "Save IDW",
+                    MessageBox.Show(LanguageManager.L("MSG_SAVE_IDW_NO_MODEL"), LanguageManager.L("TITLE_SAVE_IDW"),
                         MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }
@@ -397,19 +397,19 @@ namespace OpenCadDrawingAddin
                 try
                 {
                     dwgDoc.SaveAs(savePath, false);
-                    MessageBox.Show("Drawing saved:\n" + savePath, "Save IDW",
+                    MessageBox.Show(LanguageManager.L("MSG_SAVE_IDW_SAVED", savePath), LanguageManager.L("TITLE_SAVE_IDW"),
                         MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
                 catch
                 {
-                    MessageBox.Show("Drawing could not be saved for some reason.", "Save IDW",
+                    MessageBox.Show(LanguageManager.L("MSG_SAVE_IDW_FAILED"), LanguageManager.L("TITLE_SAVE_IDW"),
                         MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
             catch (Exception ex)
             {
                 LicenseHelper.WriteLog("Error running Save IDW", ex);
-                MessageBox.Show("Error: " + ex.Message, "Save IDW", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(LanguageManager.L("MSG_PROCESSING_ERROR") + ex.Message, LanguageManager.L("TITLE_ERROR"), MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
         private void m_settingsButton_OnExecute(NameValueMap Context) { using (var frm = new SettingsForm()) { frm.ShowDialog(); } }
@@ -425,7 +425,7 @@ namespace OpenCadDrawingAddin
 
                 if (activeDoc.DocumentType != DocumentTypeEnum.kAssemblyDocumentObject)
                 {
-                    MessageBox.Show("Check Reference chỉ chạy được trong Assembly.", "Check Reference",
+                    MessageBox.Show(LanguageManager.L("MSG_CHECK_REF_ASM_ONLY"), LanguageManager.L("TITLE_CHECK_REF"),
                         MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
@@ -453,8 +453,8 @@ namespace OpenCadDrawingAddin
                 if (string.IsNullOrEmpty(refList))
                 {
                     MessageBox.Show(
-                        "Assembly này không có Occurrence nào BOM Structure = Reference\n(ngoài danh sách loại trừ).",
-                        "Check Reference", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        LanguageManager.L("MSG_CHECK_REF_NO_RESULT"),
+                        LanguageManager.L("TITLE_CHECK_REF"), MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
                 else
                 {
@@ -464,14 +464,14 @@ namespace OpenCadDrawingAddin
 
                     using (var sw = new System.IO.StreamWriter(outPath, false, System.Text.Encoding.UTF8))
                     {
-                        sw.WriteLine("Các Occurrence BOM Structure = Reference (ngoài danh sách loại trừ):");
+                        sw.WriteLine(LanguageManager.L("MSG_CHECK_REF_HEADER"));
                         sw.WriteLine(refList);
                     }
 
                     try { System.Diagnostics.Process.Start(outPath); }
                     catch
                     {
-                        MessageBox.Show("Không mở được file tự động:\n" + outPath, "Check Reference",
+                        MessageBox.Show(LanguageManager.L("MSG_CHECK_REF_CANNOT_OPEN", outPath), LanguageManager.L("TITLE_CHECK_REF"),
                             MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     }
                 }
@@ -479,7 +479,7 @@ namespace OpenCadDrawingAddin
             catch (Exception ex)
             {
                 LicenseHelper.WriteLog("Error running Check Reference", ex);
-                MessageBox.Show("Error: " + ex.Message, "Check Reference", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(LanguageManager.L("MSG_PROCESSING_ERROR") + ex.Message, LanguageManager.L("TITLE_ERROR"), MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -536,8 +536,8 @@ namespace OpenCadDrawingAddin
                 if (string.IsNullOrEmpty(xmlPath) || !System.IO.File.Exists(xmlPath))
                 {
                     MessageBox.Show(
-                        "BOM XML file is not configured or does not exist.\nPlease open Settings > Bom format tab to set the path.",
-                        "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        LanguageManager.L("MSG_BOM_XML_NOT_SET"),
+                        LanguageManager.L("TITLE_WARNING"), MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
 
@@ -558,14 +558,14 @@ namespace OpenCadDrawingAddin
                     }
                     catch
                     {
-                        MessageBox.Show("LOD in use in drawing; Macro failed!", "Error",
+                        MessageBox.Show(LanguageManager.L("MSG_BOM_LOD_ERROR"), LanguageManager.L("TITLE_ERROR"),
                             MessageBoxButtons.OK, MessageBoxIcon.Error);
                         return;
                     }
                 }
                 else
                 {
-                    MessageBox.Show("Invalid Document! Only Assembly or Drawing documents are supported.", "Error",
+                    MessageBox.Show(LanguageManager.L("MSG_BOM_INVALID_DOC"), LanguageManager.L("TITLE_ERROR"),
                         MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }
@@ -576,13 +576,13 @@ namespace OpenCadDrawingAddin
                 oBOM.StructuredViewFirstLevelOnly = false;
                 oBOM.PartsOnlyViewEnabled = true;
 
-                MessageBox.Show("BOM format applied successfully!", "Success",
+                MessageBox.Show(LanguageManager.L("MSG_BOM_SUCCESS"), LanguageManager.L("TITLE_INFO"),
                     MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             catch (Exception ex)
             {
                 LicenseHelper.WriteLog("Error running BOM format", ex);
-                MessageBox.Show("Error: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(LanguageManager.L("MSG_PROCESSING_ERROR") + ex.Message, LanguageManager.L("TITLE_ERROR"), MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
         private string GenerateClientId(string cmdName) => "{" + this.GetType().GUID.ToString() + "}+" + cmdName;
