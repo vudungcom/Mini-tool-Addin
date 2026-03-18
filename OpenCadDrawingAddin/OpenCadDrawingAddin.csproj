@@ -6,8 +6,8 @@
     <ProjectGuid>{B5D2C9F1-3E7A-4B8D-9C1F-0A5E7B3D6F82}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>OpenCadDrawingAddin</RootNamespace>
-    <AssemblyName>OpenCadDrawingAddin</AssemblyName>
+    <RootNamespace>MiniTool</RootNamespace>
+    <AssemblyName>MiniTool</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
@@ -65,7 +65,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="OpenCadDrawingAddin.addin">
+    <None Include="MiniTool.addin">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
@@ -74,7 +74,7 @@
   <Target Name="DeployToInventor" AfterTargets="Build">
     <MakeDir Directories="$(APPDATA)\Autodesk\Inventor 2024\Addins" Condition="!Exists('$(APPDATA)\Autodesk\Inventor 2024\Addins')" />
     <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(APPDATA)\Autodesk\Inventor 2024\Addins" />
-    <Copy SourceFiles="$(ProjectDir)OpenCadDrawingAddin.addin" DestinationFolder="$(APPDATA)\Autodesk\Inventor 2024\Addins" />
+    <Copy SourceFiles="$(ProjectDir)MiniTool.addin" DestinationFolder="$(APPDATA)\Autodesk\Inventor 2024\Addins" />
     <Message Text="=== Deploy OK: $(APPDATA)\Autodesk\Inventor 2024\Addins ===" Importance="high" />
   </Target>
 </Project>
