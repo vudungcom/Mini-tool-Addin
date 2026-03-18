@@ -722,7 +722,7 @@ namespace OpenCadDrawingAddin
                     if (_upInfo != null) StandardAddInServer._cachedUpdateInfo = _upInfo;
                     UpdateUI(_hwId, _currentVersion, _licInfo, _upInfo);
                 }
-                catch { lblInfo.Text = "Error loading data"; }
+                catch { lblInfo.Text = "Error loading data"; } 
             }
 
             private void UpdateUI(string hwId, string version, LicenseHelper.LicenseInfo licInfo, LicenseHelper.UpdateInfo upInfo)
