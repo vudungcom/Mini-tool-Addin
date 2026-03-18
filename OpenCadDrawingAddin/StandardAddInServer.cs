@@ -18,6 +18,9 @@ namespace OpenCadDrawingAddin
         private ButtonDefinition m_myButton;
         private ButtonDefinition m_settingsButton;
         private ButtonDefinition m_aboutButton;
+        private ButtonDefinition m_bomButton;        // [NEW] Bom format button
+        private ButtonDefinition m_nameUpdateButton; // [NEW] Name Update button
+        private ButtonDefinition m_saveIdwButton;    // [NEW] Save IDW button
 
         public static bool IsVietnamese => LanguageManager.CurrentLanguage == "VN";
 
@@ -62,6 +65,9 @@ namespace OpenCadDrawingAddin
             if (m_myButton != null) { m_myButton.Delete(); m_myButton = null; }
             if (m_settingsButton != null) { m_settingsButton.Delete(); m_settingsButton = null; }
             if (m_aboutButton != null) { m_aboutButton.Delete(); m_aboutButton = null; }
+            if (m_bomButton != null) { m_bomButton.Delete(); m_bomButton = null; }        // [NEW]
+            if (m_nameUpdateButton != null) { m_nameUpdateButton.Delete(); m_nameUpdateButton = null; } // [NEW]
+            if (m_saveIdwButton != null) { m_saveIdwButton.Delete(); m_saveIdwButton = null; }    // [NEW]
             if (m_inventorApplication != null) { Marshal.ReleaseComObject(m_inventorApplication); m_inventorApplication = null; }
             GC.Collect();
         }
@@ -74,12 +80,39 @@ namespace OpenCadDrawingAddin
             ControlDefinitions controlDefs = m_inventorApplication.CommandManager.ControlDefinitions;
 
             m_myButton = controlDefs.AddButtonDefinition(
-                "Open CAD Drawing", "OpenCadCmd", CommandTypesEnum.kShapeEditCmdType,
+                "Open Cad", "OpenCadCmd", CommandTypesEnum.kShapeEditCmdType, // [CHANGED] "Open CAD Drawing" → "Open CAD"
                 GenerateClientId("OpenCadCmd"),
                 "Open corresponding CAD drawing file.",
-                "Open CAD Drawing",
+                "Open Cad",
                 null, null);
             m_myButton.OnExecute += m_myButton_OnExecute;
+
+            // [NEW] Bom format button
+            m_bomButton = controlDefs.AddButtonDefinition(
+                "Bom Format", "OCDABomCmd", CommandTypesEnum.kQueryOnlyCmdType,
+                GenerateClientId("OCDABomCmd"),
+                "Apply BOM customization from XML file.",
+                "Bom Format",
+                null, null);
+            m_bomButton.OnExecute += m_bomButton_OnExecute;
+
+            // [NEW] Name Update button
+            m_nameUpdateButton = controlDefs.AddButtonDefinition(
+                "Name Update", "OCDANameUpdateCmd", CommandTypesEnum.kQueryOnlyCmdType,
+                GenerateClientId("OCDANameUpdateCmd"),
+                "Update display names of parts/occurrences from file names.",
+                "Name Update",
+                null, null);
+            m_nameUpdateButton.OnExecute += m_nameUpdateButton_OnExecute;
+
+            // [NEW] Save IDW button
+            m_saveIdwButton = controlDefs.AddButtonDefinition(
+                "Save IDW", "OCDASaveIdwCmd", CommandTypesEnum.kQueryOnlyCmdType,
+                GenerateClientId("OCDASaveIdwCmd"),
+                "Save drawing (.idw) to the same folder as the model file.",
+                "Save IDW",
+                null, null);
+            m_saveIdwButton.OnExecute += m_saveIdwButton_OnExecute;
 
             m_settingsButton = controlDefs.AddButtonDefinition(
                 "Settings", "OCDASettingsCmd", CommandTypesEnum.kQueryOnlyCmdType,
@@ -112,7 +145,17 @@ namespace OpenCadDrawingAddin
                 catch { try { panel = tab.RibbonPanels[panelId]; } catch { } }
 
                 if (panel == null) return;
-                if (!ButtonExists(panel, m_myButton)) panel.CommandControls.AddButton(m_myButton, true);
+
+                // [CHANGED] Cột TRÁI - 4 nút chức năng (small, stack 3+1)
+                if (!ButtonExists(panel, m_myButton)) panel.CommandControls.AddButton(m_myButton, false);
+                if (!ButtonExists(panel, m_bomButton)) panel.CommandControls.AddButton(m_bomButton, false);
+                if (!ButtonExists(panel, m_nameUpdateButton)) panel.CommandControls.AddButton(m_nameUpdateButton, false);
+                if (!ButtonExists(panel, m_saveIdwButton)) panel.CommandControls.AddButton(m_saveIdwButton, false);
+
+                // Separator phân chia 2 nhóm
+                panel.CommandControls.AddSeparator();
+
+                // Cột PHẢI - 2 nút tiện ích
                 if (!ButtonExists(panel, m_settingsButton)) panel.CommandControls.AddButton(m_settingsButton, false);
                 if (!ButtonExists(panel, m_aboutButton)) panel.CommandControls.AddButton(m_aboutButton, false);
             }
@@ -158,8 +201,215 @@ namespace OpenCadDrawingAddin
             catch (Exception ex) { LicenseHelper.WriteLog("Error running Open CAD Drawing", ex); }
         }
 
-        private void m_aboutButton_OnExecute(NameValueMap Context) { using (var frm = new AboutBoxForm(true)) { frm.ShowDialog(); } }
+        // [NEW] Handler cho Name Update button
+        // Logic từ file name_update.iLogicVb
+        private void m_nameUpdateButton_OnExecute(NameValueMap Context)
+        {
+            try
+            {
+                Document activeDoc = m_inventorApplication.ActiveDocument;
+
+                if (activeDoc.DocumentType == DocumentTypeEnum.kPartDocumentObject)
+                {
+                    // Part: cập nhật DisplayName từ tên file
+                    PartDocument doc = (PartDocument)activeDoc;
+                    string newName = doc.FullFileName.Substring(doc.FullFileName.LastIndexOf("\\") + 1);
+                    newName = newName.Substring(0, newName.LastIndexOf("."));
+                    doc.DisplayName = newName;
+                    MessageBox.Show("Name updated: " + newName, "Name Update",
+                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                else if (activeDoc.DocumentType == DocumentTypeEnum.kAssemblyDocumentObject)
+                {
+                    // Assembly: cập nhật tên tất cả occurrences đệ quy
+                    AssemblyDocument adoc = (AssemblyDocument)activeDoc;
+                    NameUpdateReplace(adoc.ComponentDefinition.Occurrences);
+                    MessageBox.Show("Name update completed for all occurrences.", "Name Update",
+                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                else
+                {
+                    MessageBox.Show("Name Update only supports Part or Assembly documents.", "Name Update",
+                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+            }
+            catch (Exception ex)
+            {
+                LicenseHelper.WriteLog("Error running Name Update", ex);
+                MessageBox.Show("Error: " + ex.Message, "Name Update", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        // Helper đệ quy cho Name Update (tương đương Function Replace trong iLogic)
+        private string[] _nameUpdatePaths = null;
+        private int[] _nameUpdateIndex = null;
+        private int _nameUpdateCount = 0;
+
+        private void NameUpdateReplace(ComponentOccurrences occs)
+        {
+            bool isRoot = (_nameUpdatePaths == null);
+            if (isRoot)
+            {
+                _nameUpdatePaths = new string[1000];
+                _nameUpdateIndex = new int[1000];
+                _nameUpdateCount = 0;
+            }
+
+            foreach (ComponentOccurrence occ in occs)
+            {
+                try
+                {
+                    Document doc = (Document)occ.Definition.Document; // [FIX CS0266]
+                    string newName = doc.FullFileName.Substring(doc.FullFileName.LastIndexOf("\\") + 1);
+                    newName = newName.Substring(0, newName.LastIndexOf("."));
+                    if (string.IsNullOrEmpty(newName)) newName = "empty";
+
+                    int idx = System.Array.IndexOf(_nameUpdatePaths, doc.FullFileName);
+                    if (idx < 0)
+                    {
+                        _nameUpdatePaths[_nameUpdateCount] = doc.FullFileName;
+                        _nameUpdateIndex[_nameUpdateCount] = 1;
+                        occ.Name = newName + ":1";
+                        _nameUpdateCount++;
+                    }
+                    else
+                    {
+                        _nameUpdateIndex[idx]++;
+                        occ.Name = newName + ":" + _nameUpdateIndex[idx].ToString();
+                    }
+
+                    if (doc.DocumentType == DocumentTypeEnum.kAssemblyDocumentObject)
+                    {
+                        // [FIX CS0266] Documents.Open trả về object, cần cast về Document trước
+                        AssemblyDocument subAdoc = (AssemblyDocument)(Document)m_inventorApplication.Documents.Open(doc.FullFileName, false);
+                        NameUpdateReplace(subAdoc.ComponentDefinition.Occurrences);
+                    }
+                }
+                catch { }
+            }
+
+            if (isRoot) { _nameUpdatePaths = null; _nameUpdateIndex = null; _nameUpdateCount = 0; }
+        }
+
+        // [NEW] Handler cho Save IDW button
+        // Logic từ file Save_idw_and_ipt_same_location.txt
+        private void m_saveIdwButton_OnExecute(NameValueMap Context)
+        {
+            try
+            {
+                Document activeDoc = m_inventorApplication.ActiveDocument;
+
+                if (activeDoc.DocumentType != DocumentTypeEnum.kDrawingDocumentObject)
+                {
+                    MessageBox.Show("Save IDW only works on Drawing documents.", "Save IDW",
+                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                DrawingDocument dwgDoc = (DrawingDocument)activeDoc;
+
+                // Lấy model document và path
+                // [FIX CS1061] DrawingDocument không có ModelDocument trong C# API
+                // Phải lấy qua sheet đầu tiên → DrawingView đầu tiên → ReferencedDocument
+                Document modelDoc;
+                string modelPath;
+                try
+                {
+                    modelDoc = (Document)dwgDoc.ActiveSheet.DrawingViews[1]
+                                .ReferencedDocumentDescriptor.ReferencedDocument;
+                    modelPath = modelDoc.FullFileName;
+                }
+                catch
+                {
+                    MessageBox.Show("Could not get model reference.", "Save IDW",
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+
+                // Tạo đường dẫn .idw cùng thư mục với model
+                string savePath = modelPath.Substring(0, modelPath.Length - 4) + ".idw";
+
+                try
+                {
+                    dwgDoc.SaveAs(savePath, false);
+                    MessageBox.Show("Drawing saved:\n" + savePath, "Save IDW",
+                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                catch
+                {
+                    MessageBox.Show("Drawing could not be saved for some reason.", "Save IDW",
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+            catch (Exception ex)
+            {
+                LicenseHelper.WriteLog("Error running Save IDW", ex);
+                MessageBox.Show("Error: " + ex.Message, "Save IDW", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
         private void m_settingsButton_OnExecute(NameValueMap Context) { using (var frm = new SettingsForm()) { frm.ShowDialog(); } }
+        private void m_aboutButton_OnExecute(NameValueMap Context) { using (var frm = new AboutBoxForm(true)) { frm.ShowDialog(); } } // [RESTORED]
+
+        // [NEW] Handler cho Bom format button
+        private void m_bomButton_OnExecute(NameValueMap Context)
+        {
+            try
+            {
+                var settings = OpenCadSettings.Load();
+                string xmlPath = settings.BomXmlPath;
+
+                if (string.IsNullOrEmpty(xmlPath) || !System.IO.File.Exists(xmlPath))
+                {
+                    MessageBox.Show(
+                        "BOM XML file is not configured or does not exist.\nPlease open Settings > Bom format tab to set the path.",
+                        "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                Document oADoc = m_inventorApplication.ActiveDocument;
+                AssemblyDocument oDoc = null;
+
+                if (oADoc.DocumentType == DocumentTypeEnum.kAssemblyDocumentObject)
+                {
+                    oDoc = (AssemblyDocument)oADoc;
+                }
+                else if (oADoc.DocumentType == DocumentTypeEnum.kDrawingDocumentObject)
+                {
+                    try
+                    {
+                        var dwgDoc = (DrawingDocument)oADoc;
+                        oDoc = (AssemblyDocument)dwgDoc.ActiveSheet.DrawingViews[1]
+                               .ReferencedDocumentDescriptor.ReferencedDocument;
+                    }
+                    catch
+                    {
+                        MessageBox.Show("LOD in use in drawing; Macro failed!", "Error",
+                            MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("Invalid Document! Only Assembly or Drawing documents are supported.", "Error",
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+
+                BOM oBOM = oDoc.ComponentDefinition.BOM;
+                oBOM.ImportBOMCustomization(xmlPath);
+                oBOM.StructuredViewEnabled = true;
+                oBOM.StructuredViewFirstLevelOnly = false;
+                oBOM.PartsOnlyViewEnabled = true;
+
+                MessageBox.Show("BOM format applied successfully!", "Success",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (Exception ex)
+            {
+                LicenseHelper.WriteLog("Error running BOM format", ex);
+                MessageBox.Show("Error: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
         private string GenerateClientId(string cmdName) => "{" + this.GetType().GUID.ToString() + "}+" + cmdName;
 
         // ============================================================

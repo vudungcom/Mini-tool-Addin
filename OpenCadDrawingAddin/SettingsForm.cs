@@ -7,7 +7,7 @@ using OpenCadDrawingAddin.Logic;
 namespace OpenCadDrawingAddin
 {
     /// <summary>
-    /// Form Settings cho Open CAD Drawing Add-in
+    /// Form Settings cho Mini Tool Add-in
     /// Tab 1 - Settings: Chọn thư mục CAD + tùy chọn số sửa đổi
     /// Tab 2 - Language: Chọn ngôn ngữ hiển thị
     /// Version 1.0
@@ -18,6 +18,7 @@ namespace OpenCadDrawingAddin
         private TabControl mainTabControl;
         private TabPage tabSettings;
         private TabPage tabLanguage;
+        private TabPage tabBom; // [NEW]
 
         // Tab Settings
         private Label lblCadFolder;
@@ -29,6 +30,10 @@ namespace OpenCadDrawingAddin
         private Label lblExtension;
         private TextBox txtExtension;
         private Label lblExtensionHint;
+
+        // Tab Bom format [NEW]
+        private TextBox txtBomXmlPath;
+        private Button btnBomBrowse;
 
         // Tab Language
         private ListBox lstLanguages;
@@ -69,8 +74,8 @@ namespace OpenCadDrawingAddin
                 Size = new Size(445, 290)
             };
 
-            // --- Tab 1: Settings ---
-            tabSettings = new TabPage(LanguageManager.L("TAB_SETTINGS"));
+            // --- Tab 1: Settings (renamed to Cad drawing) ---
+            tabSettings = new TabPage(LanguageManager.L("TAB_SETTINGS")); // [CHANGED] key TAB_SETTINGS giờ = "Cad drawing"
             BuildSettingsTab();
             mainTabControl.TabPages.Add(tabSettings);
 
@@ -78,6 +83,11 @@ namespace OpenCadDrawingAddin
             tabLanguage = new TabPage(LanguageManager.L("TAB_LANGUAGE"));
             BuildLanguageTab();
             mainTabControl.TabPages.Add(tabLanguage);
+
+            // --- Tab 3: Bom format --- [NEW]
+            tabBom = new TabPage(LanguageManager.L("TAB_BOM"));
+            BuildBomTab();
+            mainTabControl.TabPages.Add(tabBom);
 
             this.Controls.Add(mainTabControl);
 
@@ -205,6 +215,51 @@ namespace OpenCadDrawingAddin
         }
 
         // ============================================================
+        // TAB 3: BOM FORMAT [NEW]
+        // ============================================================
+        private void BuildBomTab()
+        {
+            int x = 15, y = 15;
+
+            var lblXmlPath = new Label
+            {
+                Text = LanguageManager.L("LBL_BOM_XML_PATH"),
+                Location = new Point(x, y),
+                Size = new Size(400, 18),
+                Font = new Font("Segoe UI", 9F, FontStyle.Bold)
+            };
+            tabBom.Controls.Add(lblXmlPath);
+            y += 20;
+
+            txtBomXmlPath = new TextBox
+            {
+                Location = new Point(x, y),
+                Size = new Size(320, 23)
+            };
+            tabBom.Controls.Add(txtBomXmlPath);
+
+            btnBomBrowse = new Button
+            {
+                Text = LanguageManager.L("BTN_BROWSE"),
+                Location = new Point(x + 325, y - 1),
+                Size = new Size(85, 25)
+            };
+            btnBomBrowse.Click += BtnBomBrowse_Click;
+            tabBom.Controls.Add(btnBomBrowse);
+            y += 25;
+
+            var lblHint = new Label
+            {
+                Text = LanguageManager.L("LBL_BOM_XML_HINT"),
+                Location = new Point(x, y),
+                Size = new Size(400, 18),
+                ForeColor = Color.Gray,
+                Font = new Font("Segoe UI", 8F, FontStyle.Italic)
+            };
+            tabBom.Controls.Add(lblHint);
+        }
+
+        // ============================================================
         // TAB 2: LANGUAGE
         // ============================================================
         private void BuildLanguageTab()
@@ -242,6 +297,8 @@ namespace OpenCadDrawingAddin
             if (!txtExtension.Text.StartsWith("."))
                 txtExtension.Text = "." + txtExtension.Text;
 
+            txtBomXmlPath.Text = _settings.BomXmlPath; // [NEW]
+
             // Select current language
             string currentLang = _settings.Language;
             for (int i = 0; i < lstLanguages.Items.Count; i++)
@@ -269,6 +326,8 @@ namespace OpenCadDrawingAddin
 
             _settings.UseRevisionSuffix = chkUseRevision.Checked;
 
+            _settings.BomXmlPath = txtBomXmlPath.Text.Trim(); // [NEW]
+
             // Language
             if (lstLanguages.SelectedItem != null)
             {
@@ -295,6 +354,26 @@ namespace OpenCadDrawingAddin
                 if (dialog.ShowDialog() == DialogResult.OK)
                 {
                     txtCadFolder.Text = dialog.SelectedPath;
+                }
+            }
+        }
+
+        // [NEW] Browse for BOM XML file
+        private void BtnBomBrowse_Click(object sender, EventArgs e)
+        {
+            using (var dialog = new OpenFileDialog())
+            {
+                dialog.Title = "Select BOM XML File";
+                dialog.Filter = "XML Files (*.xml)|*.xml|All Files (*.*)|*.*";
+                dialog.FilterIndex = 1;
+
+                string current = txtBomXmlPath.Text.Trim();
+                if (!string.IsNullOrEmpty(current) && File.Exists(current))
+                    dialog.InitialDirectory = Path.GetDirectoryName(current);
+
+                if (dialog.ShowDialog() == DialogResult.OK)
+                {
+                    txtBomXmlPath.Text = dialog.FileName;
                 }
             }
         }

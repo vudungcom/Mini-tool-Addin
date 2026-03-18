@@ -37,6 +37,11 @@ namespace OpenCadDrawingAddin.Logic
         /// </summary>
         public string Language { get; set; } = "EN";
 
+        /// <summary>
+        /// [NEW] Đường dẫn file .xml cho BOM customization
+        /// </summary>
+        public string BomXmlPath { get; set; } = "";
+
         // ============================================================
         // PATHS
         // ============================================================
@@ -65,10 +70,11 @@ namespace OpenCadDrawingAddin.Logic
                 var root = xml.Root;
                 if (root == null) return settings;
 
-                settings.CadFolderPath  = (string)root.Element("CadFolderPath")  ?? "";
+                settings.CadFolderPath = (string)root.Element("CadFolderPath") ?? "";
                 settings.UseRevisionSuffix = ParseBool(root.Element("UseRevisionSuffix"), false);
-                settings.CadExtension   = (string)root.Element("CadExtension")   ?? ".dwg";
-                settings.Language       = (string)root.Element("Language")        ?? "EN";
+                settings.CadExtension = (string)root.Element("CadExtension") ?? ".dwg";
+                settings.Language = (string)root.Element("Language") ?? "EN";
+                settings.BomXmlPath = (string)root.Element("BomXmlPath") ?? ""; // [NEW]
             }
             catch (Exception ex)
             {
@@ -89,10 +95,11 @@ namespace OpenCadDrawingAddin.Logic
 
                 var xml = new XDocument(
                     new XElement("OpenCadSettings",
-                        new XElement("CadFolderPath",    CadFolderPath),
+                        new XElement("CadFolderPath", CadFolderPath),
                         new XElement("UseRevisionSuffix", UseRevisionSuffix),
-                        new XElement("CadExtension",     CadExtension),
-                        new XElement("Language",         Language)
+                        new XElement("CadExtension", CadExtension),
+                        new XElement("Language", Language),
+                        new XElement("BomXmlPath", BomXmlPath) // [NEW]
                     )
                 );
                 xml.Save(_settingsPath);
