@@ -313,8 +313,8 @@ namespace OpenCadDrawingAddin.Logic
 
                 string timeLeft = FormatTimeLeft(trialInfo.minutesLeft, vietnamese);
                 string message = vietnamese
-                    ? $"⚠️ Thời gian dùng thử sắp hết!\n\nBạn còn {timeLeft} để trải nghiệm Replace File Add-in.\n\nVui lòng kích hoạt license để tiếp tục sử dụng."
-                    : $"⚠️ Trial period ending soon!\n\nYou have {timeLeft} left to try Replace File Add-in.\n\nPlease activate your license to continue using.";
+                    ? $"⚠️ Thời gian dùng thử sắp hết!\n\nBạn còn {timeLeft} để trải nghiệm Mini Tool Add-in.\n\nVui lòng kích hoạt license để tiếp tục sử dụng."
+                    : $"⚠️ Trial period ending soon!\n\nYou have {timeLeft} left to try Mini Tool Add-in.\n\nPlease activate your license to continue using.";
 
                 MessageBox.Show(message,
                     vietnamese ? "Nhắc nhở Trial" : "Trial Reminder",
