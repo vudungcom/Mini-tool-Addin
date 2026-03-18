@@ -56,6 +56,11 @@ namespace OpenCadDrawingAddin
                     ["LBL_BOM_XML_PATH"] = "BOM XML File:",
                     ["LBL_BOM_XML_HINT"] = "Path to .xml BOM customization file",
 
+                    // === CHECK REFERENCE TAB ===                                    // [NEW BLOCK]
+                    ["TAB_CHECK_REF"] = "Check Reference",
+                    ["LBL_CHECK_REF_EXCLUDE"] = "Exclude List File:",
+                    ["LBL_CHECK_REF_EXCLUDE_HINT"] = "Path to exclude_list.txt (one keyword per line)",
+
                     // === SETTINGS CONTROLS ===
                     ["LBL_CAD_FOLDER"] = "CAD Drawing Folder:",
                     ["LBL_FOLDER_HINT"] = "Folder containing .dwg files",
@@ -132,6 +137,11 @@ namespace OpenCadDrawingAddin
                     ["LBL_BOM_XML_PATH"] = "File XML BOM:",
                     ["LBL_BOM_XML_HINT"] = "Đường dẫn đến file .xml tùy chỉnh BOM",
 
+                    // [NEW BLOCK]
+                    ["TAB_CHECK_REF"] = "Check Reference",
+                    ["LBL_CHECK_REF_EXCLUDE"] = "File danh sách loại trừ:",
+                    ["LBL_CHECK_REF_EXCLUDE_HINT"] = "Đường dẫn đến exclude_list.txt (mỗi dòng 1 từ khóa)",
+
                     ["LBL_CAD_FOLDER"] = "Thư mục file CAD:",
                     ["LBL_FOLDER_HINT"] = "Thư mục chứa các file .dwg",
                     ["CHK_USE_REVISION"] = "Thêm số sửa đổi vào tên file",
@@ -202,6 +212,11 @@ namespace OpenCadDrawingAddin
                     // [NEW BLOCK]
                     ["LBL_BOM_XML_PATH"] = "BOM XMLファイル:",
                     ["LBL_BOM_XML_HINT"] = ".xml BOMカスタマイズファイルのパス",
+
+                    // [NEW BLOCK]
+                    ["TAB_CHECK_REF"] = "Check Reference",
+                    ["LBL_CHECK_REF_EXCLUDE"] = "除外リストファイル:",
+                    ["LBL_CHECK_REF_EXCLUDE_HINT"] = "exclude_list.txtのパス（1行に1キーワード）",
                     ["LBL_CAD_FOLDER"] = "CAD図面フォルダ:",
                     ["LBL_FOLDER_HINT"] = ".dwgファイルを含むフォルダ",
                     ["CHK_USE_REVISION"] = "ファイル名に改訂番号を追加する",

@@ -21,6 +21,7 @@ namespace OpenCadDrawingAddin
         private ButtonDefinition m_bomButton;        // [NEW] Bom format button
         private ButtonDefinition m_nameUpdateButton; // [NEW] Name Update button
         private ButtonDefinition m_saveIdwButton;    // [NEW] Save IDW button
+        private ButtonDefinition m_checkRefButton;   // [NEW] Check Reference button
 
         public static bool IsVietnamese => LanguageManager.CurrentLanguage == "VN";
 
@@ -68,6 +69,7 @@ namespace OpenCadDrawingAddin
             if (m_bomButton != null) { m_bomButton.Delete(); m_bomButton = null; }        // [NEW]
             if (m_nameUpdateButton != null) { m_nameUpdateButton.Delete(); m_nameUpdateButton = null; } // [NEW]
             if (m_saveIdwButton != null) { m_saveIdwButton.Delete(); m_saveIdwButton = null; }    // [NEW]
+            if (m_checkRefButton != null) { m_checkRefButton.Delete(); m_checkRefButton = null; }   // [NEW]
             if (m_inventorApplication != null) { Marshal.ReleaseComObject(m_inventorApplication); m_inventorApplication = null; }
             GC.Collect();
         }
@@ -80,19 +82,19 @@ namespace OpenCadDrawingAddin
             ControlDefinitions controlDefs = m_inventorApplication.CommandManager.ControlDefinitions;
 
             m_myButton = controlDefs.AddButtonDefinition(
-                "Open Cad", "OpenCadCmd", CommandTypesEnum.kShapeEditCmdType, // [CHANGED] "Open CAD Drawing" → "Open CAD"
+                "Open CAD", "OpenCadCmd", CommandTypesEnum.kShapeEditCmdType, // [CHANGED] "Open CAD Drawing" → "Open CAD"
                 GenerateClientId("OpenCadCmd"),
                 "Open corresponding CAD drawing file.",
-                "Open Cad",
+                "Open CAD",
                 null, null);
             m_myButton.OnExecute += m_myButton_OnExecute;
 
             // [NEW] Bom format button
             m_bomButton = controlDefs.AddButtonDefinition(
-                "Bom Format", "OCDABomCmd", CommandTypesEnum.kQueryOnlyCmdType,
+                "BOM Format", "OCDABomCmd", CommandTypesEnum.kQueryOnlyCmdType,
                 GenerateClientId("OCDABomCmd"),
                 "Apply BOM customization from XML file.",
-                "Bom Format",
+                "BOM Format",
                 null, null);
             m_bomButton.OnExecute += m_bomButton_OnExecute;
 
@@ -114,6 +116,15 @@ namespace OpenCadDrawingAddin
                 null, null);
             m_saveIdwButton.OnExecute += m_saveIdwButton_OnExecute;
 
+            // [NEW] Check Reference button
+            m_checkRefButton = controlDefs.AddButtonDefinition(
+                "Check Ref", "OCDACheckRefCmd", CommandTypesEnum.kQueryOnlyCmdType,
+                GenerateClientId("OCDACheckRefCmd"),
+                "Scan assembly for occurrences with BOM Structure = Reference.",
+                "Check Reference",
+                null, null);
+            m_checkRefButton.OnExecute += m_checkRefButton_OnExecute;
+
             m_settingsButton = controlDefs.AddButtonDefinition(
                 "Settings", "OCDASettingsCmd", CommandTypesEnum.kQueryOnlyCmdType,
                 GenerateClientId("OCDASettingsCmd"),
@@ -131,9 +142,12 @@ namespace OpenCadDrawingAddin
 
             AddPanelToRibbon("Assembly", "id_TabAssemble", "{A7F3B8D1-2C4E-4A9F-8E2B-6D1F5C3A9E72}");
             AddPanelToRibbon("Part", "id_TabModel", "{A7F3B8D1-2C4E-4A9F-8E2B-6D1F5C3A9E73}");
+
+            // [NEW] Drawing ribbon - thử lần lượt các tab ID phổ biến
+            AddDrawingRibbonPanel();
         }
 
-        private void AddPanelToRibbon(string ribbonName, string tabId, string panelGuid)
+        private void AddPanelToRibbon(string ribbonName, string tabId, string panelGuid, bool drawingOnly = false)
         {
             try
             {
@@ -146,16 +160,67 @@ namespace OpenCadDrawingAddin
 
                 if (panel == null) return;
 
-                // [CHANGED] Cột TRÁI - 4 nút chức năng (small, stack 3+1)
-                if (!ButtonExists(panel, m_myButton)) panel.CommandControls.AddButton(m_myButton, false);
-                if (!ButtonExists(panel, m_bomButton)) panel.CommandControls.AddButton(m_bomButton, false);
-                if (!ButtonExists(panel, m_nameUpdateButton)) panel.CommandControls.AddButton(m_nameUpdateButton, false);
+                if (drawingOnly)
+                {
+                    // [NEW] Drawing ribbon: chỉ hiện Save IDW + separator + Settings/About
+                    if (!ButtonExists(panel, m_saveIdwButton)) panel.CommandControls.AddButton(m_saveIdwButton, false);
+                    panel.CommandControls.AddSeparator();
+                    if (!ButtonExists(panel, m_settingsButton)) panel.CommandControls.AddButton(m_settingsButton, false);
+                    if (!ButtonExists(panel, m_aboutButton)) panel.CommandControls.AddButton(m_aboutButton, false);
+                }
+                else
+                {
+                    // Assembly / Part ribbon: đầy đủ 5 nút chức năng
+                    if (!ButtonExists(panel, m_myButton)) panel.CommandControls.AddButton(m_myButton, false);
+                    if (!ButtonExists(panel, m_bomButton)) panel.CommandControls.AddButton(m_bomButton, false);
+                    if (!ButtonExists(panel, m_nameUpdateButton)) panel.CommandControls.AddButton(m_nameUpdateButton, false);
+                    if (!ButtonExists(panel, m_saveIdwButton)) panel.CommandControls.AddButton(m_saveIdwButton, false);
+                    if (!ButtonExists(panel, m_checkRefButton)) panel.CommandControls.AddButton(m_checkRefButton, false);
+
+                    panel.CommandControls.AddSeparator();
+
+                    if (!ButtonExists(panel, m_settingsButton)) panel.CommandControls.AddButton(m_settingsButton, false);
+                    if (!ButtonExists(panel, m_aboutButton)) panel.CommandControls.AddButton(m_aboutButton, false);
+                }
+            }
+            catch { }
+        }
+
+        // [NEW] Thêm panel vào Drawing ribbon - thử lần lượt các tab ID
+        private void AddDrawingRibbonPanel()
+        {
+            try
+            {
+                Ribbon ribbon = m_inventorApplication.UserInterfaceManager.Ribbons["Drawing"];
+                string panelId = "id_Panel_OpenCadTools_Drawing";
+                string panelGuid = "{A7F3B8D1-2C4E-4A9F-8E2B-6D1F5C3A9E74}";
+
+                // Thử lần lượt các tab ID phổ biến của Drawing ribbon trong Inventor
+                string[] tabIds = {
+                    "id_TabPlaceViews",  // [CONFIRMED] Place Views - đúng tab ID
+                    "id_TabAnnotate",    // Annotate - fallback
+                    "id_TabTools"        // Tools - fallback cuối
+                };
+
+                RibbonPanel panel = null;
+                foreach (string tabId in tabIds)
+                {
+                    try
+                    {
+                        RibbonTab tab = ribbon.RibbonTabs[tabId];
+                        try { panel = tab.RibbonPanels.Add("Mini Tool", panelId, panelGuid); }
+                        catch { try { panel = tab.RibbonPanels[panelId]; } catch { } }
+
+                        if (panel != null) break; // Thành công, dừng vòng lặp
+                    }
+                    catch { continue; } // Tab ID này không tồn tại, thử cái tiếp
+                }
+
+                if (panel == null) return;
+
+                // Drawing panel: chỉ Save IDW + separator + Settings/About
                 if (!ButtonExists(panel, m_saveIdwButton)) panel.CommandControls.AddButton(m_saveIdwButton, false);
-
-                // Separator phân chia 2 nhóm
                 panel.CommandControls.AddSeparator();
-
-                // Cột PHẢI - 2 nút tiện ích
                 if (!ButtonExists(panel, m_settingsButton)) panel.CommandControls.AddButton(m_settingsButton, false);
                 if (!ButtonExists(panel, m_aboutButton)) panel.CommandControls.AddButton(m_aboutButton, false);
             }
@@ -349,6 +414,116 @@ namespace OpenCadDrawingAddin
         }
         private void m_settingsButton_OnExecute(NameValueMap Context) { using (var frm = new SettingsForm()) { frm.ShowDialog(); } }
         private void m_aboutButton_OnExecute(NameValueMap Context) { using (var frm = new AboutBoxForm(true)) { frm.ShowDialog(); } } // [RESTORED]
+
+        // [NEW] Handler cho Check Reference button
+        // Logic từ Check_Reference.txt (iLogic)
+        private void m_checkRefButton_OnExecute(NameValueMap Context)
+        {
+            try
+            {
+                Document activeDoc = m_inventorApplication.ActiveDocument;
+
+                if (activeDoc.DocumentType != DocumentTypeEnum.kAssemblyDocumentObject)
+                {
+                    MessageBox.Show("Check Reference chỉ chạy được trong Assembly.", "Check Reference",
+                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                // Load exclude list từ settings
+                var settings = OpenCadSettings.Load();
+                var excludeList = new System.Collections.Generic.List<string>();
+
+                string excludeFile = settings.CheckRefExcludeListPath;
+                if (!string.IsNullOrEmpty(excludeFile) && System.IO.File.Exists(excludeFile))
+                {
+                    foreach (string line in System.IO.File.ReadAllLines(excludeFile, System.Text.Encoding.UTF8))
+                    {
+                        if (!string.IsNullOrWhiteSpace(line))
+                            excludeList.Add(line.Trim().ToLower());
+                    }
+                }
+
+                // Scan assembly
+                string refList = "";
+                AssemblyDocument asmDoc = (AssemblyDocument)activeDoc;
+                CheckRefOccurrences(asmDoc.ComponentDefinition.Occurrences, ref refList, excludeList);
+
+                // Hiển thị kết quả
+                if (string.IsNullOrEmpty(refList))
+                {
+                    MessageBox.Show(
+                        "Assembly này không có Occurrence nào BOM Structure = Reference\n(ngoài danh sách loại trừ).",
+                        "Check Reference", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                else
+                {
+                    string asmFolder = System.IO.Path.GetDirectoryName(activeDoc.FullFileName);
+                    string asmName = System.IO.Path.GetFileNameWithoutExtension(activeDoc.FullFileName);
+                    string outPath = System.IO.Path.Combine(asmFolder, asmName + "_ReferenceCheck.txt");
+
+                    using (var sw = new System.IO.StreamWriter(outPath, false, System.Text.Encoding.UTF8))
+                    {
+                        sw.WriteLine("Các Occurrence BOM Structure = Reference (ngoài danh sách loại trừ):");
+                        sw.WriteLine(refList);
+                    }
+
+                    try { System.Diagnostics.Process.Start(outPath); }
+                    catch
+                    {
+                        MessageBox.Show("Không mở được file tự động:\n" + outPath, "Check Reference",
+                            MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                LicenseHelper.WriteLog("Error running Check Reference", ex);
+                MessageBox.Show("Error: " + ex.Message, "Check Reference", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        // Helper đệ quy cho Check Reference
+        private void CheckRefOccurrences(
+            ComponentOccurrences occs,
+            ref string refList,
+            System.Collections.Generic.List<string> excludeList)
+        {
+            foreach (ComponentOccurrence occ in occs)
+            {
+                try
+                {
+                    if (occ.BOMStructure == BOMStructureEnum.kReferenceBOMStructure)
+                    {
+                        string occName = occ.Name.ToLower();
+                        Document occDoc = (Document)occ.Definition.Document;
+                        string fileName = System.IO.Path.GetFileNameWithoutExtension(occDoc.FullFileName).ToLower();
+                        string fileNameEx = System.IO.Path.GetFileName(occDoc.FullFileName).ToLower();
+
+                        bool skip = false;
+                        foreach (string ex in excludeList)
+                        {
+                            if (occName.Contains(ex) || fileName.Contains(ex) || fileNameEx.Contains(ex))
+                            {
+                                skip = true;
+                                break;
+                            }
+                        }
+
+                        if (!skip)
+                            refList += "\r\n" + occ.Name + "   --> " + ((Document)occ.Definition.Document).FullFileName;
+                    }
+
+                    // Đệ quy vào sub-assembly
+                    if (occ.DefinitionDocumentType == DocumentTypeEnum.kAssemblyDocumentObject)
+                    {
+                        AssemblyDocument subAsm = (AssemblyDocument)(Document)occ.Definition.Document;
+                        CheckRefOccurrences(subAsm.ComponentDefinition.Occurrences, ref refList, excludeList);
+                    }
+                }
+                catch { }
+            }
+        }
 
         // [NEW] Handler cho Bom format button
         private void m_bomButton_OnExecute(NameValueMap Context)

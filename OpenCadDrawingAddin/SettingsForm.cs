@@ -18,12 +18,14 @@ namespace OpenCadDrawingAddin
         private TabControl mainTabControl;
         private TabPage tabSettings;
         private TabPage tabLanguage;
-        private TabPage tabBom; // [NEW]
+        private TabPage tabBom;       // [NEW]
+        private TabPage tabCheckRef;  // [NEW]
 
-        // Tab Settings
+        // Tab Settings - [CHANGED v1.1] multi-folder
         private Label lblCadFolder;
-        private TextBox txtCadFolder;
-        private Button btnBrowse;
+        private ListBox lstCadFolders;   // [CHANGED] thay txtCadFolder
+        private Button btnAddFolder;     // [NEW] thêm folder
+        private Button btnRemoveFolder;  // [NEW] xóa folder
         private Label lblFolderHint;
         private CheckBox chkUseRevision;
         private Label lblRevisionHint;
@@ -34,6 +36,10 @@ namespace OpenCadDrawingAddin
         // Tab Bom format [NEW]
         private TextBox txtBomXmlPath;
         private Button btnBomBrowse;
+
+        // Tab Check Reference [NEW]
+        private TextBox txtCheckRefExcludePath;
+        private Button btnCheckRefBrowse;
 
         // Tab Language
         private ListBox lstLanguages;
@@ -79,15 +85,20 @@ namespace OpenCadDrawingAddin
             BuildSettingsTab();
             mainTabControl.TabPages.Add(tabSettings);
 
-            // --- Tab 2: Language ---
-            tabLanguage = new TabPage(LanguageManager.L("TAB_LANGUAGE"));
-            BuildLanguageTab();
-            mainTabControl.TabPages.Add(tabLanguage);
-
-            // --- Tab 3: Bom format --- [NEW]
+            // --- Tab 2: Bom format ---
             tabBom = new TabPage(LanguageManager.L("TAB_BOM"));
             BuildBomTab();
             mainTabControl.TabPages.Add(tabBom);
+
+            // --- Tab 3: Check Reference ---
+            tabCheckRef = new TabPage(LanguageManager.L("TAB_CHECK_REF"));
+            BuildCheckRefTab();
+            mainTabControl.TabPages.Add(tabCheckRef);
+
+            // --- Tab 4: Language --- [MOVED] ra ngoài cùng phải
+            tabLanguage = new TabPage(LanguageManager.L("TAB_LANGUAGE"));
+            BuildLanguageTab();
+            mainTabControl.TabPages.Add(tabLanguage);
 
             this.Controls.Add(mainTabControl);
 
@@ -133,23 +144,37 @@ namespace OpenCadDrawingAddin
             tabSettings.Controls.Add(lblCadFolder);
             y += 20;
 
-            txtCadFolder = new TextBox
+            // [CHANGED v1.1] ListBox thay cho TextBox - hỗ trợ nhiều folder
+            lstCadFolders = new ListBox
             {
                 Location = new Point(x, y),
-                Size = new Size(320, 23),
-                // PlaceholderText không có trong .NET 4.8 - bỏ qua
+                Size = new Size(320, 70),
+                Font = new Font("Segoe UI", 8.5F),
+                SelectionMode = SelectionMode.One
             };
-            tabSettings.Controls.Add(txtCadFolder);
+            tabSettings.Controls.Add(lstCadFolders);
 
-            btnBrowse = new Button
+            btnAddFolder = new Button
             {
-                Text = LanguageManager.L("BTN_BROWSE"),
-                Location = new Point(x + 325, y - 1),
-                Size = new Size(85, 25)
+                Text = "+",
+                Location = new Point(x + 325, y),
+                Size = new Size(85, 25),
+                Font = new Font("Segoe UI", 10F, FontStyle.Bold),
+                BackColor = Color.LightGreen
             };
-            btnBrowse.Click += BtnBrowse_Click;
-            tabSettings.Controls.Add(btnBrowse);
-            y += 25;
+            btnAddFolder.Click += BtnAddFolder_Click;
+            tabSettings.Controls.Add(btnAddFolder);
+
+            btnRemoveFolder = new Button
+            {
+                Text = "−",
+                Location = new Point(x + 325, y + 30),
+                Size = new Size(85, 25),
+                Font = new Font("Segoe UI", 10F, FontStyle.Bold)
+            };
+            btnRemoveFolder.Click += BtnRemoveFolder_Click;
+            tabSettings.Controls.Add(btnRemoveFolder);
+            y += 75;
 
             lblFolderHint = new Label
             {
@@ -260,6 +285,51 @@ namespace OpenCadDrawingAddin
         }
 
         // ============================================================
+        // TAB 4: CHECK REFERENCE [NEW]
+        // ============================================================
+        private void BuildCheckRefTab()
+        {
+            int x = 15, y = 15;
+
+            var lblExclude = new Label
+            {
+                Text = LanguageManager.L("LBL_CHECK_REF_EXCLUDE"),
+                Location = new Point(x, y),
+                Size = new Size(400, 18),
+                Font = new Font("Segoe UI", 9F, FontStyle.Bold)
+            };
+            tabCheckRef.Controls.Add(lblExclude);
+            y += 20;
+
+            txtCheckRefExcludePath = new TextBox
+            {
+                Location = new Point(x, y),
+                Size = new Size(320, 23)
+            };
+            tabCheckRef.Controls.Add(txtCheckRefExcludePath);
+
+            btnCheckRefBrowse = new Button
+            {
+                Text = LanguageManager.L("BTN_BROWSE"),
+                Location = new Point(x + 325, y - 1),
+                Size = new Size(85, 25)
+            };
+            btnCheckRefBrowse.Click += BtnCheckRefBrowse_Click;
+            tabCheckRef.Controls.Add(btnCheckRefBrowse);
+            y += 25;
+
+            var lblHint = new Label
+            {
+                Text = LanguageManager.L("LBL_CHECK_REF_EXCLUDE_HINT"),
+                Location = new Point(x, y),
+                Size = new Size(400, 18),
+                ForeColor = Color.Gray,
+                Font = new Font("Segoe UI", 8F, FontStyle.Italic)
+            };
+            tabCheckRef.Controls.Add(lblHint);
+        }
+
+        // ============================================================
         // TAB 2: LANGUAGE
         // ============================================================
         private void BuildLanguageTab()
@@ -291,13 +361,18 @@ namespace OpenCadDrawingAddin
         // ============================================================
         private void LoadSettingsToUI()
         {
-            txtCadFolder.Text = _settings.CadFolderPath;
+            // [CHANGED v1.1] Load multi-folder vào ListBox
+            lstCadFolders.Items.Clear();
+            foreach (var folder in _settings.CadFolderPaths)
+                if (!string.IsNullOrEmpty(folder))
+                    lstCadFolders.Items.Add(folder);
             chkUseRevision.Checked = _settings.UseRevisionSuffix;
             txtExtension.Text = _settings.CadExtension.TrimStart('.');
             if (!txtExtension.Text.StartsWith("."))
                 txtExtension.Text = "." + txtExtension.Text;
 
             txtBomXmlPath.Text = _settings.BomXmlPath; // [NEW]
+            txtCheckRefExcludePath.Text = _settings.CheckRefExcludeListPath; // [NEW]
 
             // Select current language
             string currentLang = _settings.Language;
@@ -316,7 +391,10 @@ namespace OpenCadDrawingAddin
 
         private void SaveUIToSettings()
         {
-            _settings.CadFolderPath = txtCadFolder.Text.Trim();
+            // [CHANGED v1.1] Save multi-folder từ ListBox
+            _settings.CadFolderPaths.Clear();
+            foreach (var item in lstCadFolders.Items)
+                _settings.CadFolderPaths.Add(item.ToString());
 
             // Normalize extension
             string ext = txtExtension.Text.Trim();
@@ -327,6 +405,7 @@ namespace OpenCadDrawingAddin
             _settings.UseRevisionSuffix = chkUseRevision.Checked;
 
             _settings.BomXmlPath = txtBomXmlPath.Text.Trim(); // [NEW]
+            _settings.CheckRefExcludeListPath = txtCheckRefExcludePath.Text.Trim(); // [NEW]
 
             // Language
             if (lstLanguages.SelectedItem != null)
@@ -341,21 +420,32 @@ namespace OpenCadDrawingAddin
         // ============================================================
         // EVENT HANDLERS
         // ============================================================
-        private void BtnBrowse_Click(object sender, EventArgs e)
+
+        // [CHANGED v1.1] Thêm folder vào danh sách
+        private void BtnAddFolder_Click(object sender, EventArgs e)
         {
             using (var dialog = new FolderBrowserDialog())
             {
                 dialog.Description = "Select CAD Drawing Folder";
                 dialog.ShowNewFolderButton = false;
 
-                if (!string.IsNullOrEmpty(txtCadFolder.Text) && Directory.Exists(txtCadFolder.Text))
-                    dialog.SelectedPath = txtCadFolder.Text;
+                if (lstCadFolders.SelectedItem != null)
+                    dialog.SelectedPath = lstCadFolders.SelectedItem.ToString();
 
                 if (dialog.ShowDialog() == DialogResult.OK)
                 {
-                    txtCadFolder.Text = dialog.SelectedPath;
+                    string path = dialog.SelectedPath;
+                    if (!lstCadFolders.Items.Contains(path))
+                        lstCadFolders.Items.Add(path);
                 }
             }
+        }
+
+        // [CHANGED v1.1] Xóa folder được chọn khỏi danh sách
+        private void BtnRemoveFolder_Click(object sender, EventArgs e)
+        {
+            if (lstCadFolders.SelectedIndex >= 0)
+                lstCadFolders.Items.RemoveAt(lstCadFolders.SelectedIndex);
         }
 
         // [NEW] Browse for BOM XML file
@@ -378,18 +468,41 @@ namespace OpenCadDrawingAddin
             }
         }
 
+        // [NEW] Browse cho Check Reference exclude list
+        private void BtnCheckRefBrowse_Click(object sender, EventArgs e)
+        {
+            using (var dialog = new OpenFileDialog())
+            {
+                dialog.Title = "Select Exclude List File";
+                dialog.Filter = "Text Files (*.txt)|*.txt|All Files (*.*)|*.*";
+                dialog.FilterIndex = 1;
+
+                string current = txtCheckRefExcludePath.Text.Trim();
+                if (!string.IsNullOrEmpty(current) && File.Exists(current))
+                    dialog.InitialDirectory = Path.GetDirectoryName(current);
+
+                if (dialog.ShowDialog() == DialogResult.OK)
+                {
+                    txtCheckRefExcludePath.Text = dialog.FileName;
+                }
+            }
+        }
+
         private void BtnSave_Click(object sender, EventArgs e)
         {
-            // Validate folder
-            string folder = txtCadFolder.Text.Trim();
-            if (!string.IsNullOrEmpty(folder) && !Directory.Exists(folder))
+            // [CHANGED v1.1] Validate tất cả folder trong list
+            foreach (var item in lstCadFolders.Items)
             {
-                var result = MessageBox.Show(
-                    $"Folder does not exist:\n{folder}\n\nSave anyway?",
-                    LanguageManager.L("TITLE_WARNING"),
-                    MessageBoxButtons.YesNo,
-                    MessageBoxIcon.Warning);
-                if (result == DialogResult.No) return;
+                string folder = item.ToString();
+                if (!Directory.Exists(folder))
+                {
+                    var result = MessageBox.Show(
+                        $"Folder does not exist:\n{folder}\n\nSave anyway?",
+                        LanguageManager.L("TITLE_WARNING"),
+                        MessageBoxButtons.YesNo,
+                        MessageBoxIcon.Warning);
+                    if (result == DialogResult.No) return;
+                }
             }
 
             SaveUIToSettings();

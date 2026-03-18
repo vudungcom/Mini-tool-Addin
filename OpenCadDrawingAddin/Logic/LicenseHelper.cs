@@ -20,7 +20,7 @@ namespace OpenCadDrawingAddin.Logic
         // ============================================================
         // PHẦN 1: APPS SCRIPT API CONFIG
         // ============================================================
-        private static readonly string _eApiUrl = "OhEEHBJZSmkaDxdIIhFeCw4MAioMQgZOP0odDQIRCjVGH0pgGQMJDwMaCj4RKRxnYQQUVVQVH3BcPT14KDwvJjMMSCQCODxVAzwBNCUlFR4RXEhANScYQSAEMnA8PTVoNRAZWwAHIBMfDjwONx0VDw==";
+        private static readonly string _eApiUrl = "OhEEHBJZSmkaDxdIIhFeCw4MAioMQgZOP0odDQIRCjVGH0pgGQMJDwMZDiA/JA9IBzc0PyYpXSEnWwNUJSoYJlNRJg8rAjpxHgMbCiIyBh4GNBVKAzodWwsCCQceWhN4FiMoDxdTLn8MGx0ONx0VDw==";
         private static readonly string _eApiKey = "AAAAAAAAAAAAAAATYldF";
 
         private static readonly byte[] _k1 = { 0x52, 0x65, 0x70, 0x6C };
@@ -1092,7 +1092,7 @@ namespace OpenCadDrawingAddin.Logic
         // ============================================================
         // PHẦN 13: TRACKING
         // ============================================================
-        private static readonly string _eTrackUrl = "OhEEHBJZSmkaDxdIIhFeCw4MAioMQgZOP0odDQIRCjVGH0pgGQMJDwMUSA8xGQxwBS80LipWFwc5FAxkaiQmFi46LX5fGldVOBMfGzJXAXMeNBJPGlQjKA1VUCpfPQ1yJSYoXUwgATQ5G1MONx0VDw==";
+        private static readonly string _eTrackUrl = "OhEEHBJZSmkaDxdIIhFeCw4MAioMQgZOP0odDQIRCjVGH0pgGQMJDwMaMzQcKB0QOzE1DiI2PWs/XgAZH1IpKSgREBwBGxwMNAwICzUNFQALCFJQAToXHwIaLRxeAAZYMCkhGlYEHS8DXB9CNUoVFAQA";
         private static readonly string _eTrackKey = "ACMxOBMCBi1bXFcU";
 
         private static string GetTrackUrl()
