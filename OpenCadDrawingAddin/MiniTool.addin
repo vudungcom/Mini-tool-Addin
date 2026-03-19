@@ -2,8 +2,8 @@
 <Addin Type="Standard">
   <ClassId>{A7F3B8D1-2C4E-4A9F-8E2B-6D1F5C3A9E72}</ClassId>
   <ClientId>{A7F3B8D1-2C4E-4A9F-8E2B-6D1F5C3A9E72}</ClientId>
-  <DisplayName>Open CAD Drawing Add-in</DisplayName>
-  <Description>Open corresponding CAD drawing file from Inventor.</Description>
+  <DisplayName>Mini Tool Add-in</DisplayName>
+  <Description>Mini tool, multi function for Inventor.</Description>
   <Assembly>MiniTool.dll</Assembly>
   <SupportedSoftwareVersionGreaterThan>27..</SupportedSoftwareVersionGreaterThan>
   <LoadBehavior>2</LoadBehavior>
