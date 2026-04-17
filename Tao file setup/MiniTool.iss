@@ -13,7 +13,7 @@
 #define SourcePath "D:\Setup\Ngoc\App cua Ngoc\Mini-Tool\Mini Tool\OpenCadDrawingAddin\bin\Release"
 
 [Setup]
-AppId={{64DB7978-5BCD-4388-BD7B-7EBA2C4B33D2}}
+AppId={{65DB7978-5BCD-4388-BD7B-7EBA2C4B33D2}}
 AppName={#MyAppName}
 AppVersion={#MyAppVersion}
 AppVerName={#MyAppName} {#MyAppVersion}

@@ -9,7 +9,7 @@ namespace OpenCadDrawingAddin.Logic
     /// <summary>
     /// Settings cho Open CAD Drawing Add-in
     /// Lưu/Load qua XML tại AppData
-    /// Version 1.1 - Multi-folder support
+    /// Version 1.2 - Thêm Create DWG settings
     /// </summary>
     public class OpenCadSettings
     {
@@ -65,6 +65,21 @@ namespace OpenCadDrawingAddin.Logic
         /// </summary>
         public string CheckRefExcludeListPath { get; set; } = "";
 
+        /// <summary>
+        /// [NEW v1.2] Đường dẫn file DWGExport.ini dùng cho Create DWG
+        /// </summary>
+        public string CreateDwgIniPath { get; set; } = "";
+
+        /// <summary>
+        /// [NEW v1.2] Đường dẫn file danh sách (.txt) dùng khi export theo list
+        /// </summary>
+        public string CreateDwgListPath { get; set; } = "";
+
+        /// <summary>
+        /// [NEW v1.2] Đường dẫn thư mục lưu file DWG xuất ra
+        /// </summary>
+        public string CreateDwgOutputPath { get; set; } = "";
+
         // ============================================================
         // PATHS
         // ============================================================
@@ -113,8 +128,13 @@ namespace OpenCadDrawingAddin.Logic
                 settings.UseRevisionSuffix = ParseBool(root.Element("UseRevisionSuffix"), false);
                 settings.CadExtension = (string)root.Element("CadExtension") ?? ".dwg";
                 settings.Language = (string)root.Element("Language") ?? "EN";
-                settings.BomXmlPath = (string)root.Element("BomXmlPath") ?? ""; // [NEW]
-                settings.CheckRefExcludeListPath = (string)root.Element("CheckRefExcludeListPath") ?? ""; // [NEW]
+                settings.BomXmlPath = (string)root.Element("BomXmlPath") ?? "";
+                settings.CheckRefExcludeListPath = (string)root.Element("CheckRefExcludeListPath") ?? "";
+
+                // [NEW v1.2] Create DWG settings
+                settings.CreateDwgIniPath = (string)root.Element("CreateDwgIniPath") ?? "";
+                settings.CreateDwgListPath = (string)root.Element("CreateDwgListPath") ?? "";
+                settings.CreateDwgOutputPath = (string)root.Element("CreateDwgOutputPath") ?? "";
             }
             catch (Exception ex)
             {
@@ -142,8 +162,12 @@ namespace OpenCadDrawingAddin.Logic
                         new XElement("UseRevisionSuffix", UseRevisionSuffix),
                         new XElement("CadExtension", CadExtension),
                         new XElement("Language", Language),
-                        new XElement("BomXmlPath", BomXmlPath),              // [NEW]
-                        new XElement("CheckRefExcludeListPath", CheckRefExcludeListPath)  // [NEW]
+                        new XElement("BomXmlPath", BomXmlPath),
+                        new XElement("CheckRefExcludeListPath", CheckRefExcludeListPath),
+                        // [NEW v1.2] Create DWG settings
+                        new XElement("CreateDwgIniPath", CreateDwgIniPath),
+                        new XElement("CreateDwgListPath", CreateDwgListPath),
+                        new XElement("CreateDwgOutputPath", CreateDwgOutputPath)
                     )
                 );
                 xml.Save(_settingsPath);

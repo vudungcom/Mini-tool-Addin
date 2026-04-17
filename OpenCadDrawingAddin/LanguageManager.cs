@@ -5,7 +5,7 @@ namespace OpenCadDrawingAddin
 {
     /// <summary>
     /// Quản lý đa ngôn ngữ (i18n) cho Mini Tool Add-in
-    /// Version 1.1 - Full 7 languages: EN, VN, JA, KO, ZH, ES, PT
+    /// Version 1.2 - Thêm Create DWG keys
     /// </summary>
     public static class LanguageManager
     {
@@ -53,6 +53,7 @@ namespace OpenCadDrawingAddin
                     ["TAB_LANGUAGE"] = "Language",
                     ["TAB_BOM"] = "BOM Format",
                     ["TAB_CHECK_REF"] = "Check Reference",
+                    ["TAB_CREATE_DWG"] = "Create DWG",  // [NEW v1.2]
 
                     // === CAD DRAWING TAB ===
                     ["LBL_CAD_FOLDER"] = "CAD Drawing Folder:",
@@ -69,6 +70,14 @@ namespace OpenCadDrawingAddin
                     // === CHECK REFERENCE TAB ===
                     ["LBL_CHECK_REF_EXCLUDE"] = "Exclude List File:",
                     ["LBL_CHECK_REF_EXCLUDE_HINT"] = "Path to exclude_list.txt (one keyword per line)",
+
+                    // === CREATE DWG TAB === [NEW v1.2]
+                    ["LBL_CREATE_DWG_INI"] = "DWGExport.ini File:",
+                    ["LBL_CREATE_DWG_INI_HINT"] = "Export configuration file for DWG format (from Inventor)",
+                    ["LBL_CREATE_DWG_LIST"] = "List File (.txt):",
+                    ["LBL_CREATE_DWG_LIST_HINT"] = "File names to export (used in 'Export by List' mode)",
+                    ["LBL_CREATE_DWG_OUTPUT"] = "Output Folder:",
+                    ["LBL_CREATE_DWG_OUTPUT_HINT"] = "Folder where exported DWG files will be saved",
 
                     // === BUTTONS ===
                     ["BTN_SAVE"] = "Save",
@@ -134,6 +143,40 @@ namespace OpenCadDrawingAddin
                     ["MSG_BOM_LOD_ERROR"] = "LOD in use in drawing; Macro failed!",
                     ["MSG_BOM_INVALID_DOC"] = "Invalid Document! Only Assembly or Drawing documents are supported.",
                     ["MSG_BOM_SUCCESS"] = "BOM format applied successfully!",
+
+                    // === CREATE DWG === [NEW v1.2]
+                    ["TITLE_CREATE_DWG_CONFIRM"] = "Create DWG",
+                    ["MSG_CREATE_DWG_NO_INI"] = "DWGExport.ini not configured or not found.\nPlease set it in Settings > Create DWG tab.",
+                    ["MSG_CREATE_DWG_NO_OUTPUT"] = "Output folder is not configured.\nPlease set it in Settings > Create DWG tab.",
+                    ["MSG_CREATE_DWG_NEED_ASSEMBLY"] = "Create DWG only works in Assembly documents.",
+                    ["MSG_CREATE_DWG_CANNOT_CREATE_FOLDER"] = "Cannot create output folder: ",
+                    ["MSG_CREATE_DWG_NO_MODELS"] = "No model files (.ipt/.iam) found in this assembly.",
+                    ["MSG_CREATE_DWG_CHOOSE_MODE"] = "Choose export mode:",
+                    ["MSG_CREATE_DWG_MODE_ALL"] = "Export All",
+                    ["MSG_CREATE_DWG_MODE_LIST"] = "Export by List",
+                    ["MSG_CREATE_DWG_NO_IDW_FOUND"] = "No IDW files found in the same folder as assembly models.",
+                    ["MSG_CREATE_DWG_NO_LIST"] = "List file not configured or not found.\nPlease set it in Settings > Create DWG tab.",
+                    ["MSG_CREATE_DWG_LIST_EMPTY"] = "List file contains no valid file names.",
+                    ["MSG_CREATE_DWG_NO_MATCH"] = "No IDW files matched the list within the assembly.",
+                    ["MSG_CREATE_DWG_MISSING_IN_ASM"] = "Not found in assembly: ",
+                    ["MSG_CREATE_DWG_NO_IDW_FOR_MODEL"] = "Model exists but no IDW in same folder: ",
+                    ["MSG_CREATE_DWG_PREVIEW_COUNT"] = "IDW files to export: ",
+                    ["MSG_CREATE_DWG_PREVIEW_OUTPUT"] = "Output folder: ",
+                    ["MSG_CREATE_DWG_PREVIEW_MODE"] = "Mode: ",
+                    ["MSG_CREATE_DWG_DUPLICATE_WARNING"] = "Warning - duplicate model names: ",
+                    ["MSG_CREATE_DWG_DUPLICATE_USED"] = "Used: ",
+                    ["MSG_CREATE_DWG_PREVIEW_FIRST5"] = "First 5 files:",
+                    ["MSG_CREATE_DWG_CONFIRM_PROMPT"] = "Click OK to start export.",
+                    ["MSG_CREATE_DWG_DONE"] = "DWG export completed.",
+                    ["MSG_CREATE_DWG_TOTAL"] = "Total: ",
+                    ["MSG_CREATE_DWG_OK"] = "Successful: ",
+                    ["MSG_CREATE_DWG_FAIL"] = "Failed: ",
+                    // [NEW v1.1] Assembly: hỏi xác nhận xuất theo list
+                    ["MSG_CREATE_DWG_ASK_LIST"] = "Export DWG files according to the configured list?",
+                    // [NEW v1.1] Drawing: xuất thẳng IDW hiện tại
+                    ["MSG_CREATE_DWG_IDW_NOT_SAVED"] = "The current IDW file has not been saved to disk yet.",
+                    ["MSG_CREATE_DWG_OVERWRITE"] = "File already exists:\n{0}\nOverwrite?",
+                    ["MSG_CREATE_DWG_IDW_DONE"] = "DWG exported successfully:\n{0}",
                 },
 
                 // ========================================
@@ -161,6 +204,7 @@ namespace OpenCadDrawingAddin
                     ["TAB_LANGUAGE"] = "Ngôn ngữ",
                     ["TAB_BOM"] = "BOM Format",
                     ["TAB_CHECK_REF"] = "Check Reference",
+                    ["TAB_CREATE_DWG"] = "Tạo DWG",  // [NEW v1.2]
 
                     ["LBL_CAD_FOLDER"] = "Thư mục file CAD:",
                     ["LBL_FOLDER_HINT"] = "Thư mục chứa các file .dwg",
@@ -174,6 +218,14 @@ namespace OpenCadDrawingAddin
 
                     ["LBL_CHECK_REF_EXCLUDE"] = "File danh sách loại trừ:",
                     ["LBL_CHECK_REF_EXCLUDE_HINT"] = "Đường dẫn đến exclude_list.txt (mỗi dòng 1 từ khóa)",
+
+                    // === TAB TẠO DWG === [NEW v1.2]
+                    ["LBL_CREATE_DWG_INI"] = "File DWGExport.ini:",
+                    ["LBL_CREATE_DWG_INI_HINT"] = "File cấu hình xuất DWG (lấy từ Inventor)",
+                    ["LBL_CREATE_DWG_LIST"] = "File danh sách (.txt):",
+                    ["LBL_CREATE_DWG_LIST_HINT"] = "Tên file cần xuất (dùng khi chọn 'Xuất theo danh sách')",
+                    ["LBL_CREATE_DWG_OUTPUT"] = "Thư mục lưu DWG:",
+                    ["LBL_CREATE_DWG_OUTPUT_HINT"] = "Thư mục lưu các file DWG được xuất ra",
 
                     ["BTN_SAVE"] = "Lưu",
                     ["BTN_CANCEL"] = "Hủy",
@@ -237,6 +289,40 @@ namespace OpenCadDrawingAddin
                     ["MSG_BOM_LOD_ERROR"] = "LOD đang được sử dụng trong bản vẽ; Macro thất bại!",
                     ["MSG_BOM_INVALID_DOC"] = "Tài liệu không hợp lệ! Chỉ hỗ trợ Assembly hoặc Drawing.",
                     ["MSG_BOM_SUCCESS"] = "Đã áp dụng định dạng BOM thành công!",
+
+                    // === CREATE DWG === [NEW v1.2]
+                    ["TITLE_CREATE_DWG_CONFIRM"] = "Tạo DWG",
+                    ["MSG_CREATE_DWG_NO_INI"] = "File DWGExport.ini chưa được cấu hình hoặc không tồn tại.\nVui lòng thiết lập trong Settings > tab Tạo DWG.",
+                    ["MSG_CREATE_DWG_NO_OUTPUT"] = "Thư mục lưu DWG chưa được cấu hình.\nVui lòng thiết lập trong Settings > tab Tạo DWG.",
+                    ["MSG_CREATE_DWG_NEED_ASSEMBLY"] = "Tính năng Tạo DWG chỉ hoạt động trong tài liệu Assembly.",
+                    ["MSG_CREATE_DWG_CANNOT_CREATE_FOLDER"] = "Không thể tạo thư mục output: ",
+                    ["MSG_CREATE_DWG_NO_MODELS"] = "Không tìm thấy file model (.ipt/.iam) nào trong bản lắp này.",
+                    ["MSG_CREATE_DWG_CHOOSE_MODE"] = "Chọn chế độ xuất:",
+                    ["MSG_CREATE_DWG_MODE_ALL"] = "Xuất tất cả",
+                    ["MSG_CREATE_DWG_MODE_LIST"] = "Xuất theo danh sách",
+                    ["MSG_CREATE_DWG_NO_IDW_FOUND"] = "Không tìm thấy file IDW nào nằm đúng thư mục với các model trong bản lắp.",
+                    ["MSG_CREATE_DWG_NO_LIST"] = "File danh sách chưa được cấu hình hoặc không tồn tại.\nVui lòng thiết lập trong Settings > tab Tạo DWG.",
+                    ["MSG_CREATE_DWG_LIST_EMPTY"] = "File danh sách không chứa tên file hợp lệ nào.",
+                    ["MSG_CREATE_DWG_NO_MATCH"] = "Không có file IDW nào khớp với danh sách trong phạm vi bản lắp.",
+                    ["MSG_CREATE_DWG_MISSING_IN_ASM"] = "Không tìm thấy trong assembly: ",
+                    ["MSG_CREATE_DWG_NO_IDW_FOR_MODEL"] = "Có model nhưng không có IDW đúng thư mục: ",
+                    ["MSG_CREATE_DWG_PREVIEW_COUNT"] = "Số IDW sẽ xuất: ",
+                    ["MSG_CREATE_DWG_PREVIEW_OUTPUT"] = "Thư mục lưu: ",
+                    ["MSG_CREATE_DWG_PREVIEW_MODE"] = "Chế độ: ",
+                    ["MSG_CREATE_DWG_DUPLICATE_WARNING"] = "Cảnh báo - tên model trùng: ",
+                    ["MSG_CREATE_DWG_DUPLICATE_USED"] = "Đang dùng: ",
+                    ["MSG_CREATE_DWG_PREVIEW_FIRST5"] = "5 file đầu tiên:",
+                    ["MSG_CREATE_DWG_CONFIRM_PROMPT"] = "Nhấn OK để bắt đầu xuất.",
+                    ["MSG_CREATE_DWG_DONE"] = "Đã xuất DWG xong.",
+                    ["MSG_CREATE_DWG_TOTAL"] = "Tổng số: ",
+                    ["MSG_CREATE_DWG_OK"] = "Thành công: ",
+                    ["MSG_CREATE_DWG_FAIL"] = "Thất bại: ",
+                    // [NEW v1.1] Assembly: hỏi xác nhận xuất theo list
+                    ["MSG_CREATE_DWG_ASK_LIST"] = "Xuất file DWG theo danh sách đã cấu hình không?",
+                    // [NEW v1.1] Drawing: xuất thẳng IDW hiện tại
+                    ["MSG_CREATE_DWG_IDW_NOT_SAVED"] = "File IDW hiện tại chưa được lưu xuống ổ đĩa.",
+                    ["MSG_CREATE_DWG_OVERWRITE"] = "File đã tồn tại:\n{0}\nGhi đè?",
+                    ["MSG_CREATE_DWG_IDW_DONE"] = "Xuất DWG thành công:\n{0}",
                 },
 
                 // ========================================
@@ -343,7 +429,7 @@ namespace OpenCadDrawingAddin
                 },
 
                 // ========================================
-                // KOREAN [NEW - đầy đủ]
+                // KOREAN
                 // ========================================
                 ["KO"] = new Dictionary<string, string>
                 {
@@ -446,7 +532,7 @@ namespace OpenCadDrawingAddin
                 },
 
                 // ========================================
-                // CHINESE SIMPLIFIED [NEW - đầy đủ]
+                // CHINESE SIMPLIFIED
                 // ========================================
                 ["ZH"] = new Dictionary<string, string>
                 {
@@ -549,7 +635,7 @@ namespace OpenCadDrawingAddin
                 },
 
                 // ========================================
-                // SPANISH [NEW - đầy đủ]
+                // SPANISH
                 // ========================================
                 ["ES"] = new Dictionary<string, string>
                 {
@@ -622,6 +708,7 @@ namespace OpenCadDrawingAddin
                     ["ABOUT_OTHER_ADDIN"] = "Otros complementos",
                     ["ABOUT_VIEW_LOG"] = "Ver registro",
                     ["ABOUT_COPY_EMAIL"] = "Copiar",
+
                     // === NAME UPDATE ===
                     ["TITLE_NAME_UPDATE"] = "Actualizar nombre",
                     ["MSG_NAME_UPDATED"] = "Nombre actualizado: {0}",
@@ -651,7 +738,7 @@ namespace OpenCadDrawingAddin
                 },
 
                 // ========================================
-                // PORTUGUESE [NEW - đầy đủ]
+                // PORTUGUESE
                 // ========================================
                 ["PT"] = new Dictionary<string, string>
                 {
@@ -724,6 +811,7 @@ namespace OpenCadDrawingAddin
                     ["ABOUT_OTHER_ADDIN"] = "Outros suplementos",
                     ["ABOUT_VIEW_LOG"] = "Ver registro",
                     ["ABOUT_COPY_EMAIL"] = "Copiar",
+
                     // === NAME UPDATE ===
                     ["TITLE_NAME_UPDATE"] = "Atualizar nome",
                     ["MSG_NAME_UPDATED"] = "Nome atualizado: {0}",

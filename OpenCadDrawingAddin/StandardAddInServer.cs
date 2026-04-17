@@ -22,6 +22,7 @@ namespace OpenCadDrawingAddin
         private ButtonDefinition m_nameUpdateButton; // [NEW] Name Update button
         private ButtonDefinition m_saveIdwButton;    // [NEW] Save IDW button
         private ButtonDefinition m_checkRefButton;   // [NEW] Check Reference button
+        private ButtonDefinition m_createDwgButton;  // [NEW v1.2] Create DWG button
 
         public static bool IsVietnamese => LanguageManager.CurrentLanguage == "VN";
 
@@ -70,6 +71,7 @@ namespace OpenCadDrawingAddin
             if (m_nameUpdateButton != null) { m_nameUpdateButton.Delete(); m_nameUpdateButton = null; } // [NEW]
             if (m_saveIdwButton != null) { m_saveIdwButton.Delete(); m_saveIdwButton = null; }    // [NEW]
             if (m_checkRefButton != null) { m_checkRefButton.Delete(); m_checkRefButton = null; }   // [NEW]
+            if (m_createDwgButton != null) { m_createDwgButton.Delete(); m_createDwgButton = null; } // [NEW v1.2]
             if (m_inventorApplication != null) { Marshal.ReleaseComObject(m_inventorApplication); m_inventorApplication = null; }
             GC.Collect();
         }
@@ -125,6 +127,15 @@ namespace OpenCadDrawingAddin
                 null, null);
             m_checkRefButton.OnExecute += m_checkRefButton_OnExecute;
 
+            // [NEW v1.2] Create DWG button
+            m_createDwgButton = controlDefs.AddButtonDefinition(
+                "Create DWG", "OCDACreateDwgCmd", CommandTypesEnum.kQueryOnlyCmdType,
+                GenerateClientId("OCDACreateDwgCmd"),
+                "Export IDW files to DWG from Assembly.",
+                "Create DWG",
+                null, null);
+            m_createDwgButton.OnExecute += m_createDwgButton_OnExecute;
+
             m_settingsButton = controlDefs.AddButtonDefinition(
                 "Settings", "OCDASettingsCmd", CommandTypesEnum.kQueryOnlyCmdType,
                 GenerateClientId("OCDASettingsCmd"),
@@ -170,12 +181,13 @@ namespace OpenCadDrawingAddin
                 }
                 else
                 {
-                    // Assembly / Part ribbon: đầy đủ 5 nút chức năng
+                    // Assembly / Part ribbon: đầy đủ các nút chức năng
                     if (!ButtonExists(panel, m_myButton)) panel.CommandControls.AddButton(m_myButton, false);
                     if (!ButtonExists(panel, m_bomButton)) panel.CommandControls.AddButton(m_bomButton, false);
                     if (!ButtonExists(panel, m_nameUpdateButton)) panel.CommandControls.AddButton(m_nameUpdateButton, false);
                     if (!ButtonExists(panel, m_saveIdwButton)) panel.CommandControls.AddButton(m_saveIdwButton, false);
                     if (!ButtonExists(panel, m_checkRefButton)) panel.CommandControls.AddButton(m_checkRefButton, false);
+                    if (!ButtonExists(panel, m_createDwgButton)) panel.CommandControls.AddButton(m_createDwgButton, false); // [NEW v1.2]
 
                     panel.CommandControls.AddSeparator();
 
@@ -218,8 +230,9 @@ namespace OpenCadDrawingAddin
 
                 if (panel == null) return;
 
-                // Drawing panel: chỉ Save IDW + separator + Settings/About
+                // Drawing panel: Save IDW + Create DWG + separator + Settings/About
                 if (!ButtonExists(panel, m_saveIdwButton)) panel.CommandControls.AddButton(m_saveIdwButton, false);
+                if (!ButtonExists(panel, m_createDwgButton)) panel.CommandControls.AddButton(m_createDwgButton, false); // [NEW v1.2]
                 panel.CommandControls.AddSeparator();
                 if (!ButtonExists(panel, m_settingsButton)) panel.CommandControls.AddButton(m_settingsButton, false);
                 if (!ButtonExists(panel, m_aboutButton)) panel.CommandControls.AddButton(m_aboutButton, false);
@@ -264,6 +277,29 @@ namespace OpenCadDrawingAddin
                 logic.RunOpenCad();
             }
             catch (Exception ex) { LicenseHelper.WriteLog("Error running Open CAD Drawing", ex); }
+        }
+
+        // [NEW v1.2] Handler cho Create DWG button
+        // - Drawing (IDW): xuất file hiện tại trực tiếp sang DWG
+        // - Assembly: xuất theo List file đã cấu hình trong Settings
+        private void m_createDwgButton_OnExecute(NameValueMap Context)
+        {
+            try
+            {
+                var logic = new CreateDwgLogic(m_inventorApplication);
+                Document activeDoc = m_inventorApplication.ActiveDocument;
+
+                if (activeDoc != null && activeDoc.DocumentType == DocumentTypeEnum.kDrawingDocumentObject)
+                    logic.RunCreateDwgFromIdw();
+                else
+                    logic.RunCreateDwg();
+            }
+            catch (Exception ex)
+            {
+                LicenseHelper.WriteLog("Error running Create DWG", ex);
+                MessageBox.Show(LanguageManager.L("MSG_PROCESSING_ERROR") + ex.Message,
+                    LanguageManager.L("TITLE_ERROR"), MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         // [NEW] Handler cho Name Update button
@@ -722,7 +758,7 @@ namespace OpenCadDrawingAddin
                     if (_upInfo != null) StandardAddInServer._cachedUpdateInfo = _upInfo;
                     UpdateUI(_hwId, _currentVersion, _licInfo, _upInfo);
                 }
-                catch { lblInfo.Text = "Error loading data"; } 
+                catch { lblInfo.Text = "Error loading data"; }
             }
 
             private void UpdateUI(string hwId, string version, LicenseHelper.LicenseInfo licInfo, LicenseHelper.UpdateInfo upInfo)

@@ -20,6 +20,7 @@ namespace OpenCadDrawingAddin
         private TabPage tabLanguage;
         private TabPage tabBom;       // [NEW]
         private TabPage tabCheckRef;  // [NEW]
+        private TabPage tabCreateDwg; // [NEW v1.2]
 
         // Tab Settings - [CHANGED v1.1] multi-folder
         private Label lblCadFolder;
@@ -40,6 +41,14 @@ namespace OpenCadDrawingAddin
         // Tab Check Reference [NEW]
         private TextBox txtCheckRefExcludePath;
         private Button btnCheckRefBrowse;
+
+        // Tab Create DWG [NEW v1.2]
+        private TextBox txtCreateDwgIniPath;
+        private Button btnCreateDwgIniBrowse;
+        private TextBox txtCreateDwgListPath;
+        private Button btnCreateDwgListBrowse;
+        private TextBox txtCreateDwgOutputPath;
+        private Button btnCreateDwgOutputBrowse;
 
         // Tab Language
         private ListBox lstLanguages;
@@ -95,7 +104,12 @@ namespace OpenCadDrawingAddin
             BuildCheckRefTab();
             mainTabControl.TabPages.Add(tabCheckRef);
 
-            // --- Tab 4: Language --- [MOVED] ra ngoài cùng phải
+            // --- Tab 4: Create DWG --- [NEW v1.2]
+            tabCreateDwg = new TabPage(LanguageManager.L("TAB_CREATE_DWG"));
+            BuildCreateDwgTab();
+            mainTabControl.TabPages.Add(tabCreateDwg);
+
+            // --- Tab 5: Language --- [MOVED] ra ngoài cùng phải
             tabLanguage = new TabPage(LanguageManager.L("TAB_LANGUAGE"));
             BuildLanguageTab();
             mainTabControl.TabPages.Add(tabLanguage);
@@ -240,7 +254,7 @@ namespace OpenCadDrawingAddin
         }
 
         // ============================================================
-        // TAB 3: BOM FORMAT [NEW]
+        // TAB 2: BOM FORMAT [NEW]
         // ============================================================
         private void BuildBomTab()
         {
@@ -285,7 +299,7 @@ namespace OpenCadDrawingAddin
         }
 
         // ============================================================
-        // TAB 4: CHECK REFERENCE [NEW]
+        // TAB 3: CHECK REFERENCE [NEW]
         // ============================================================
         private void BuildCheckRefTab()
         {
@@ -330,7 +344,131 @@ namespace OpenCadDrawingAddin
         }
 
         // ============================================================
-        // TAB 2: LANGUAGE
+        // TAB 4: CREATE DWG [NEW v1.2]
+        // ============================================================
+        private void BuildCreateDwgTab()
+        {
+            int x = 15, y = 15;
+
+            // --- DWGExport.ini path ---
+            var lblIni = new Label
+            {
+                Text = LanguageManager.L("LBL_CREATE_DWG_INI"),
+                Location = new Point(x, y),
+                Size = new Size(400, 18),
+                Font = new Font("Segoe UI", 9F, FontStyle.Bold)
+            };
+            tabCreateDwg.Controls.Add(lblIni);
+            y += 20;
+
+            txtCreateDwgIniPath = new TextBox
+            {
+                Location = new Point(x, y),
+                Size = new Size(320, 23)
+            };
+            tabCreateDwg.Controls.Add(txtCreateDwgIniPath);
+
+            btnCreateDwgIniBrowse = new Button
+            {
+                Text = LanguageManager.L("BTN_BROWSE"),
+                Location = new Point(x + 325, y - 1),
+                Size = new Size(85, 25)
+            };
+            btnCreateDwgIniBrowse.Click += BtnCreateDwgIniBrowse_Click;
+            tabCreateDwg.Controls.Add(btnCreateDwgIniBrowse);
+            y += 25;
+
+            var lblIniHint = new Label
+            {
+                Text = LanguageManager.L("LBL_CREATE_DWG_INI_HINT"),
+                Location = new Point(x, y),
+                Size = new Size(400, 18),
+                ForeColor = Color.Gray,
+                Font = new Font("Segoe UI", 8F, FontStyle.Italic)
+            };
+            tabCreateDwg.Controls.Add(lblIniHint);
+            y += 30;
+
+            // --- List file path ---
+            var lblList = new Label
+            {
+                Text = LanguageManager.L("LBL_CREATE_DWG_LIST"),
+                Location = new Point(x, y),
+                Size = new Size(400, 18),
+                Font = new Font("Segoe UI", 9F, FontStyle.Bold)
+            };
+            tabCreateDwg.Controls.Add(lblList);
+            y += 20;
+
+            txtCreateDwgListPath = new TextBox
+            {
+                Location = new Point(x, y),
+                Size = new Size(320, 23)
+            };
+            tabCreateDwg.Controls.Add(txtCreateDwgListPath);
+
+            btnCreateDwgListBrowse = new Button
+            {
+                Text = LanguageManager.L("BTN_BROWSE"),
+                Location = new Point(x + 325, y - 1),
+                Size = new Size(85, 25)
+            };
+            btnCreateDwgListBrowse.Click += BtnCreateDwgListBrowse_Click;
+            tabCreateDwg.Controls.Add(btnCreateDwgListBrowse);
+            y += 25;
+
+            var lblListHint = new Label
+            {
+                Text = LanguageManager.L("LBL_CREATE_DWG_LIST_HINT"),
+                Location = new Point(x, y),
+                Size = new Size(400, 18),
+                ForeColor = Color.Gray,
+                Font = new Font("Segoe UI", 8F, FontStyle.Italic)
+            };
+            tabCreateDwg.Controls.Add(lblListHint);
+            y += 30;
+
+            // --- Output folder ---
+            var lblOutput = new Label
+            {
+                Text = LanguageManager.L("LBL_CREATE_DWG_OUTPUT"),
+                Location = new Point(x, y),
+                Size = new Size(400, 18),
+                Font = new Font("Segoe UI", 9F, FontStyle.Bold)
+            };
+            tabCreateDwg.Controls.Add(lblOutput);
+            y += 20;
+
+            txtCreateDwgOutputPath = new TextBox
+            {
+                Location = new Point(x, y),
+                Size = new Size(320, 23)
+            };
+            tabCreateDwg.Controls.Add(txtCreateDwgOutputPath);
+
+            btnCreateDwgOutputBrowse = new Button
+            {
+                Text = LanguageManager.L("BTN_BROWSE"),
+                Location = new Point(x + 325, y - 1),
+                Size = new Size(85, 25)
+            };
+            btnCreateDwgOutputBrowse.Click += BtnCreateDwgOutputBrowse_Click;
+            tabCreateDwg.Controls.Add(btnCreateDwgOutputBrowse);
+            y += 25;
+
+            var lblOutputHint = new Label
+            {
+                Text = LanguageManager.L("LBL_CREATE_DWG_OUTPUT_HINT"),
+                Location = new Point(x, y),
+                Size = new Size(400, 18),
+                ForeColor = Color.Gray,
+                Font = new Font("Segoe UI", 8F, FontStyle.Italic)
+            };
+            tabCreateDwg.Controls.Add(lblOutputHint);
+        }
+
+        // ============================================================
+        // TAB 5: LANGUAGE
         // ============================================================
         private void BuildLanguageTab()
         {
@@ -371,8 +509,13 @@ namespace OpenCadDrawingAddin
             if (!txtExtension.Text.StartsWith("."))
                 txtExtension.Text = "." + txtExtension.Text;
 
-            txtBomXmlPath.Text = _settings.BomXmlPath; // [NEW]
-            txtCheckRefExcludePath.Text = _settings.CheckRefExcludeListPath; // [NEW]
+            txtBomXmlPath.Text = _settings.BomXmlPath;
+            txtCheckRefExcludePath.Text = _settings.CheckRefExcludeListPath;
+
+            // [NEW v1.2] Create DWG
+            txtCreateDwgIniPath.Text = _settings.CreateDwgIniPath;
+            txtCreateDwgListPath.Text = _settings.CreateDwgListPath;
+            txtCreateDwgOutputPath.Text = _settings.CreateDwgOutputPath;
 
             // Select current language
             string currentLang = _settings.Language;
@@ -404,8 +547,13 @@ namespace OpenCadDrawingAddin
 
             _settings.UseRevisionSuffix = chkUseRevision.Checked;
 
-            _settings.BomXmlPath = txtBomXmlPath.Text.Trim(); // [NEW]
-            _settings.CheckRefExcludeListPath = txtCheckRefExcludePath.Text.Trim(); // [NEW]
+            _settings.BomXmlPath = txtBomXmlPath.Text.Trim();
+            _settings.CheckRefExcludeListPath = txtCheckRefExcludePath.Text.Trim();
+
+            // [NEW v1.2] Create DWG
+            _settings.CreateDwgIniPath = txtCreateDwgIniPath.Text.Trim();
+            _settings.CreateDwgListPath = txtCreateDwgListPath.Text.Trim();
+            _settings.CreateDwgOutputPath = txtCreateDwgOutputPath.Text.Trim();
 
             // Language
             if (lstLanguages.SelectedItem != null)
@@ -462,9 +610,7 @@ namespace OpenCadDrawingAddin
                     dialog.InitialDirectory = Path.GetDirectoryName(current);
 
                 if (dialog.ShowDialog() == DialogResult.OK)
-                {
                     txtBomXmlPath.Text = dialog.FileName;
-                }
             }
         }
 
@@ -482,9 +628,60 @@ namespace OpenCadDrawingAddin
                     dialog.InitialDirectory = Path.GetDirectoryName(current);
 
                 if (dialog.ShowDialog() == DialogResult.OK)
-                {
                     txtCheckRefExcludePath.Text = dialog.FileName;
-                }
+            }
+        }
+
+        // [NEW v1.2] Browse cho DWGExport.ini
+        private void BtnCreateDwgIniBrowse_Click(object sender, EventArgs e)
+        {
+            using (var dialog = new OpenFileDialog())
+            {
+                dialog.Title = "Select DWGExport.ini File";
+                dialog.Filter = "INI Files (*.ini)|*.ini|All Files (*.*)|*.*";
+                dialog.FilterIndex = 1;
+
+                string current = txtCreateDwgIniPath.Text.Trim();
+                if (!string.IsNullOrEmpty(current) && File.Exists(current))
+                    dialog.InitialDirectory = Path.GetDirectoryName(current);
+
+                if (dialog.ShowDialog() == DialogResult.OK)
+                    txtCreateDwgIniPath.Text = dialog.FileName;
+            }
+        }
+
+        // [NEW v1.2] Browse cho file list .txt
+        private void BtnCreateDwgListBrowse_Click(object sender, EventArgs e)
+        {
+            using (var dialog = new OpenFileDialog())
+            {
+                dialog.Title = "Select List File (.txt)";
+                dialog.Filter = "Text Files (*.txt)|*.txt|All Files (*.*)|*.*";
+                dialog.FilterIndex = 1;
+
+                string current = txtCreateDwgListPath.Text.Trim();
+                if (!string.IsNullOrEmpty(current) && File.Exists(current))
+                    dialog.InitialDirectory = Path.GetDirectoryName(current);
+
+                if (dialog.ShowDialog() == DialogResult.OK)
+                    txtCreateDwgListPath.Text = dialog.FileName;
+            }
+        }
+
+        // [NEW v1.2] Browse cho output folder
+        private void BtnCreateDwgOutputBrowse_Click(object sender, EventArgs e)
+        {
+            using (var dialog = new FolderBrowserDialog())
+            {
+                dialog.Description = "Select Output Folder for DWG Files";
+                dialog.ShowNewFolderButton = true;
+
+                string current = txtCreateDwgOutputPath.Text.Trim();
+                if (!string.IsNullOrEmpty(current) && Directory.Exists(current))
+                    dialog.SelectedPath = current;
+
+                if (dialog.ShowDialog() == DialogResult.OK)
+                    txtCreateDwgOutputPath.Text = dialog.SelectedPath;
             }
         }
 

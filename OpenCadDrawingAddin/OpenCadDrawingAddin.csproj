@@ -11,6 +11,7 @@
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
+
     <InventorPath Condition="Exists('C:\Program Files\Autodesk\Inventor 2026\Bin\Public Assemblies\Autodesk.Inventor.Interop.dll')">C:\Program Files\Autodesk\Inventor 2026\Bin\Public Assemblies</InventorPath>
     <InventorPath Condition="'$(InventorPath)'=='' AND Exists('C:\Program Files\Autodesk\Inventor 2025\Bin\Public Assemblies\Autodesk.Inventor.Interop.dll')">C:\Program Files\Autodesk\Inventor 2025\Bin\Public Assemblies</InventorPath>
     <InventorPath Condition="'$(InventorPath)'=='' AND Exists('C:\Program Files\Autodesk\Inventor 2024\Bin\Public Assemblies\Autodesk.Inventor.Interop.dll')">C:\Program Files\Autodesk\Inventor 2024\Bin\Public Assemblies</InventorPath>
@@ -62,6 +63,7 @@
     <Compile Include="Logic\LicenseHelper.cs" />
     <Compile Include="Logic\OpenCadSettings.cs" />
     <Compile Include="Logic\OpenCadLogic.cs" />
+	<Compile Include="Logic\CreateDwgLogic.cs" /> 
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
