@@ -21,6 +21,7 @@ namespace OpenCadDrawingAddin
         private TabPage tabBom;       // [NEW]
         private TabPage tabCheckRef;  // [NEW]
         private TabPage tabCreateDwg; // [NEW v1.2]
+        private TabPage tabCopyPaste;  // [NEW v1.3]
 
         // Tab Settings - [CHANGED v1.1] multi-folder
         private Label lblCadFolder;
@@ -52,6 +53,10 @@ namespace OpenCadDrawingAddin
 
         // Tab Language
         private ListBox lstLanguages;
+
+        // Tab Copy-Paste [NEW v1.3]
+        private CheckBox chkShowCopyNotify;
+        private CheckBox chkShowPasteNotify;
 
         // Bottom buttons
         private Button btnSave;
@@ -109,7 +114,12 @@ namespace OpenCadDrawingAddin
             BuildCreateDwgTab();
             mainTabControl.TabPages.Add(tabCreateDwg);
 
-            // --- Tab 5: Language --- [MOVED] ra ngoài cùng phải
+            // --- Tab 5: Copy-Paste --- [NEW v1.3]
+            tabCopyPaste = new TabPage(LanguageManager.L("TAB_COPY_PASTE"));
+            BuildCopyPasteTab();
+            mainTabControl.TabPages.Add(tabCopyPaste);
+
+            // --- Tab 6: Language --- [MOVED] ra ngoài cùng phải
             tabLanguage = new TabPage(LanguageManager.L("TAB_LANGUAGE"));
             BuildLanguageTab();
             mainTabControl.TabPages.Add(tabLanguage);
@@ -495,6 +505,54 @@ namespace OpenCadDrawingAddin
         }
 
         // ============================================================
+        // TAB 6: COPY-PASTE [NEW v1.3]
+        // ============================================================
+        private void BuildCopyPasteTab()
+        {
+            int x = 15, y = 20;
+
+            var lblTitle = new Label
+            {
+                Text = LanguageManager.L("LBL_COPY_PASTE_NOTIFY"),
+                Location = new Point(x, y),
+                Size = new Size(400, 18),
+                Font = new Font("Segoe UI", 9F, FontStyle.Bold)
+            };
+            tabCopyPaste.Controls.Add(lblTitle);
+            y += 28;
+
+            chkShowCopyNotify = new CheckBox
+            {
+                Text = LanguageManager.L("CHK_SHOW_COPY_NOTIFY"),
+                Location = new Point(x, y),
+                Size = new Size(400, 22),
+                Font = new Font("Segoe UI", 9F)
+            };
+            tabCopyPaste.Controls.Add(chkShowCopyNotify);
+            y += 28;
+
+            chkShowPasteNotify = new CheckBox
+            {
+                Text = LanguageManager.L("CHK_SHOW_PASTE_NOTIFY"),
+                Location = new Point(x, y),
+                Size = new Size(400, 22),
+                Font = new Font("Segoe UI", 9F)
+            };
+            tabCopyPaste.Controls.Add(chkShowPasteNotify);
+            y += 36;
+
+            var lblHint = new Label
+            {
+                Text = LanguageManager.L("LBL_COPY_PASTE_HINT"),
+                Location = new Point(x, y),
+                Size = new Size(400, 36),
+                ForeColor = Color.Gray,
+                Font = new Font("Segoe UI", 8F, FontStyle.Italic)
+            };
+            tabCopyPaste.Controls.Add(lblHint);
+        }
+
+        // ============================================================
         // LOAD / SAVE
         // ============================================================
         private void LoadSettingsToUI()
@@ -516,6 +574,10 @@ namespace OpenCadDrawingAddin
             txtCreateDwgIniPath.Text = _settings.CreateDwgIniPath;
             txtCreateDwgListPath.Text = _settings.CreateDwgListPath;
             txtCreateDwgOutputPath.Text = _settings.CreateDwgOutputPath;
+
+            // [NEW v1.3] Copy-Paste notifications
+            chkShowCopyNotify.Checked = _settings.ShowCopyNotification;
+            chkShowPasteNotify.Checked = _settings.ShowPasteNotification;
 
             // Select current language
             string currentLang = _settings.Language;
@@ -554,6 +616,10 @@ namespace OpenCadDrawingAddin
             _settings.CreateDwgIniPath = txtCreateDwgIniPath.Text.Trim();
             _settings.CreateDwgListPath = txtCreateDwgListPath.Text.Trim();
             _settings.CreateDwgOutputPath = txtCreateDwgOutputPath.Text.Trim();
+
+            // [NEW v1.3] Copy-Paste notifications
+            _settings.ShowCopyNotification = chkShowCopyNotify.Checked;
+            _settings.ShowPasteNotification = chkShowPasteNotify.Checked;
 
             // Language
             if (lstLanguages.SelectedItem != null)

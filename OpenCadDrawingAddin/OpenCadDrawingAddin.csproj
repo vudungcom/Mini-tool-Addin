@@ -11,7 +11,6 @@
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
-
     <InventorPath Condition="Exists('C:\Program Files\Autodesk\Inventor 2026\Bin\Public Assemblies\Autodesk.Inventor.Interop.dll')">C:\Program Files\Autodesk\Inventor 2026\Bin\Public Assemblies</InventorPath>
     <InventorPath Condition="'$(InventorPath)'=='' AND Exists('C:\Program Files\Autodesk\Inventor 2025\Bin\Public Assemblies\Autodesk.Inventor.Interop.dll')">C:\Program Files\Autodesk\Inventor 2025\Bin\Public Assemblies</InventorPath>
     <InventorPath Condition="'$(InventorPath)'=='' AND Exists('C:\Program Files\Autodesk\Inventor 2024\Bin\Public Assemblies\Autodesk.Inventor.Interop.dll')">C:\Program Files\Autodesk\Inventor 2024\Bin\Public Assemblies</InventorPath>
@@ -55,6 +54,7 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CrossScreenCopyPasteLogic.cs" />
     <Compile Include="StandardAddInServer.cs" />
     <Compile Include="LanguageManager.cs" />
     <Compile Include="SettingsForm.cs">
@@ -63,7 +63,7 @@
     <Compile Include="Logic\LicenseHelper.cs" />
     <Compile Include="Logic\OpenCadSettings.cs" />
     <Compile Include="Logic\OpenCadLogic.cs" />
-	<Compile Include="Logic\CreateDwgLogic.cs" /> 
+    <Compile Include="Logic\CreateDwgLogic.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

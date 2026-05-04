@@ -54,6 +54,7 @@ namespace OpenCadDrawingAddin
                     ["TAB_BOM"] = "BOM Format",
                     ["TAB_CHECK_REF"] = "Check Reference",
                     ["TAB_CREATE_DWG"] = "Create DWG",  // [NEW v1.2]
+                    ["TAB_COPY_PASTE"] = "Copy-Paste",  // [NEW v1.3]
 
                     // === CAD DRAWING TAB ===
                     ["LBL_CAD_FOLDER"] = "CAD Drawing Folder:",
@@ -177,6 +178,25 @@ namespace OpenCadDrawingAddin
                     ["MSG_CREATE_DWG_IDW_NOT_SAVED"] = "The current IDW file has not been saved to disk yet.",
                     ["MSG_CREATE_DWG_OVERWRITE"] = "File already exists:\n{0}\nOverwrite?",
                     ["MSG_CREATE_DWG_IDW_DONE"] = "DWG exported successfully:\n{0}",
+
+                    // === CROSS-SCREEN COPY/PASTE === [NEW v1.3]
+                    ["TITLE_COPY_COMP"] = "Copy",
+                    ["TITLE_PASTE_COMP"] = "Place",
+                    ["MSG_COPY_COMP_SUCCESS"] = "Copied:\n{0}\n\nGo to screen 2 → click [Paste Comp] to insert into Assembly.",
+                    ["MSG_COPY_COMP_NO_SELECTION"] = "Please click to select a Part or Sub-Assembly before pressing Copy.",
+                    ["MSG_COPY_COMP_CANNOT_GET"] = "Cannot get file from selected component.\nPlease select a Part or Sub-Assembly.",
+                    ["MSG_COPY_COMP_FILE_NOT_FOUND"] = "File not found: {0}",
+                    ["MSG_PASTE_COMP_NO_CLIPBOARD"] = "Clipboard does not contain an Inventor component.\nPlease [Copy Comp] first.",
+                    ["MSG_PASTE_COMP_ASM_ONLY"] = "Please open an Assembly (.iam) file before using Paste.",
+                    ["MSG_PASTE_COMP_SUCCESS"] = "Pasted:\n{0}\n\nComponent placed at current camera position.\nYou can drag to adjust.",
+                    ["MSG_PASTE_COMP_FILE_NOT_FOUND"] = "File not found:\n{0}\n\nCheck path or network connection.",
+
+                    // === COPY-PASTE SETTINGS TAB === [NEW v1.3]
+                    ["LBL_COPY_PASTE_NOTIFY"] = "Notifications",
+                    ["CHK_SHOW_COPY_NOTIFY"] = "Show Copy notification",
+                    ["CHK_SHOW_PASTE_NOTIFY"] = "Show Place notification",
+                    ["LBL_COPY_PASTE_HINT"] = "Uncheck to skip the popup when working fast across screens.",
+                    ["CHK_DONT_SHOW_AGAIN"] = "Don't show this again",
                 },
 
                 // ========================================
@@ -205,6 +225,7 @@ namespace OpenCadDrawingAddin
                     ["TAB_BOM"] = "BOM Format",
                     ["TAB_CHECK_REF"] = "Check Reference",
                     ["TAB_CREATE_DWG"] = "Tạo DWG",  // [NEW v1.2]
+                    ["TAB_COPY_PASTE"] = "Copy-Paste",  // [NEW v1.3]
 
                     ["LBL_CAD_FOLDER"] = "Thư mục file CAD:",
                     ["LBL_FOLDER_HINT"] = "Thư mục chứa các file .dwg",
@@ -323,6 +344,25 @@ namespace OpenCadDrawingAddin
                     ["MSG_CREATE_DWG_IDW_NOT_SAVED"] = "File IDW hiện tại chưa được lưu xuống ổ đĩa.",
                     ["MSG_CREATE_DWG_OVERWRITE"] = "File đã tồn tại:\n{0}\nGhi đè?",
                     ["MSG_CREATE_DWG_IDW_DONE"] = "Xuất DWG thành công:\n{0}",
+
+                    // === CROSS-SCREEN COPY/PASTE === [NEW v1.3]
+                    ["TITLE_COPY_COMP"] = "Copy",
+                    ["TITLE_PASTE_COMP"] = "Place",
+                    ["MSG_COPY_COMP_SUCCESS"] = "Đã copy:\n{0}\n\nSang màn hình 2 → nhấn [Paste Comp] để insert vào Assembly.",
+                    ["MSG_COPY_COMP_NO_SELECTION"] = "Hãy click chọn một Part hoặc Sub-Assembly trước khi nhấn Copy.",
+                    ["MSG_COPY_COMP_CANNOT_GET"] = "Không lấy được file từ component đang chọn.\nVui lòng chọn một Part hoặc Sub-Assembly.",
+                    ["MSG_COPY_COMP_FILE_NOT_FOUND"] = "Không tìm thấy file: {0}",
+                    ["MSG_PASTE_COMP_NO_CLIPBOARD"] = "Clipboard không chứa component Inventor.\nHãy [Copy Comp] trước.",
+                    ["MSG_PASTE_COMP_ASM_ONLY"] = "Vui lòng mở một file Assembly (.iam) trước khi Paste.",
+                    ["MSG_PASTE_COMP_SUCCESS"] = "Đã paste:\n{0}\n\nComponent được đặt tại vùng camera hiện tại.\nBạn có thể kéo để chỉnh vị trí.",
+                    ["MSG_PASTE_COMP_FILE_NOT_FOUND"] = "Không tìm thấy file:\n{0}\n\nKiểm tra lại đường dẫn hoặc kết nối mạng.",
+
+                    // === COPY-PASTE SETTINGS TAB === [NEW v1.3]
+                    ["LBL_COPY_PASTE_NOTIFY"] = "Thông báo",
+                    ["CHK_SHOW_COPY_NOTIFY"] = "Hiển thị thông báo sau khi Copy",
+                    ["CHK_SHOW_PASTE_NOTIFY"] = "Hiển thị thông báo sau khi Place",
+                    ["LBL_COPY_PASTE_HINT"] = "Bỏ tích để ẩn popup khi làm việc nhanh giữa 2 màn hình.",
+                    ["CHK_DONT_SHOW_AGAIN"] = "Không hiển thị lại",
                 },
 
                 // ========================================
@@ -426,6 +466,26 @@ namespace OpenCadDrawingAddin
                     ["MSG_BOM_LOD_ERROR"] = "LODが図面で使用中です。マクロが失敗しました！",
                     ["MSG_BOM_INVALID_DOC"] = "無効なドキュメントです！アセンブリまたは図面のみ対応しています。",
                     ["MSG_BOM_SUCCESS"] = "BOMフォーマットが正常に適用されました！",
+
+                    // === CROSS-SCREEN COPY/PASTE === [NEW v1.3]
+                    ["TITLE_COPY_COMP"] = "Copy",
+                    ["TITLE_PASTE_COMP"] = "Place",
+                    ["MSG_COPY_COMP_SUCCESS"] = "コピーしました:\n{0}\n\n画面2 → [Paste Comp]でアセンブリに挿入してください。",
+                    ["MSG_COPY_COMP_NO_SELECTION"] = "コピーする前にパーツまたはサブアセンブリを選択してください。",
+                    ["MSG_COPY_COMP_CANNOT_GET"] = "選択したコンポーネントのファイルを取得できません。\nパーツまたはサブアセンブリを選択してください。",
+                    ["MSG_COPY_COMP_FILE_NOT_FOUND"] = "ファイルが見つかりません: {0}",
+                    ["MSG_PASTE_COMP_NO_CLIPBOARD"] = "クリップボードにInventorコンポーネントがありません。\n先に[Copy Comp]を実行してください。",
+                    ["MSG_PASTE_COMP_ASM_ONLY"] = "貼り付け前にアセンブリ(.iam)ファイルを開いてください。",
+                    ["MSG_PASTE_COMP_SUCCESS"] = "貼り付けました:\n{0}\n\n現在のカメラ位置に配置されました。\nドラッグで位置を調整できます。",
+                    ["MSG_PASTE_COMP_FILE_NOT_FOUND"] = "ファイルが見つかりません:\n{0}\n\nパスまたはネットワーク接続を確認してください。",
+
+                    // === COPY-PASTE SETTINGS TAB === [NEW v1.3]
+                    ["TAB_COPY_PASTE"] = "Copy-Paste",
+                    ["LBL_COPY_PASTE_NOTIFY"] = "通知",
+                    ["CHK_SHOW_COPY_NOTIFY"] = "Copyの後に通知を表示する",
+                    ["CHK_SHOW_PASTE_NOTIFY"] = "Placeの後に通知を表示する",
+                    ["LBL_COPY_PASTE_HINT"] = "チェックを外すと、2画面間の高速作業時にポップアップを非表示にします。",
+                    ["CHK_DONT_SHOW_AGAIN"] = "次回から表示しない",
                 },
 
                 // ========================================
@@ -529,6 +589,26 @@ namespace OpenCadDrawingAddin
                     ["MSG_BOM_LOD_ERROR"] = "도면에서 LOD가 사용 중입니다. 매크로가 실패했습니다!",
                     ["MSG_BOM_INVALID_DOC"] = "잘못된 문서입니다! 어셈블리 또는 도면만 지원됩니다.",
                     ["MSG_BOM_SUCCESS"] = "BOM 형식이 성공적으로 적용되었습니다!",
+
+                    // === CROSS-SCREEN COPY/PASTE === [NEW v1.3]
+                    ["TITLE_COPY_COMP"] = "Copy",
+                    ["TITLE_PASTE_COMP"] = "Place",
+                    ["MSG_COPY_COMP_SUCCESS"] = "복사되었습니다:\n{0}\n\n화면 2 → [Paste Comp]를 클릭하여 어셈블리에 삽입하세요.",
+                    ["MSG_COPY_COMP_NO_SELECTION"] = "복사하기 전에 부품 또는 하위 어셈블리를 클릭하여 선택하세요.",
+                    ["MSG_COPY_COMP_CANNOT_GET"] = "선택한 컴포넌트의 파일을 가져올 수 없습니다.\n부품 또는 하위 어셈블리를 선택하세요.",
+                    ["MSG_COPY_COMP_FILE_NOT_FOUND"] = "파일을 찾을 수 없습니다: {0}",
+                    ["MSG_PASTE_COMP_NO_CLIPBOARD"] = "클립보드에 Inventor 컴포넌트가 없습니다.\n먼저 [Copy Comp]를 실행하세요.",
+                    ["MSG_PASTE_COMP_ASM_ONLY"] = "붙여넣기 전에 어셈블리(.iam) 파일을 여세요.",
+                    ["MSG_PASTE_COMP_SUCCESS"] = "붙여넣기 완료:\n{0}\n\n현재 카메라 위치에 배치되었습니다.\n드래그하여 위치를 조정하세요.",
+                    ["MSG_PASTE_COMP_FILE_NOT_FOUND"] = "파일을 찾을 수 없습니다:\n{0}\n\n경로 또는 네트워크 연결을 확인하세요.",
+
+                    // === COPY-PASTE SETTINGS TAB === [NEW v1.3]
+                    ["TAB_COPY_PASTE"] = "Copy-Paste",
+                    ["LBL_COPY_PASTE_NOTIFY"] = "알림",
+                    ["CHK_SHOW_COPY_NOTIFY"] = "Copy 후 알림 표시",
+                    ["CHK_SHOW_PASTE_NOTIFY"] = "Place 후 알림 표시",
+                    ["LBL_COPY_PASTE_HINT"] = "체크 해제 시 두 화면 간 빠른 작업 중 팝업을 숨깁니다.",
+                    ["CHK_DONT_SHOW_AGAIN"] = "다시 표시하지 않음",
                 },
 
                 // ========================================
@@ -632,6 +712,26 @@ namespace OpenCadDrawingAddin
                     ["MSG_BOM_LOD_ERROR"] = "图纸中正在使用LOD，宏失败！",
                     ["MSG_BOM_INVALID_DOC"] = "无效文档！仅支持装配体或图纸。",
                     ["MSG_BOM_SUCCESS"] = "BOM格式已成功应用！",
+
+                    // === CROSS-SCREEN COPY/PASTE === [NEW v1.3]
+                    ["TITLE_COPY_COMP"] = "Copy",
+                    ["TITLE_PASTE_COMP"] = "Place",
+                    ["MSG_COPY_COMP_SUCCESS"] = "已复制：\n{0}\n\n切换到屏幕2 → 点击[Paste Comp]插入装配体。",
+                    ["MSG_COPY_COMP_NO_SELECTION"] = "请先点击选择一个零件或子装配体，再按复制。",
+                    ["MSG_COPY_COMP_CANNOT_GET"] = "无法获取所选零件的文件。\n请选择一个零件或子装配体。",
+                    ["MSG_COPY_COMP_FILE_NOT_FOUND"] = "未找到文件：{0}",
+                    ["MSG_PASTE_COMP_NO_CLIPBOARD"] = "剪贴板中没有Inventor零件。\n请先执行[Copy Comp]。",
+                    ["MSG_PASTE_COMP_ASM_ONLY"] = "请先打开一个装配体(.iam)文件再粘贴。",
+                    ["MSG_PASTE_COMP_SUCCESS"] = "粘贴成功：\n{0}\n\n零件已放置在当前相机位置。\n可拖动调整位置。",
+                    ["MSG_PASTE_COMP_FILE_NOT_FOUND"] = "未找到文件：\n{0}\n\n请检查路径或网络连接。",
+
+                    // === COPY-PASTE SETTINGS TAB === [NEW v1.3]
+                    ["TAB_COPY_PASTE"] = "Copy-Paste",
+                    ["LBL_COPY_PASTE_NOTIFY"] = "通知",
+                    ["CHK_SHOW_COPY_NOTIFY"] = "Copy 后显示通知",
+                    ["CHK_SHOW_PASTE_NOTIFY"] = "Place 后显示通知",
+                    ["LBL_COPY_PASTE_HINT"] = "取消勾选可在两屏间快速操作时隐藏弹窗。",
+                    ["CHK_DONT_SHOW_AGAIN"] = "不再显示",
                 },
 
                 // ========================================
@@ -735,6 +835,26 @@ namespace OpenCadDrawingAddin
                     ["MSG_BOM_LOD_ERROR"] = "LOD en uso en el dibujo; ¡Macro falló!",
                     ["MSG_BOM_INVALID_DOC"] = "¡Documento inválido! Solo se admiten Ensamble o Dibujo.",
                     ["MSG_BOM_SUCCESS"] = "¡Formato BOM aplicado exitosamente!",
+
+                    // === CROSS-SCREEN COPY/PASTE === [NEW v1.3]
+                    ["TITLE_COPY_COMP"] = "Copy",
+                    ["TITLE_PASTE_COMP"] = "Place",
+                    ["MSG_COPY_COMP_SUCCESS"] = "Copiado:\n{0}\n\nVaya a la pantalla 2 → haga clic en [Paste Comp] para insertar en el Ensamble.",
+                    ["MSG_COPY_COMP_NO_SELECTION"] = "Haga clic para seleccionar una Pieza o Subensamble antes de copiar.",
+                    ["MSG_COPY_COMP_CANNOT_GET"] = "No se puede obtener el archivo del componente seleccionado.\nSeleccione una Pieza o Subensamble.",
+                    ["MSG_COPY_COMP_FILE_NOT_FOUND"] = "Archivo no encontrado: {0}",
+                    ["MSG_PASTE_COMP_NO_CLIPBOARD"] = "El portapapeles no contiene un componente de Inventor.\nEjecute [Copy Comp] primero.",
+                    ["MSG_PASTE_COMP_ASM_ONLY"] = "Abra un archivo de Ensamble (.iam) antes de pegar.",
+                    ["MSG_PASTE_COMP_SUCCESS"] = "Pegado:\n{0}\n\nComponente colocado en la posición de cámara actual.\nPuede arrastrarlo para ajustar la posición.",
+                    ["MSG_PASTE_COMP_FILE_NOT_FOUND"] = "Archivo no encontrado:\n{0}\n\nVerifique la ruta o la conexión de red.",
+
+                    // === COPY-PASTE SETTINGS TAB === [NEW v1.3]
+                    ["TAB_COPY_PASTE"] = "Copy-Paste",
+                    ["LBL_COPY_PASTE_NOTIFY"] = "Notificaciones",
+                    ["CHK_SHOW_COPY_NOTIFY"] = "Mostrar notificación de Copy",
+                    ["CHK_SHOW_PASTE_NOTIFY"] = "Mostrar notificación de Place",
+                    ["LBL_COPY_PASTE_HINT"] = "Desmarque para ocultar el popup al trabajar rápido entre pantallas.",
+                    ["CHK_DONT_SHOW_AGAIN"] = "No mostrar de nuevo",
                 },
 
                 // ========================================
@@ -838,6 +958,26 @@ namespace OpenCadDrawingAddin
                     ["MSG_BOM_LOD_ERROR"] = "LOD em uso no desenho; Macro falhou!",
                     ["MSG_BOM_INVALID_DOC"] = "Documento inválido! Apenas Conjunto ou Desenho são suportados.",
                     ["MSG_BOM_SUCCESS"] = "Formato BOM aplicado com sucesso!",
+
+                    // === CROSS-SCREEN COPY/PASTE === [NEW v1.3]
+                    ["TITLE_COPY_COMP"] = "Copy",
+                    ["TITLE_PASTE_COMP"] = "Place",
+                    ["MSG_COPY_COMP_SUCCESS"] = "Copiado:\n{0}\n\nVá para a tela 2 → clique em [Paste Comp] para inserir no Conjunto.",
+                    ["MSG_COPY_COMP_NO_SELECTION"] = "Clique para selecionar uma Peça ou Subconjunto antes de copiar.",
+                    ["MSG_COPY_COMP_CANNOT_GET"] = "Não é possível obter o arquivo do componente selecionado.\nSelecione uma Peça ou Subconjunto.",
+                    ["MSG_COPY_COMP_FILE_NOT_FOUND"] = "Arquivo não encontrado: {0}",
+                    ["MSG_PASTE_COMP_NO_CLIPBOARD"] = "A área de transferência não contém um componente Inventor.\nExecute [Copy Comp] primeiro.",
+                    ["MSG_PASTE_COMP_ASM_ONLY"] = "Abra um arquivo de Conjunto (.iam) antes de colar.",
+                    ["MSG_PASTE_COMP_SUCCESS"] = "Colado:\n{0}\n\nComponente posicionado na posição atual da câmera.\nArraste para ajustar a posição.",
+                    ["MSG_PASTE_COMP_FILE_NOT_FOUND"] = "Arquivo não encontrado:\n{0}\n\nVerifique o caminho ou a conexão de rede.",
+
+                    // === COPY-PASTE SETTINGS TAB === [NEW v1.3]
+                    ["TAB_COPY_PASTE"] = "Copy-Paste",
+                    ["LBL_COPY_PASTE_NOTIFY"] = "Notificações",
+                    ["CHK_SHOW_COPY_NOTIFY"] = "Mostrar notificação de Copy",
+                    ["CHK_SHOW_PASTE_NOTIFY"] = "Mostrar notificação de Place",
+                    ["LBL_COPY_PASTE_HINT"] = "Desmarque para ocultar o popup ao trabalhar rapidamente entre telas.",
+                    ["CHK_DONT_SHOW_AGAIN"] = "Não mostrar novamente",
                 },
             };
 

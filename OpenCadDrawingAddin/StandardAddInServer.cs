@@ -23,6 +23,8 @@ namespace OpenCadDrawingAddin
         private ButtonDefinition m_saveIdwButton;    // [NEW] Save IDW button
         private ButtonDefinition m_checkRefButton;   // [NEW] Check Reference button
         private ButtonDefinition m_createDwgButton;  // [NEW v1.2] Create DWG button
+        private ButtonDefinition m_copyComponentButton;  // [NEW v1.3] Copy Component (cross-screen)
+        private ButtonDefinition m_pasteComponentButton; // [NEW v1.3] Paste Component (cross-screen)
 
         public static bool IsVietnamese => LanguageManager.CurrentLanguage == "VN";
 
@@ -72,6 +74,8 @@ namespace OpenCadDrawingAddin
             if (m_saveIdwButton != null) { m_saveIdwButton.Delete(); m_saveIdwButton = null; }    // [NEW]
             if (m_checkRefButton != null) { m_checkRefButton.Delete(); m_checkRefButton = null; }   // [NEW]
             if (m_createDwgButton != null) { m_createDwgButton.Delete(); m_createDwgButton = null; } // [NEW v1.2]
+            if (m_copyComponentButton != null) { m_copyComponentButton.Delete(); m_copyComponentButton = null; } // [NEW v1.3]
+            if (m_pasteComponentButton != null) { m_pasteComponentButton.Delete(); m_pasteComponentButton = null; } // [NEW v1.3]
             if (m_inventorApplication != null) { Marshal.ReleaseComObject(m_inventorApplication); m_inventorApplication = null; }
             GC.Collect();
         }
@@ -136,6 +140,24 @@ namespace OpenCadDrawingAddin
                 null, null);
             m_createDwgButton.OnExecute += m_createDwgButton_OnExecute;
 
+            // [NEW v1.3] Copy Component button (cross-screen)
+            m_copyComponentButton = controlDefs.AddButtonDefinition(
+                "Copy", "OCDACopyComponentCmd", CommandTypesEnum.kQueryOnlyCmdType,
+                GenerateClientId("OCDACopyComponentCmd"),
+                "Copy current component path to clipboard (for cross-screen paste).",
+                "Copy Component",
+                null, null);
+            m_copyComponentButton.OnExecute += m_copyComponentButton_OnExecute;
+
+            // [NEW v1.3] Paste Component button (cross-screen)
+            m_pasteComponentButton = controlDefs.AddButtonDefinition(
+                "Place", "OCDAPasteComponentCmd", CommandTypesEnum.kQueryOnlyCmdType,
+                GenerateClientId("OCDAPasteComponentCmd"),
+                "Insert copied component into the current Assembly (cross-screen).",
+                "Place Component",
+                null, null);
+            m_pasteComponentButton.OnExecute += m_pasteComponentButton_OnExecute;
+
             m_settingsButton = controlDefs.AddButtonDefinition(
                 "Settings", "OCDASettingsCmd", CommandTypesEnum.kQueryOnlyCmdType,
                 GenerateClientId("OCDASettingsCmd"),
@@ -188,6 +210,10 @@ namespace OpenCadDrawingAddin
                     if (!ButtonExists(panel, m_saveIdwButton)) panel.CommandControls.AddButton(m_saveIdwButton, false);
                     if (!ButtonExists(panel, m_checkRefButton)) panel.CommandControls.AddButton(m_checkRefButton, false);
                     if (!ButtonExists(panel, m_createDwgButton)) panel.CommandControls.AddButton(m_createDwgButton, false); // [NEW v1.2]
+
+                    // [NEW v1.3] Copy/Paste Component - cột riêng
+                    if (!ButtonExists(panel, m_copyComponentButton)) panel.CommandControls.AddButton(m_copyComponentButton, false);
+                    if (!ButtonExists(panel, m_pasteComponentButton)) panel.CommandControls.AddButton(m_pasteComponentButton, false);
 
                     panel.CommandControls.AddSeparator();
 
@@ -302,7 +328,27 @@ namespace OpenCadDrawingAddin
             }
         }
 
-        // [NEW] Handler cho Name Update button
+        // [NEW v1.3] Handler cho Copy Component button (cross-screen)
+        private void m_copyComponentButton_OnExecute(NameValueMap Context)
+        {
+            try
+            {
+                var logic = new CrossScreenCopyPasteLogic(m_inventorApplication);
+                logic.CopyComponent();
+            }
+            catch (Exception ex) { LicenseHelper.WriteLog("Error running Copy Component", ex); }
+        }
+
+        // [NEW v1.3] Handler cho Paste Component button (cross-screen)
+        private void m_pasteComponentButton_OnExecute(NameValueMap Context)
+        {
+            try
+            {
+                var logic = new CrossScreenCopyPasteLogic(m_inventorApplication);
+                logic.PasteComponent();
+            }
+            catch (Exception ex) { LicenseHelper.WriteLog("Error running Paste Component", ex); }
+        }
         // Logic từ file name_update.iLogicVb
         private void m_nameUpdateButton_OnExecute(NameValueMap Context)
         {

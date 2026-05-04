@@ -80,6 +80,16 @@ namespace OpenCadDrawingAddin.Logic
         /// </summary>
         public string CreateDwgOutputPath { get; set; } = "";
 
+        /// <summary>
+        /// [NEW v1.3] Hiển thị thông báo sau khi Copy Component thành công
+        /// </summary>
+        public bool ShowCopyNotification { get; set; } = true;
+
+        /// <summary>
+        /// [NEW v1.3] Hiển thị thông báo sau khi Paste Component thành công
+        /// </summary>
+        public bool ShowPasteNotification { get; set; } = true;
+
         // ============================================================
         // PATHS
         // ============================================================
@@ -135,6 +145,10 @@ namespace OpenCadDrawingAddin.Logic
                 settings.CreateDwgIniPath = (string)root.Element("CreateDwgIniPath") ?? "";
                 settings.CreateDwgListPath = (string)root.Element("CreateDwgListPath") ?? "";
                 settings.CreateDwgOutputPath = (string)root.Element("CreateDwgOutputPath") ?? "";
+
+                // [NEW v1.3] Copy-Paste notification settings
+                settings.ShowCopyNotification = ParseBool(root.Element("ShowCopyNotification"), true);
+                settings.ShowPasteNotification = ParseBool(root.Element("ShowPasteNotification"), true);
             }
             catch (Exception ex)
             {
@@ -167,7 +181,10 @@ namespace OpenCadDrawingAddin.Logic
                         // [NEW v1.2] Create DWG settings
                         new XElement("CreateDwgIniPath", CreateDwgIniPath),
                         new XElement("CreateDwgListPath", CreateDwgListPath),
-                        new XElement("CreateDwgOutputPath", CreateDwgOutputPath)
+                        new XElement("CreateDwgOutputPath", CreateDwgOutputPath),
+                        // [NEW v1.3] Copy-Paste notification settings
+                        new XElement("ShowCopyNotification", ShowCopyNotification),
+                        new XElement("ShowPasteNotification", ShowPasteNotification)
                     )
                 );
                 xml.Save(_settingsPath);
