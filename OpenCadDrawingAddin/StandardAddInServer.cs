@@ -344,8 +344,19 @@ namespace OpenCadDrawingAddin
         {
             try
             {
+                // Capture selection NGAY TẠI ĐÂY trước khi Inventor kịp clear SelectSet
+                // khi button được click. Truyền thẳng vào PasteComponent.
+                ComponentOccurrence preSelected = null;
+                try
+                {
+                    var doc = m_inventorApplication.ActiveDocument;
+                    if (doc?.SelectSet != null && doc.SelectSet.Count >= 1)
+                        preSelected = CrossScreenCopyPasteLogic.GetOccurrenceFromObject(doc.SelectSet[1]);
+                }
+                catch { }
+
                 var logic = new CrossScreenCopyPasteLogic(m_inventorApplication);
-                logic.PasteComponent();
+                logic.PasteComponent(preSelected);
             }
             catch (Exception ex) { LicenseHelper.WriteLog("Error running Paste Component", ex); }
         }

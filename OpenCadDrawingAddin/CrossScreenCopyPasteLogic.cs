@@ -95,7 +95,7 @@ namespace OpenCadDrawingAddin.Logic
         // PASTE
         // ============================================================
 
-        public void PasteComponent()
+        public void PasteComponent(ComponentOccurrence preSelected = null)
         {
             try
             {
@@ -120,21 +120,29 @@ namespace OpenCadDrawingAddin.Logic
                 }
 
                 var asmDoc = activeDoc as AssemblyDocument;
-                asmDoc.ComponentDefinition.Occurrences.Add(filePath, BuildPlacementMatrix());
+                string shortName = System.IO.Path.GetFileName(filePath);
+                string notifyMsg;
 
-                // Hiện thông báo nếu setting cho phép
+                if (preSelected != null)
+                {
+                    // Có selection → Replace: lưu vị trí cũ → delete → add mới tại đúng vị trí
+                    Matrix savedMatrix = preSelected.Transformation;
+                    preSelected.Delete();
+                    asmDoc.ComponentDefinition.Occurrences.Add(filePath, savedMatrix);
+                    notifyMsg = LanguageManager.L("MSG_PLACE_COMP_REPLACED", shortName);
+                }
+                else
+                {
+                    // Không có selection → Add vào Camera.Target
+                    asmDoc.ComponentDefinition.Occurrences.Add(filePath, BuildPlacementMatrix());
+                    notifyMsg = LanguageManager.L("MSG_PASTE_COMP_SUCCESS", shortName);
+                }
+
                 var settings = OpenCadSettings.Load();
                 if (settings.ShowPasteNotification)
                 {
-                    bool dontShowAgain = ShowNotifyWithCheckbox(
-                        LanguageManager.L("MSG_PASTE_COMP_SUCCESS", System.IO.Path.GetFileName(filePath)),
-                        LanguageManager.L("TITLE_PASTE_COMP"));
-
-                    if (dontShowAgain)
-                    {
-                        settings.ShowPasteNotification = false;
-                        settings.Save();
-                    }
+                    bool dontShowAgain = ShowNotifyWithCheckbox(notifyMsg, LanguageManager.L("TITLE_PASTE_COMP"));
+                    if (dontShowAgain) { settings.ShowPasteNotification = false; settings.Save(); }
                 }
             }
             catch (Exception ex)
@@ -250,6 +258,24 @@ namespace OpenCadDrawingAddin.Logic
                     return ep.ContainingOccurrence?.Definition?.Document as Document;
                 if (selectedObj is VertexProxy vp)
                     return vp.ContainingOccurrence?.Definition?.Document as Document;
+                return null;
+            }
+            catch { return null; }
+        }
+
+        /// <summary>
+        /// Lấy ComponentOccurrence từ bất kỳ object nào trong SelectSet.
+        /// Public static để StandardAddInServer có thể gọi ngay trong OnExecute
+        /// trước khi Inventor kịp clear SelectSet.
+        /// </summary>
+        public static ComponentOccurrence GetOccurrenceFromObject(object selectedObj)
+        {
+            try
+            {
+                if (selectedObj is ComponentOccurrence occ) return occ;
+                if (selectedObj is FaceProxy fp) return fp.ContainingOccurrence;
+                if (selectedObj is EdgeProxy ep) return ep.ContainingOccurrence;
+                if (selectedObj is VertexProxy vp) return vp.ContainingOccurrence;
                 return null;
             }
             catch { return null; }

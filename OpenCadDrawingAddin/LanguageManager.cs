@@ -189,6 +189,7 @@ namespace OpenCadDrawingAddin
                     ["MSG_PASTE_COMP_NO_CLIPBOARD"] = "Clipboard does not contain an Inventor component.\nPlease [Copy Comp] first.",
                     ["MSG_PASTE_COMP_ASM_ONLY"] = "Please open an Assembly (.iam) file before using Paste.",
                     ["MSG_PASTE_COMP_SUCCESS"] = "Pasted:\n{0}\n\nComponent placed at current camera position.\nYou can drag to adjust.",
+                    ["MSG_PLACE_COMP_REPLACED"] = "Replaced with:\n{0}\n\nConstraints preserved.",
                     ["MSG_PASTE_COMP_FILE_NOT_FOUND"] = "File not found:\n{0}\n\nCheck path or network connection.",
 
                     // === COPY-PASTE SETTINGS TAB === [NEW v1.3]
@@ -355,6 +356,7 @@ namespace OpenCadDrawingAddin
                     ["MSG_PASTE_COMP_NO_CLIPBOARD"] = "Clipboard không chứa component Inventor.\nHãy [Copy Comp] trước.",
                     ["MSG_PASTE_COMP_ASM_ONLY"] = "Vui lòng mở một file Assembly (.iam) trước khi Paste.",
                     ["MSG_PASTE_COMP_SUCCESS"] = "Đã paste:\n{0}\n\nComponent được đặt tại vùng camera hiện tại.\nBạn có thể kéo để chỉnh vị trí.",
+                    ["MSG_PLACE_COMP_REPLACED"] = "Đã thay thế bằng:\n{0}\n\nRàng buộc được giữ nguyên.",
                     ["MSG_PASTE_COMP_FILE_NOT_FOUND"] = "Không tìm thấy file:\n{0}\n\nKiểm tra lại đường dẫn hoặc kết nối mạng.",
 
                     // === COPY-PASTE SETTINGS TAB === [NEW v1.3]
@@ -477,6 +479,7 @@ namespace OpenCadDrawingAddin
                     ["MSG_PASTE_COMP_NO_CLIPBOARD"] = "クリップボードにInventorコンポーネントがありません。\n先に[Copy Comp]を実行してください。",
                     ["MSG_PASTE_COMP_ASM_ONLY"] = "貼り付け前にアセンブリ(.iam)ファイルを開いてください。",
                     ["MSG_PASTE_COMP_SUCCESS"] = "貼り付けました:\n{0}\n\n現在のカメラ位置に配置されました。\nドラッグで位置を調整できます。",
+                    ["MSG_PLACE_COMP_REPLACED"] = "置き換えました:\n{0}\n\n拘束は保持されています。",
                     ["MSG_PASTE_COMP_FILE_NOT_FOUND"] = "ファイルが見つかりません:\n{0}\n\nパスまたはネットワーク接続を確認してください。",
 
                     // === COPY-PASTE SETTINGS TAB === [NEW v1.3]
@@ -600,6 +603,7 @@ namespace OpenCadDrawingAddin
                     ["MSG_PASTE_COMP_NO_CLIPBOARD"] = "클립보드에 Inventor 컴포넌트가 없습니다.\n먼저 [Copy Comp]를 실행하세요.",
                     ["MSG_PASTE_COMP_ASM_ONLY"] = "붙여넣기 전에 어셈블리(.iam) 파일을 여세요.",
                     ["MSG_PASTE_COMP_SUCCESS"] = "붙여넣기 완료:\n{0}\n\n현재 카메라 위치에 배치되었습니다.\n드래그하여 위치를 조정하세요.",
+                    ["MSG_PLACE_COMP_REPLACED"] = "교체되었습니다:\n{0}\n\n구속 조건이 유지되었습니다.",
                     ["MSG_PASTE_COMP_FILE_NOT_FOUND"] = "파일을 찾을 수 없습니다:\n{0}\n\n경로 또는 네트워크 연결을 확인하세요.",
 
                     // === COPY-PASTE SETTINGS TAB === [NEW v1.3]
@@ -723,6 +727,7 @@ namespace OpenCadDrawingAddin
                     ["MSG_PASTE_COMP_NO_CLIPBOARD"] = "剪贴板中没有Inventor零件。\n请先执行[Copy Comp]。",
                     ["MSG_PASTE_COMP_ASM_ONLY"] = "请先打开一个装配体(.iam)文件再粘贴。",
                     ["MSG_PASTE_COMP_SUCCESS"] = "粘贴成功：\n{0}\n\n零件已放置在当前相机位置。\n可拖动调整位置。",
+                    ["MSG_PLACE_COMP_REPLACED"] = "已替换为：\n{0}\n\n约束已保留。",
                     ["MSG_PASTE_COMP_FILE_NOT_FOUND"] = "未找到文件：\n{0}\n\n请检查路径或网络连接。",
 
                     // === COPY-PASTE SETTINGS TAB === [NEW v1.3]
@@ -846,6 +851,7 @@ namespace OpenCadDrawingAddin
                     ["MSG_PASTE_COMP_NO_CLIPBOARD"] = "El portapapeles no contiene un componente de Inventor.\nEjecute [Copy Comp] primero.",
                     ["MSG_PASTE_COMP_ASM_ONLY"] = "Abra un archivo de Ensamble (.iam) antes de pegar.",
                     ["MSG_PASTE_COMP_SUCCESS"] = "Pegado:\n{0}\n\nComponente colocado en la posición de cámara actual.\nPuede arrastrarlo para ajustar la posición.",
+                    ["MSG_PLACE_COMP_REPLACED"] = "Reemplazado con:\n{0}\n\nLas restricciones se han conservado.",
                     ["MSG_PASTE_COMP_FILE_NOT_FOUND"] = "Archivo no encontrado:\n{0}\n\nVerifique la ruta o la conexión de red.",
 
                     // === COPY-PASTE SETTINGS TAB === [NEW v1.3]
@@ -969,6 +975,7 @@ namespace OpenCadDrawingAddin
                     ["MSG_PASTE_COMP_NO_CLIPBOARD"] = "A área de transferência não contém um componente Inventor.\nExecute [Copy Comp] primeiro.",
                     ["MSG_PASTE_COMP_ASM_ONLY"] = "Abra um arquivo de Conjunto (.iam) antes de colar.",
                     ["MSG_PASTE_COMP_SUCCESS"] = "Colado:\n{0}\n\nComponente posicionado na posição atual da câmera.\nArraste para ajustar a posição.",
+                    ["MSG_PLACE_COMP_REPLACED"] = "Substituído por:\n{0}\n\nAs restrições foram preservadas.",
                     ["MSG_PASTE_COMP_FILE_NOT_FOUND"] = "Arquivo não encontrado:\n{0}\n\nVerifique o caminho ou a conexão de rede.",
 
                     // === COPY-PASTE SETTINGS TAB === [NEW v1.3]
