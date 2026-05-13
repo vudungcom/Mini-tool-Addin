@@ -55,6 +55,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CrossScreenCopyPasteLogic.cs" />
+    <Compile Include="Logic\IdwAutoCheckLogic.cs" />
     <Compile Include="StandardAddInServer.cs" />
     <Compile Include="LanguageManager.cs" />
     <Compile Include="SettingsForm.cs">

@@ -55,6 +55,8 @@ namespace OpenCadDrawingAddin
                     ["TAB_CHECK_REF"] = "Check Reference",
                     ["TAB_CREATE_DWG"] = "Create DWG",  // [NEW v1.2]
                     ["TAB_COPY_PASTE"] = "Copy-Paste",  // [NEW v1.3]
+                    ["TAB_IDW_CHECK"] = "IDW Check",  // [NEW v1.4]
+                    ["TAB_IDW_CHECK"] = "IDW Check",  // [NEW v1.4]
 
                     // === CAD DRAWING TAB ===
                     ["LBL_CAD_FOLDER"] = "CAD Drawing Folder:",
@@ -198,6 +200,18 @@ namespace OpenCadDrawingAddin
                     ["CHK_SHOW_PASTE_NOTIFY"] = "Show Place notification",
                     ["LBL_COPY_PASTE_HINT"] = "Uncheck to skip the popup when working fast across screens.",
                     ["CHK_DONT_SHOW_AGAIN"] = "Don't show this again",
+
+                    // === IDW AUTO CHECK === [NEW v1.4]
+                    ["TAB_IDW_CHECK"] = "IDW Check",
+                    ["LBL_IDW_CHECK_TITLE"] = "Auto-check when opening IDW",
+                    ["CHK_IDW_CHECK_NAME"] = "Check: Drawing file name matches model file name",
+                    ["CHK_IDW_CHECK_APPEARANCE"] = "Check: Material / Appearance matches iProperty",
+                    ["LBL_IDW_CHECK_HINT"] = "Runs automatically each time an IDW is opened.",
+                    ["TITLE_IDW_CHECK"] = "IDW Auto Check",
+                    ["MSG_IDW_CHECK_DISABLE_HINT"] = "To disable this warning, go to Settings → IDW Check.",
+                    ["MSG_IDW_NAME_MISMATCH"] = "DRAWING NAME MISMATCH\n    IDW   : \"{0}\"\n    Model : \"{1}\" (Sheet: {2})\n\n",
+                    ["MSG_IDW_MATERIAL_MISMATCH"] = "MATERIAL MISMATCH\n    Part      : {0}\n    Model     : \"{1}\"\n    iProperty : \"{2}\"\n\n",
+                    ["MSG_IDW_APPEARANCE_MISMATCH"] = "APPEARANCE MISMATCH\n    Part      : {0}\n    Model     : \"{1}\"\n    iProperty : \"{2}\"\n\n",
                 },
 
                 // ========================================
@@ -227,6 +241,8 @@ namespace OpenCadDrawingAddin
                     ["TAB_CHECK_REF"] = "Check Reference",
                     ["TAB_CREATE_DWG"] = "Tạo DWG",  // [NEW v1.2]
                     ["TAB_COPY_PASTE"] = "Copy-Paste",  // [NEW v1.3]
+                    ["TAB_IDW_CHECK"] = "IDW Check",  // [NEW v1.4]
+                    ["TAB_IDW_CHECK"] = "IDW Check",  // [NEW v1.4]
 
                     ["LBL_CAD_FOLDER"] = "Thư mục file CAD:",
                     ["LBL_FOLDER_HINT"] = "Thư mục chứa các file .dwg",
@@ -365,6 +381,18 @@ namespace OpenCadDrawingAddin
                     ["CHK_SHOW_PASTE_NOTIFY"] = "Hiển thị thông báo sau khi Place",
                     ["LBL_COPY_PASTE_HINT"] = "Bỏ tích để ẩn popup khi làm việc nhanh giữa 2 màn hình.",
                     ["CHK_DONT_SHOW_AGAIN"] = "Không hiển thị lại",
+
+                    // === IDW AUTO CHECK === [NEW v1.4]
+                    ["TAB_IDW_CHECK"] = "IDW Check",
+                    ["LBL_IDW_CHECK_TITLE"] = "Tự động kiểm tra khi mở IDW",
+                    ["CHK_IDW_CHECK_NAME"] = "Kiểm tra: Tên file IDW phải khớp tên file model",
+                    ["CHK_IDW_CHECK_APPEARANCE"] = "Kiểm tra: Material / Appearance phải khớp iProperty",
+                    ["LBL_IDW_CHECK_HINT"] = "Tự động chạy mỗi khi mở file IDW.",
+                    ["TITLE_IDW_CHECK"] = "IDW Auto Check",
+                    ["MSG_IDW_CHECK_DISABLE_HINT"] = "Để tắt cảnh báo này, vào Settings → IDW Check.",
+                    ["MSG_IDW_NAME_MISMATCH"] = "TÊN FILE KHÔNG KHỚP\n    IDW   : \"{0}\"\n    Model : \"{1}\" (Sheet: {2})\n\n",
+                    ["MSG_IDW_MATERIAL_MISMATCH"] = "MATERIAL KHÔNG KHỚP\n    Part      : {0}\n    Model     : \"{1}\"\n    iProperty : \"{2}\"\n\n",
+                    ["MSG_IDW_APPEARANCE_MISMATCH"] = "APPEARANCE KHÔNG KHỚP\n    Part      : {0}\n    Model     : \"{1}\"\n    iProperty : \"{2}\"\n\n",
                 },
 
                 // ========================================
@@ -489,6 +517,18 @@ namespace OpenCadDrawingAddin
                     ["CHK_SHOW_PASTE_NOTIFY"] = "Placeの後に通知を表示する",
                     ["LBL_COPY_PASTE_HINT"] = "チェックを外すと、2画面間の高速作業時にポップアップを非表示にします。",
                     ["CHK_DONT_SHOW_AGAIN"] = "次回から表示しない",
+
+                    // === IDW AUTO CHECK === [NEW v1.4]
+                    ["TAB_IDW_CHECK"] = "IDW Check",
+                    ["LBL_IDW_CHECK_TITLE"] = "IDWを開いたときに自動チェック",
+                    ["CHK_IDW_CHECK_NAME"] = "チェック：図面ファイル名とモデルファイル名が一致するか",
+                    ["CHK_IDW_CHECK_APPEARANCE"] = "チェック：マテリアル/外観がiPropertyと一致するか",
+                    ["LBL_IDW_CHECK_HINT"] = "IDWを開くたびに自動的に実行されます。",
+                    ["TITLE_IDW_CHECK"] = "IDW Auto Check",
+                    ["MSG_IDW_CHECK_DISABLE_HINT"] = "この警告を無効にするには、設定 → IDW Checkへ。",
+                    ["MSG_IDW_NAME_MISMATCH"] = "ファイル名の不一致\n    IDW   : \"{0}\"\n    Model : \"{1}\" (Sheet: {2})\n\n",
+                    ["MSG_IDW_MATERIAL_MISMATCH"] = "マテリアルの不一致\n    Part      : {0}\n    Model     : \"{1}\"\n    iProperty : \"{2}\"\n\n",
+                    ["MSG_IDW_APPEARANCE_MISMATCH"] = "外観の不一致\n    Part      : {0}\n    Model     : \"{1}\"\n    iProperty : \"{2}\"\n\n",
                 },
 
                 // ========================================
@@ -613,6 +653,18 @@ namespace OpenCadDrawingAddin
                     ["CHK_SHOW_PASTE_NOTIFY"] = "Place 후 알림 표시",
                     ["LBL_COPY_PASTE_HINT"] = "체크 해제 시 두 화면 간 빠른 작업 중 팝업을 숨깁니다.",
                     ["CHK_DONT_SHOW_AGAIN"] = "다시 표시하지 않음",
+
+                    // === IDW AUTO CHECK === [NEW v1.4]
+                    ["TAB_IDW_CHECK"] = "IDW Check",
+                    ["LBL_IDW_CHECK_TITLE"] = "IDW 열 때 자동 검사",
+                    ["CHK_IDW_CHECK_NAME"] = "검사: 도면 파일명과 모델 파일명 일치 여부",
+                    ["CHK_IDW_CHECK_APPEARANCE"] = "검사: 재질/외관이 iProperty와 일치 여부",
+                    ["LBL_IDW_CHECK_HINT"] = "IDW 파일을 열 때마다 자동으로 실행됩니다.",
+                    ["TITLE_IDW_CHECK"] = "IDW Auto Check",
+                    ["MSG_IDW_CHECK_DISABLE_HINT"] = "이 경고를 비활성화하려면 설정 → IDW Check로 이동하세요.",
+                    ["MSG_IDW_NAME_MISMATCH"] = "파일명 불일치\n    IDW   : \"{0}\"\n    Model : \"{1}\" (Sheet: {2})\n\n",
+                    ["MSG_IDW_MATERIAL_MISMATCH"] = "재질 불일치\n    Part      : {0}\n    Model     : \"{1}\"\n    iProperty : \"{2}\"\n\n",
+                    ["MSG_IDW_APPEARANCE_MISMATCH"] = "외관 불일치\n    Part      : {0}\n    Model     : \"{1}\"\n    iProperty : \"{2}\"\n\n",
                 },
 
                 // ========================================
@@ -737,6 +789,18 @@ namespace OpenCadDrawingAddin
                     ["CHK_SHOW_PASTE_NOTIFY"] = "Place 后显示通知",
                     ["LBL_COPY_PASTE_HINT"] = "取消勾选可在两屏间快速操作时隐藏弹窗。",
                     ["CHK_DONT_SHOW_AGAIN"] = "不再显示",
+
+                    // === IDW AUTO CHECK === [NEW v1.4]
+                    ["TAB_IDW_CHECK"] = "IDW Check",
+                    ["LBL_IDW_CHECK_TITLE"] = "打开IDW时自动检查",
+                    ["CHK_IDW_CHECK_NAME"] = "检查：图纸文件名与模型文件名是否一致",
+                    ["CHK_IDW_CHECK_APPEARANCE"] = "检查：材质/外观与iProperty是否一致",
+                    ["LBL_IDW_CHECK_HINT"] = "每次打开IDW文件时自动运行。",
+                    ["TITLE_IDW_CHECK"] = "IDW Auto Check",
+                    ["MSG_IDW_CHECK_DISABLE_HINT"] = "要禁用此警告，请转到设置 → IDW Check。",
+                    ["MSG_IDW_NAME_MISMATCH"] = "文件名不匹配\n    IDW   : \"{0}\"\n    Model : \"{1}\" (Sheet: {2})\n\n",
+                    ["MSG_IDW_MATERIAL_MISMATCH"] = "材质不匹配\n    Part      : {0}\n    Model     : \"{1}\"\n    iProperty : \"{2}\"\n\n",
+                    ["MSG_IDW_APPEARANCE_MISMATCH"] = "外观不匹配\n    Part      : {0}\n    Model     : \"{1}\"\n    iProperty : \"{2}\"\n\n",
                 },
 
                 // ========================================
@@ -861,6 +925,18 @@ namespace OpenCadDrawingAddin
                     ["CHK_SHOW_PASTE_NOTIFY"] = "Mostrar notificación de Place",
                     ["LBL_COPY_PASTE_HINT"] = "Desmarque para ocultar el popup al trabajar rápido entre pantallas.",
                     ["CHK_DONT_SHOW_AGAIN"] = "No mostrar de nuevo",
+
+                    // === IDW AUTO CHECK === [NEW v1.4]
+                    ["TAB_IDW_CHECK"] = "IDW Check",
+                    ["LBL_IDW_CHECK_TITLE"] = "Verificación automática al abrir IDW",
+                    ["CHK_IDW_CHECK_NAME"] = "Verificar: El nombre del archivo IDW coincide con el modelo",
+                    ["CHK_IDW_CHECK_APPEARANCE"] = "Verificar: Material/Apariencia coincide con iProperty",
+                    ["LBL_IDW_CHECK_HINT"] = "Se ejecuta automáticamente cada vez que se abre un IDW.",
+                    ["TITLE_IDW_CHECK"] = "IDW Auto Check",
+                    ["MSG_IDW_CHECK_DISABLE_HINT"] = "Para desactivar esta advertencia, vaya a Configuración → IDW Check.",
+                    ["MSG_IDW_NAME_MISMATCH"] = "Nombre no coincide\n    IDW   : \"{0}\"\n    Model : \"{1}\" (Sheet: {2})\n\n",
+                    ["MSG_IDW_MATERIAL_MISMATCH"] = "Material no coincide\n    Part      : {0}\n    Model     : \"{1}\"\n    iProperty : \"{2}\"\n\n",
+                    ["MSG_IDW_APPEARANCE_MISMATCH"] = "Apariencia no coincide\n    Part      : {0}\n    Model     : \"{1}\"\n    iProperty : \"{2}\"\n\n",
                 },
 
                 // ========================================
@@ -985,6 +1061,18 @@ namespace OpenCadDrawingAddin
                     ["CHK_SHOW_PASTE_NOTIFY"] = "Mostrar notificação de Place",
                     ["LBL_COPY_PASTE_HINT"] = "Desmarque para ocultar o popup ao trabalhar rapidamente entre telas.",
                     ["CHK_DONT_SHOW_AGAIN"] = "Não mostrar novamente",
+
+                    // === IDW AUTO CHECK === [NEW v1.4]
+                    ["TAB_IDW_CHECK"] = "IDW Check",
+                    ["LBL_IDW_CHECK_TITLE"] = "Verificação automática ao abrir IDW",
+                    ["CHK_IDW_CHECK_NAME"] = "Verificar: Nome do arquivo IDW coincide com o modelo",
+                    ["CHK_IDW_CHECK_APPEARANCE"] = "Verificar: Material/Aparência coincide com iProperty",
+                    ["LBL_IDW_CHECK_HINT"] = "Executado automaticamente cada vez que um IDW é aberto.",
+                    ["TITLE_IDW_CHECK"] = "IDW Auto Check",
+                    ["MSG_IDW_CHECK_DISABLE_HINT"] = "Para desativar este aviso, vá para Configurações → IDW Check.",
+                    ["MSG_IDW_NAME_MISMATCH"] = "Nome não coincide\n    IDW   : \"{0}\"\n    Model : \"{1}\" (Sheet: {2})\n\n",
+                    ["MSG_IDW_MATERIAL_MISMATCH"] = "Material não coincide\n    Part      : {0}\n    Model     : \"{1}\"\n    iProperty : \"{2}\"\n\n",
+                    ["MSG_IDW_APPEARANCE_MISMATCH"] = "Aparência não coincide\n    Part      : {0}\n    Model     : \"{1}\"\n    iProperty : \"{2}\"\n\n",
                 },
             };
 

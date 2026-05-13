@@ -22,6 +22,7 @@ namespace OpenCadDrawingAddin
         private TabPage tabCheckRef;  // [NEW]
         private TabPage tabCreateDwg; // [NEW v1.2]
         private TabPage tabCopyPaste;  // [NEW v1.3]
+        private TabPage tabIdwCheck;   // [NEW v1.4]
 
         // Tab Settings - [CHANGED v1.1] multi-folder
         private Label lblCadFolder;
@@ -57,6 +58,10 @@ namespace OpenCadDrawingAddin
         // Tab Copy-Paste [NEW v1.3]
         private CheckBox chkShowCopyNotify;
         private CheckBox chkShowPasteNotify;
+
+        // Tab IDW Check [NEW v1.4]
+        private CheckBox chkAutoCheckDrawingName;
+        private CheckBox chkAutoCheckAppearance;
 
         // Bottom buttons
         private Button btnSave;
@@ -118,6 +123,11 @@ namespace OpenCadDrawingAddin
             tabCopyPaste = new TabPage(LanguageManager.L("TAB_COPY_PASTE"));
             BuildCopyPasteTab();
             mainTabControl.TabPages.Add(tabCopyPaste);
+
+            // --- Tab: IDW Check --- [NEW v1.4]
+            tabIdwCheck = new TabPage(LanguageManager.L("TAB_IDW_CHECK"));
+            BuildIdwCheckTab();
+            mainTabControl.TabPages.Add(tabIdwCheck);
 
             // --- Tab 6: Language --- [MOVED] ra ngoài cùng phải
             tabLanguage = new TabPage(LanguageManager.L("TAB_LANGUAGE"));
@@ -553,8 +563,52 @@ namespace OpenCadDrawingAddin
         }
 
         // ============================================================
-        // LOAD / SAVE
+        // TAB: IDW CHECK [NEW v1.4]
         // ============================================================
+        private void BuildIdwCheckTab()
+        {
+            int x = 15, y = 20;
+
+            var lblTitle = new Label
+            {
+                Text = LanguageManager.L("LBL_IDW_CHECK_TITLE"),
+                Location = new Point(x, y),
+                Size = new Size(430, 18),
+                Font = new Font("Segoe UI", 9F, FontStyle.Bold)
+            };
+            tabIdwCheck.Controls.Add(lblTitle);
+            y += 30;
+
+            chkAutoCheckDrawingName = new CheckBox
+            {
+                Text = LanguageManager.L("CHK_IDW_CHECK_NAME"),
+                Location = new Point(x, y),
+                Size = new Size(430, 22),
+                Font = new Font("Segoe UI", 9F)
+            };
+            tabIdwCheck.Controls.Add(chkAutoCheckDrawingName);
+            y += 28;
+
+            chkAutoCheckAppearance = new CheckBox
+            {
+                Text = LanguageManager.L("CHK_IDW_CHECK_APPEARANCE"),
+                Location = new Point(x, y),
+                Size = new Size(430, 22),
+                Font = new Font("Segoe UI", 9F)
+            };
+            tabIdwCheck.Controls.Add(chkAutoCheckAppearance);
+            y += 36;
+
+            var lblHint = new Label
+            {
+                Text = LanguageManager.L("LBL_IDW_CHECK_HINT"),
+                Location = new Point(x, y),
+                Size = new Size(430, 36),
+                ForeColor = Color.Gray,
+                Font = new Font("Segoe UI", 8F, FontStyle.Italic)
+            };
+            tabIdwCheck.Controls.Add(lblHint);
+        }
         private void LoadSettingsToUI()
         {
             // [CHANGED v1.1] Load multi-folder vào ListBox
@@ -578,6 +632,10 @@ namespace OpenCadDrawingAddin
             // [NEW v1.3] Copy-Paste notifications
             chkShowCopyNotify.Checked = _settings.ShowCopyNotification;
             chkShowPasteNotify.Checked = _settings.ShowPasteNotification;
+
+            // [NEW v1.4] IDW Check
+            chkAutoCheckDrawingName.Checked = _settings.AutoCheckDrawingName;
+            chkAutoCheckAppearance.Checked = _settings.AutoCheckAppearance;
 
             // Select current language
             string currentLang = _settings.Language;
@@ -620,6 +678,10 @@ namespace OpenCadDrawingAddin
             // [NEW v1.3] Copy-Paste notifications
             _settings.ShowCopyNotification = chkShowCopyNotify.Checked;
             _settings.ShowPasteNotification = chkShowPasteNotify.Checked;
+
+            // [NEW v1.4] IDW Check
+            _settings.AutoCheckDrawingName = chkAutoCheckDrawingName.Checked;
+            _settings.AutoCheckAppearance = chkAutoCheckAppearance.Checked;
 
             // Language
             if (lstLanguages.SelectedItem != null)

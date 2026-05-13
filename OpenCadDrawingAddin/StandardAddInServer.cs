@@ -25,6 +25,7 @@ namespace OpenCadDrawingAddin
         private ButtonDefinition m_createDwgButton;  // [NEW v1.2] Create DWG button
         private ButtonDefinition m_copyComponentButton;  // [NEW v1.3] Copy Component (cross-screen)
         private ButtonDefinition m_pasteComponentButton; // [NEW v1.3] Paste Component (cross-screen)
+        private ApplicationEvents m_appEvents;           // [NEW v1.4] IDW Auto Check event
 
         public static bool IsVietnamese => LanguageManager.CurrentLanguage == "VN";
 
@@ -41,6 +42,14 @@ namespace OpenCadDrawingAddin
 
             try { OpenCadSettings.LoadAndApplyLanguage(); } catch { }
             try { CreateUserInterface(); } catch { }
+
+            // [NEW v1.4] Hook event khi mở document để tự động check IDW
+            try
+            {
+                m_appEvents = m_inventorApplication.ApplicationEvents;
+                m_appEvents.OnOpenDocument += OnOpenDocument_IdwAutoCheck;
+            }
+            catch { }
 
             Task.Run(async () =>
             {
@@ -76,6 +85,8 @@ namespace OpenCadDrawingAddin
             if (m_createDwgButton != null) { m_createDwgButton.Delete(); m_createDwgButton = null; } // [NEW v1.2]
             if (m_copyComponentButton != null) { m_copyComponentButton.Delete(); m_copyComponentButton = null; } // [NEW v1.3]
             if (m_pasteComponentButton != null) { m_pasteComponentButton.Delete(); m_pasteComponentButton = null; } // [NEW v1.3]
+            // [NEW v1.4] Unhook IDW check event
+            try { if (m_appEvents != null) { m_appEvents.OnOpenDocument -= OnOpenDocument_IdwAutoCheck; m_appEvents = null; } } catch { }
             if (m_inventorApplication != null) { Marshal.ReleaseComObject(m_inventorApplication); m_inventorApplication = null; }
             GC.Collect();
         }
@@ -845,6 +856,42 @@ namespace OpenCadDrawingAddin
 
             private async Task OnUpdateClick() { if (!string.IsNullOrEmpty(downloadUrl)) OpenUrl(downloadUrl); else await SafeLoadLicenseData(); }
             private async Task OnActiveClick() { btnActive.Enabled = false; try { await SafeLoadLicenseData(); if (_licInfo.Status == LicenseHelper.LicenseStatus.Active) MessageBox.Show(LanguageManager.L("ABOUT_LICENSE_VALID_MSG", _licInfo.ExpirationDate), "Success"); else MessageBox.Show(LanguageManager.L("ABOUT_LICENSE_INVALID_MSG", _licInfo.Message, _hwId), "Info"); } finally { btnActive.Enabled = true; } }
+        }
+
+        // [NEW v1.4] Handler tự động check IDW khi mở document
+        private void OnOpenDocument_IdwAutoCheck(
+            Document documentObject,
+            string fullDocumentName,
+            EventTimingEnum beforeOrAfter,
+            NameValueMap context,
+            out HandlingCodeEnum handlingCode)
+        {
+            handlingCode = HandlingCodeEnum.kEventNotHandled;
+            try
+            {
+                // Chỉ chạy sau khi document đã mở xong (After)
+                if (beforeOrAfter != EventTimingEnum.kAfter) return;
+                if (documentObject?.DocumentType != DocumentTypeEnum.kDrawingDocumentObject) return;
+
+                // Dùng WinForms Timer để chạy trên UI thread (STA) sau 1.5s
+                // Task.ContinueWith() chạy background thread → không access được Inventor COM
+                var timer = new System.Windows.Forms.Timer();
+                timer.Interval = 1500;
+                var docRef = documentObject; // capture
+                timer.Tick += (s, e) =>
+                {
+                    timer.Stop();
+                    timer.Dispose();
+                    try
+                    {
+                        var logic = new IdwAutoCheckLogic(m_inventorApplication);
+                        logic.RunChecks(docRef);
+                    }
+                    catch { }
+                };
+                timer.Start();
+            }
+            catch { }
         }
     }
 }

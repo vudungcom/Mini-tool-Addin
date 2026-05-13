@@ -90,6 +90,16 @@ namespace OpenCadDrawingAddin.Logic
         /// </summary>
         public bool ShowPasteNotification { get; set; } = true;
 
+        /// <summary>
+        /// [NEW v1.4] Tự động kiểm tra tên IDW vs tên model khi mở IDW
+        /// </summary>
+        public bool AutoCheckDrawingName { get; set; } = true;
+
+        /// <summary>
+        /// [NEW v1.4] Tự động kiểm tra Material/Appearance IPT vs iProperty khi mở IDW
+        /// </summary>
+        public bool AutoCheckAppearance { get; set; } = true;
+
         // ============================================================
         // PATHS
         // ============================================================
@@ -149,6 +159,10 @@ namespace OpenCadDrawingAddin.Logic
                 // [NEW v1.3] Copy-Paste notification settings
                 settings.ShowCopyNotification = ParseBool(root.Element("ShowCopyNotification"), true);
                 settings.ShowPasteNotification = ParseBool(root.Element("ShowPasteNotification"), true);
+
+                // [NEW v1.4] IDW Auto Check settings
+                settings.AutoCheckDrawingName = ParseBool(root.Element("AutoCheckDrawingName"), true);
+                settings.AutoCheckAppearance = ParseBool(root.Element("AutoCheckAppearance"), true);
             }
             catch (Exception ex)
             {
@@ -184,7 +198,10 @@ namespace OpenCadDrawingAddin.Logic
                         new XElement("CreateDwgOutputPath", CreateDwgOutputPath),
                         // [NEW v1.3] Copy-Paste notification settings
                         new XElement("ShowCopyNotification", ShowCopyNotification),
-                        new XElement("ShowPasteNotification", ShowPasteNotification)
+                        new XElement("ShowPasteNotification", ShowPasteNotification),
+                        // [NEW v1.4] IDW Auto Check settings
+                        new XElement("AutoCheckDrawingName", AutoCheckDrawingName),
+                        new XElement("AutoCheckAppearance", AutoCheckAppearance)
                     )
                 );
                 xml.Save(_settingsPath);
