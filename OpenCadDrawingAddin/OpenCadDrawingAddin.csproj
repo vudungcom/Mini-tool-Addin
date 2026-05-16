@@ -72,6 +72,13 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="16.png" />
+    <EmbeddedResource Include="32.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="NewFolder1\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- Deploy sau khi build - chạy cả Debug lẫn Release -->
   <Target Name="DeployToInventor" AfterTargets="Build">

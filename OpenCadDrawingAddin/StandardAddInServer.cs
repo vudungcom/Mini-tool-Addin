@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.IO;
 
 namespace OpenCadDrawingAddin
 {
@@ -32,6 +33,81 @@ namespace OpenCadDrawingAddin
         public static string Title_Info => LanguageManager.L("TITLE_INFO");
         public static string Title_Error => LanguageManager.L("TITLE_ERROR");
         public static string Title_Warning => LanguageManager.L("TITLE_WARNING");
+
+        // ============================================================
+        // ICON HELPER
+        // ============================================================
+
+        /// <summary>
+        /// Load icon từ file bên cạnh DLL.
+        /// Inventor yêu cầu IPictureDisp (COM) cho icon của ButtonDefinition.
+        /// stdole.IPictureDisp được convert từ System.Drawing.Image.
+        /// </summary>
+        /// <summary>
+        /// Load icon từ Embedded Resource trong Assembly.
+        /// File phải được set Build Action = Embedded Resource trong project.
+        /// Resource name format: {DefaultNamespace}.Resources.{fileName}
+        /// </summary>
+        /// <summary>
+        /// Tạo icon từ emoji Unicode - không cần file icon bên ngoài.
+        /// Windows 8.1+ có Segoe UI Emoji font built-in.
+        /// </summary>
+        private static object MakeEmojiIcon(string emoji, int size)
+        {
+            try
+            {
+                var bmp = new Bitmap(size, size);
+                using (var g = Graphics.FromImage(bmp))
+                {
+                    g.Clear(System.Drawing.Color.Transparent);
+                    g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAliasGridFit;
+                    float fontSize = size * 0.65f;
+                    using (var font = new Font("Segoe UI Emoji", fontSize, GraphicsUnit.Pixel))
+                    {
+                        var sf = new StringFormat
+                        {
+                            Alignment = StringAlignment.Center,
+                            LineAlignment = StringAlignment.Center
+                        };
+                        g.DrawString(emoji, font, Brushes.Black, new RectangleF(0, 0, size, size), sf);
+                    }
+                }
+                return AxHostConverter.GetIPictureDispFromPicture(bmp);
+            }
+            catch { return null; }
+        }
+
+        private static object _iconOpenCad16, _iconOpenCad32;
+        private static object _iconBom16, _iconBom32;
+        private static object _iconNameUpdate16, _iconNameUpdate32;
+        private static object _iconSaveIdw16, _iconSaveIdw32;
+        private static object _iconCheckRef16, _iconCheckRef32;
+        private static object _iconCreateDwg16, _iconCreateDwg32;
+        private static object _iconCopy16, _iconCopy32;
+        private static object _iconPlace16, _iconPlace32;
+        private static object _iconSettings16, _iconSettings32;
+        private static object _iconAbout16, _iconAbout32;
+
+        private static void EnsureIcons()
+        {
+            _iconOpenCad16 = MakeEmojiIcon("📐", 16); _iconOpenCad32 = MakeEmojiIcon("📐", 32);
+            _iconBom16 = MakeEmojiIcon("📋", 16); _iconBom32 = MakeEmojiIcon("📋", 32);
+            _iconNameUpdate16 = MakeEmojiIcon("🏷️", 16); _iconNameUpdate32 = MakeEmojiIcon("🏷️", 32);
+            _iconSaveIdw16 = MakeEmojiIcon("💾", 16); _iconSaveIdw32 = MakeEmojiIcon("💾", 32);
+            _iconCheckRef16 = MakeEmojiIcon("🔍", 16); _iconCheckRef32 = MakeEmojiIcon("🔍", 32);
+            _iconCreateDwg16 = MakeEmojiIcon("📤", 16); _iconCreateDwg32 = MakeEmojiIcon("📤", 32);
+            _iconCopy16 = MakeEmojiIcon("📌", 16); _iconCopy32 = MakeEmojiIcon("📌", 32);
+            _iconPlace16 = MakeEmojiIcon("📍", 16); _iconPlace32 = MakeEmojiIcon("📍", 32);
+            _iconSettings16 = MakeEmojiIcon("⚙️", 16); _iconSettings32 = MakeEmojiIcon("⚙️", 32);
+            _iconAbout16 = MakeEmojiIcon("ℹ️", 16); _iconAbout32 = MakeEmojiIcon("ℹ️", 32);
+        }
+
+        private class AxHostConverter : System.Windows.Forms.AxHost
+        {
+            private AxHostConverter() : base("") { }
+            public new static object GetIPictureDispFromPicture(Image image)
+                => System.Windows.Forms.AxHost.GetIPictureDispFromPicture(image);
+        }
 
         public static LicenseHelper.UpdateInfo _cachedUpdateInfo = null;
         private static bool _isUpdateCheckRunning = false;
@@ -98,82 +174,70 @@ namespace OpenCadDrawingAddin
         {
             ControlDefinitions controlDefs = m_inventorApplication.CommandManager.ControlDefinitions;
 
+            // Load icon một lần, dùng chung cho tất cả buttons
+            EnsureIcons();
+
             m_myButton = controlDefs.AddButtonDefinition(
-                "Open CAD", "OpenCadCmd", CommandTypesEnum.kShapeEditCmdType, // [CHANGED] "Open CAD Drawing" → "Open CAD"
+                "Open CAD", "OpenCadCmd", CommandTypesEnum.kShapeEditCmdType,
                 GenerateClientId("OpenCadCmd"),
                 "Open corresponding CAD drawing file.",
-                "Open CAD",
-                null, null);
+                "Open CAD", _iconOpenCad16, _iconOpenCad32);
             m_myButton.OnExecute += m_myButton_OnExecute;
 
-            // [NEW] Bom format button
             m_bomButton = controlDefs.AddButtonDefinition(
                 "BOM Format", "OCDABomCmd", CommandTypesEnum.kQueryOnlyCmdType,
                 GenerateClientId("OCDABomCmd"),
                 "Apply BOM customization from XML file.",
-                "BOM Format",
-                null, null);
+                "BOM Format", _iconBom16, _iconBom32);
             m_bomButton.OnExecute += m_bomButton_OnExecute;
 
-            // [NEW] Name Update button
             m_nameUpdateButton = controlDefs.AddButtonDefinition(
                 "Name Update", "OCDANameUpdateCmd", CommandTypesEnum.kQueryOnlyCmdType,
                 GenerateClientId("OCDANameUpdateCmd"),
                 "Update display names of parts/occurrences from file names.",
-                "Name Update",
-                null, null);
+                "Name Update", _iconNameUpdate16, _iconNameUpdate32);
             m_nameUpdateButton.OnExecute += m_nameUpdateButton_OnExecute;
 
-            // [NEW] Save IDW button
             m_saveIdwButton = controlDefs.AddButtonDefinition(
                 "Save IDW", "OCDASaveIdwCmd", CommandTypesEnum.kQueryOnlyCmdType,
                 GenerateClientId("OCDASaveIdwCmd"),
                 "Save drawing (.idw) to the same folder as the model file.",
-                "Save IDW",
-                null, null);
+                "Save IDW", _iconSaveIdw16, _iconSaveIdw32);
             m_saveIdwButton.OnExecute += m_saveIdwButton_OnExecute;
 
-            // [NEW] Check Reference button
             m_checkRefButton = controlDefs.AddButtonDefinition(
                 "Check Ref", "OCDACheckRefCmd", CommandTypesEnum.kQueryOnlyCmdType,
                 GenerateClientId("OCDACheckRefCmd"),
                 "Scan assembly for occurrences with BOM Structure = Reference.",
-                "Check Reference",
-                null, null);
+                "Check Reference", _iconCheckRef16, _iconCheckRef32);
             m_checkRefButton.OnExecute += m_checkRefButton_OnExecute;
 
-            // [NEW v1.2] Create DWG button
             m_createDwgButton = controlDefs.AddButtonDefinition(
                 "Create DWG", "OCDACreateDwgCmd", CommandTypesEnum.kQueryOnlyCmdType,
                 GenerateClientId("OCDACreateDwgCmd"),
                 "Export IDW files to DWG from Assembly.",
-                "Create DWG",
-                null, null);
+                "Create DWG", _iconCreateDwg16, _iconCreateDwg32);
             m_createDwgButton.OnExecute += m_createDwgButton_OnExecute;
 
-            // [NEW v1.3] Copy Component button (cross-screen)
             m_copyComponentButton = controlDefs.AddButtonDefinition(
                 "Copy", "OCDACopyComponentCmd", CommandTypesEnum.kQueryOnlyCmdType,
                 GenerateClientId("OCDACopyComponentCmd"),
-                "Copy current component path to clipboard (for cross-screen paste).",
-                "Copy Component",
-                null, null);
+                "Copy current component path to clipboard (for cross-screen place).",
+                "Copy Component", _iconCopy16, _iconCopy32);
             m_copyComponentButton.OnExecute += m_copyComponentButton_OnExecute;
 
-            // [NEW v1.3] Paste Component button (cross-screen)
             m_pasteComponentButton = controlDefs.AddButtonDefinition(
                 "Place", "OCDAPasteComponentCmd", CommandTypesEnum.kQueryOnlyCmdType,
                 GenerateClientId("OCDAPasteComponentCmd"),
                 "Insert copied component into the current Assembly (cross-screen).",
-                "Place Component",
-                null, null);
+                "Place Component", _iconPlace16, _iconPlace32);
             m_pasteComponentButton.OnExecute += m_pasteComponentButton_OnExecute;
 
             m_settingsButton = controlDefs.AddButtonDefinition(
                 "Settings", "OCDASettingsCmd", CommandTypesEnum.kQueryOnlyCmdType,
                 GenerateClientId("OCDASettingsCmd"),
                 LanguageManager.L("ABOUT_CONFIGURE_CLEANING"),
-                "Settings", null, null);
+                "Settings", _iconSettings16, _iconSettings32);
             m_settingsButton.OnExecute += m_settingsButton_OnExecute;
 
             m_aboutButton = controlDefs.AddButtonDefinition(
@@ -181,7 +245,7 @@ namespace OpenCadDrawingAddin
                 GenerateClientId("OCDAAboutCmd"),
                 "Information & Activation.",
                 "About Author",
-                null, null);
+                _iconAbout16, _iconAbout32);
             m_aboutButton.OnExecute += m_aboutButton_OnExecute;
 
             AddPanelToRibbon("Assembly", "id_TabAssemble", "{A7F3B8D1-2C4E-4A9F-8E2B-6D1F5C3A9E72}");
@@ -852,6 +916,17 @@ namespace OpenCadDrawingAddin
 
                 btnActive.Text = (licInfo.Status == LicenseHelper.LicenseStatus.Active) ? LanguageManager.L("ABOUT_RECHECK") : LanguageManager.L("ABOUT_ACTIVATE");
                 btnActive.BackColor = (licInfo.Status == LicenseHelper.LicenseStatus.Active) ? System.Drawing.Color.LightGreen : System.Drawing.Color.LightYellow;
+
+                // Cập nhật helpUrl và otherAddinUrl từ server response
+                if (upInfo != null)
+                {
+                    if (!string.IsNullOrEmpty(upInfo.HelpUrl)) helpUrl = upInfo.HelpUrl;
+                    if (!string.IsNullOrEmpty(upInfo.OtherAddinUrl)) otherAddinUrl = upInfo.OtherAddinUrl;
+                }
+
+                // Hiện lnkHelp chỉ khi có link
+                lnkHelp.Text = "?";
+                lnkHelp.Visible = !string.IsNullOrEmpty(helpUrl);
             }
 
             private async Task OnUpdateClick() { if (!string.IsNullOrEmpty(downloadUrl)) OpenUrl(downloadUrl); else await SafeLoadLicenseData(); }
