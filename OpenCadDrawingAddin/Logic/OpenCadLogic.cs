@@ -192,24 +192,26 @@ namespace OpenCadDrawingAddin.Logic
 
         /// <summary>
         /// Xây dựng suffix từ revision number
-        /// VD: revision = "1" → "-1"
-        ///     revision = "0" → "" (không thêm nếu = 0)
-        ///     revision = ""  → "" (không thêm nếu rỗng)
+        /// Chỉ chấp nhận revision là số tự nhiên dương chuẩn (1,2,3,...)
+        /// Nếu revision không thỏa (ví dụ: "R01", "01", "A", "R1"...) thì không thêm suffix.
         /// </summary>
         private string BuildRevisionSuffix(string revision)
         {
             if (string.IsNullOrEmpty(revision)) return "";
+
+            // Chỉ chấp nhận các số dương bắt đầu bằng 1-9 (không chấp nhận dẫn zero hoặc có chữ)
+            // Ví dụ: "1", "2", "10" => chấp nhận; "0", "01", "R01", "A" => không chấp nhận
             try
             {
-                int revInt = int.Parse(revision);
-                // Chỉ thêm suffix nếu revision > 0 (giống logic iLogic gốc)
-                return revInt > 0 ? "-" + revision : "";
+                if (System.Text.RegularExpressions.Regex.IsMatch(revision.Trim(), "^[1-9][0-9]*$"))
+                {
+                    return "-" + revision.Trim();
+                }
+                return "";
             }
             catch
             {
-                // Nếu revision không phải số nguyên (VD: "A", "B"),
-                // vẫn thêm suffix
-                return "-" + revision;
+                return "";
             }
         }
     }
