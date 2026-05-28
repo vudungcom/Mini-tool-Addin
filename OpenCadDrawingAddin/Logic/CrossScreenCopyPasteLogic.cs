@@ -1,28 +1,15 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Windows.Forms;
 using Inventor;
 
 namespace OpenCadDrawingAddin.Logic
 {
-    /// <summary>
-    /// Tính năng Cross-Screen Copy / Paste Component
-    /// 
-    /// Mục đích: Hỗ trợ làm việc 2 màn hình - copy component từ màn hình 1,
-    ///           paste vào Assembly đang mở ở màn hình 2.
-    ///
-    /// Cách dùng:
-    ///   1. Mở file IPT hoặc IAM (hoặc chọn component trong Assembly)
-    ///      → Click nút [Copy Component]
-    ///   2. Chuyển sang màn hình 2, mở Assembly đích
-    ///      → Click nút [Paste Component]
-    ///      → Component sẽ được insert vào Assembly tại vị trí camera hiện tại
-    ///
-    /// Version 1.0
-    /// </summary>
     public class CrossScreenCopyPasteLogic
     {
-        // Prefix đặc biệt để phân biệt với clipboard thông thường
         private const string ClipboardPrefix = "INVENTOR_COMPONENT_PATH::";
+        private const string PathSeparator = "||";
 
         private readonly Inventor.Application _app;
 
@@ -35,14 +22,6 @@ namespace OpenCadDrawingAddin.Logic
         // COPY
         // ============================================================
 
-        /// <summary>
-        /// Copy: Lấy đường dẫn file của component đang active hoặc được chọn
-        ///       → Lưu vào Clipboard
-        ///
-        /// Ưu tiên:
-        ///   1. Nếu document hiện tại là Part hoặc Assembly → dùng luôn
-        ///   2. Nếu đang trong Assembly và có chọn 1 component → lấy file của component đó
-        /// </summary>
         public void CopyComponent()
         {
             try
@@ -54,36 +33,72 @@ namespace OpenCadDrawingAddin.Logic
                     return;
                 }
 
-                string filePath = "";
+                var filePaths = new List<string>();
 
-                if (activeDoc.DocumentType == DocumentTypeEnum.kPartDocumentObject ||
-                    activeDoc.DocumentType == DocumentTypeEnum.kAssemblyDocumentObject)
+                // Ưu tiên: đọc selection hiện tại (user Ctrl+click nhiều component trong Assembly)
+                if (activeDoc.DocumentType == DocumentTypeEnum.kAssemblyDocumentObject)
                 {
-                    // Trường hợp 1: File IPT hoặc IAM đang active trực tiếp
-                    filePath = activeDoc.FullFileName;
+                    try
+                    {
+                        SelectSet sel = _app.ActiveView.SelectSet;
+                        foreach (object item in sel)
+                        {
+                            if (item is ComponentOccurrence occ)
+                            {
+                                string path = GetPathFromOccurrence(occ);
+                                if (!string.IsNullOrEmpty(path) && System.IO.File.Exists(path) && !filePaths.Contains(path))
+                                    filePaths.Add(path);
+                            }
+                        }
+                    }
+                    catch { }
+                }
+
+                // Fallback: dùng active document nếu không có selection
+                if (filePaths.Count == 0)
+                {
+                    if (activeDoc.DocumentType == DocumentTypeEnum.kPartDocumentObject ||
+                        activeDoc.DocumentType == DocumentTypeEnum.kAssemblyDocumentObject)
+                    {
+                        string docPath = activeDoc.FullFileName;
+                        if (!string.IsNullOrEmpty(docPath))
+                            filePaths.Add(docPath);
+                    }
+                    else
+                    {
+                        ShowError(LanguageManager.L("MSG_UNSUPPORTED_DOC_TYPE"));
+                        return;
+                    }
+                }
+
+                // Validate
+                foreach (string fp in filePaths)
+                {
+                    if (!System.IO.File.Exists(fp))
+                    {
+                        ShowError("Không tìm thấy file: " + fp);
+                        return;
+                    }
+                }
+
+                // Lưu vào Clipboard
+                Clipboard.SetText(ClipboardPrefix + string.Join(PathSeparator, filePaths));
+
+                // Thông báo
+                if (filePaths.Count == 1)
+                {
+                    string shortName = System.IO.Path.GetFileName(filePaths[0]);
+                    MessageBox.Show(
+                        $"Đã copy:\n{shortName}\n\nSang màn hình 2 → nhấn [Paste Component] để insert vào Assembly.",
+                        "Copy Component", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
                 else
                 {
-                    ShowError(LanguageManager.L("MSG_UNSUPPORTED_DOC_TYPE"));
-                    return;
+                    string names = string.Join("\n", filePaths.Select(f => "• " + System.IO.Path.GetFileName(f)));
+                    MessageBox.Show(
+                        $"Đã copy {filePaths.Count} component:\n{names}\n\nSang màn hình 2 → nhấn [Paste Component] để insert tất cả vào Assembly.",
+                        "Copy Component", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
-
-                if (string.IsNullOrEmpty(filePath) || !System.IO.File.Exists(filePath))
-                {
-                    ShowError("Không tìm thấy file: " + filePath);
-                    return;
-                }
-
-                // Lưu vào Clipboard với prefix đặc biệt
-                Clipboard.SetText(ClipboardPrefix + filePath);
-
-                // Thông báo ngắn gọn
-                string shortName = System.IO.Path.GetFileName(filePath);
-                MessageBox.Show(
-                    $"Đã copy:\n{shortName}\n\nSang màn hình 2 → nhấn [Paste Component] để insert vào Assembly.",
-                    "Copy Component",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Information);
             }
             catch (Exception ex)
             {
@@ -96,12 +111,6 @@ namespace OpenCadDrawingAddin.Logic
         // PASTE
         // ============================================================
 
-        /// <summary>
-        /// Paste: Đọc đường dẫn từ Clipboard → Insert component vào Assembly hiện tại
-        ///
-        /// Vị trí: Đặt tại vị trí camera target (điểm nhìn hiện tại) để gần
-        ///         vùng làm việc của user. User có thể kéo để chỉnh sau.
-        /// </summary>
         public void PasteComponent()
         {
             try
@@ -112,18 +121,21 @@ namespace OpenCadDrawingAddin.Logic
                 {
                     MessageBox.Show(
                         "Clipboard không chứa component Inventor.\nHãy [Copy Component] trước.",
-                        "Paste Component",
-                        MessageBoxButtons.OK,
-                        MessageBoxIcon.Warning);
+                        "Paste Component", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
 
-                string filePath = clipText.Substring(ClipboardPrefix.Length);
+                string[] filePaths = clipText
+                    .Substring(ClipboardPrefix.Length)
+                    .Split(new[] { PathSeparator }, StringSplitOptions.RemoveEmptyEntries);
 
-                if (!System.IO.File.Exists(filePath))
+                foreach (string fp in filePaths)
                 {
-                    ShowError($"Không tìm thấy file:\n{filePath}\n\nKiểm tra lại đường dẫn hoặc kết nối mạng.");
-                    return;
+                    if (!System.IO.File.Exists(fp))
+                    {
+                        ShowError($"Không tìm thấy file:\n{fp}\n\nKiểm tra lại đường dẫn hoặc kết nối mạng.");
+                        return;
+                    }
                 }
 
                 // 2. Kiểm tra document đích phải là Assembly
@@ -136,20 +148,30 @@ namespace OpenCadDrawingAddin.Logic
 
                 AssemblyDocument asmDoc = activeDoc as AssemblyDocument;
                 AssemblyComponentDefinition asmDef = asmDoc.ComponentDefinition;
-
-                // 3. Xây dựng Matrix vị trí đặt component
                 Matrix placementMatrix = BuildPlacementMatrix();
 
-                // 4. Insert component
-                ComponentOccurrence newOcc = asmDef.Occurrences.Add(filePath, placementMatrix);
+                // 3. Insert từng component
+                var insertedNames = new List<string>();
+                foreach (string filePath in filePaths)
+                {
+                    asmDef.Occurrences.Add(filePath, placementMatrix);
+                    insertedNames.Add(System.IO.Path.GetFileName(filePath));
+                }
 
-                // 5. Thông báo thành công
-                string shortName = System.IO.Path.GetFileName(filePath);
-                MessageBox.Show(
-                    $"Đã paste:\n{shortName}\n\nComponent được đặt tại vùng camera hiện tại.\nBạn có thể kéo để chỉnh vị trí.",
-                    "Paste Component",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Information);
+                // 4. Thông báo
+                if (insertedNames.Count == 1)
+                {
+                    MessageBox.Show(
+                        $"Đã paste:\n{insertedNames[0]}\n\nComponent được đặt tại vùng camera hiện tại.\nBạn có thể kéo để chỉnh vị trí.",
+                        "Paste Component", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                else
+                {
+                    string names = string.Join("\n", insertedNames.Select(n => "• " + n));
+                    MessageBox.Show(
+                        $"Đã paste {insertedNames.Count} component:\n{names}\n\nCác component được đặt tại vùng camera hiện tại.",
+                        "Paste Component", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
             }
             catch (Exception ex)
             {
@@ -162,46 +184,49 @@ namespace OpenCadDrawingAddin.Logic
         // PRIVATE HELPERS
         // ============================================================
 
-        /// <summary>
-        /// Xây dựng Matrix vị trí đặt component khi paste.
-        ///
-        /// Chiến lược vị trí:
-        ///   - Thử lấy Camera.Target của View hiện tại → đặt component tại đó
-        ///   - Nếu lỗi → đặt tại origin (0, 0, 0)
-        ///
-        /// Lưu ý: Inventor dùng đơn vị cm nội bộ.
-        /// </summary>
+        private string GetPathFromOccurrence(ComponentOccurrence occ)
+        {
+            // Thử ReferencedDocumentDescriptor trước (nhanh nhất)
+            try
+            {
+                string path = occ.ReferencedDocumentDescriptor.FullDocumentName;
+                if (!string.IsNullOrEmpty(path))
+                    return path;
+            }
+            catch { }
+
+            // Fallback qua Definition
+            try
+            {
+                if (occ.Definition is PartComponentDefinition partDef)
+                    return partDef.Document.FullFileName;
+                if (occ.Definition is AssemblyComponentDefinition asmDef)
+                    return asmDef.Document.FullFileName;
+            }
+            catch { }
+
+            return null;
+        }
+
         private Matrix BuildPlacementMatrix()
         {
             TransientGeometry tg = _app.TransientGeometry;
-            Matrix mat = tg.CreateMatrix(); // Identity matrix (origin)
+            Matrix mat = tg.CreateMatrix();
 
             try
             {
-                // Lấy vị trí Camera.Target của cửa sổ active
-                // → đây là điểm trung tâm màn hình user đang nhìn
                 Camera cam = _app.ActiveView.Camera;
                 Point target = cam.Target;
-
-                // Dịch matrix đến vị trí camera target
                 mat.SetTranslation(tg.CreateVector(target.X, target.Y, target.Z), false);
             }
-            catch
-            {
-                // Fallback: đặt tại origin nếu không lấy được camera
-                // mat đã là identity, không cần làm gì thêm
-            }
+            catch { }
 
             return mat;
         }
 
         private void ShowError(string message)
         {
-            MessageBox.Show(
-                message,
-                "Lỗi",
-                MessageBoxButtons.OK,
-                MessageBoxIcon.Error);
+            MessageBox.Show(message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
     }
 }

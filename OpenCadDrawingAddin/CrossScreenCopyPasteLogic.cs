@@ -32,28 +32,34 @@ namespace OpenCadDrawingAddin.Logic
                 Document activeDoc = _app.ActiveDocument;
                 if (activeDoc == null) { ShowError(LanguageManager.L("MSG_NO_ACTIVE_DOC")); return; }
 
-                string filePath = "";
+                var filePaths = new System.Collections.Generic.List<string>();
 
                 if (activeDoc.SelectSet != null && activeDoc.SelectSet.Count >= 1)
                 {
-                    Document componentDoc = GetDocumentFromSelected(activeDoc.SelectSet[1]);
-                    if (componentDoc != null)
+                    // Lấy tất cả các component được chọn
+                    for (int i = 1; i <= activeDoc.SelectSet.Count; i++)
                     {
-                        filePath = componentDoc.FullFileName;
+                        Document componentDoc = GetDocumentFromSelected(activeDoc.SelectSet[i]);
+                        if (componentDoc != null)
+                        {
+                            string fp = componentDoc.FullFileName;
+                            if (!filePaths.Contains(fp)) filePaths.Add(fp);
+                        }
                     }
-                    else
+
+                    // Fallback: không parse được → dùng activeDoc
+                    if (filePaths.Count == 0)
                     {
-                        // Fallback: click root node → dùng activeDoc
                         if (activeDoc.DocumentType == DocumentTypeEnum.kPartDocumentObject ||
                             activeDoc.DocumentType == DocumentTypeEnum.kAssemblyDocumentObject)
-                            filePath = activeDoc.FullFileName;
+                            filePaths.Add(activeDoc.FullFileName);
                         else { ShowError(LanguageManager.L("MSG_COPY_COMP_CANNOT_GET")); return; }
                     }
                 }
                 else if (activeDoc.DocumentType == DocumentTypeEnum.kPartDocumentObject ||
                          activeDoc.DocumentType == DocumentTypeEnum.kAssemblyDocumentObject)
                 {
-                    filePath = activeDoc.FullFileName;
+                    filePaths.Add(activeDoc.FullFileName);
                 }
                 else
                 {
@@ -62,26 +68,51 @@ namespace OpenCadDrawingAddin.Logic
                     return;
                 }
 
-                if (string.IsNullOrEmpty(filePath) || !System.IO.File.Exists(filePath))
+                // Kiểm tra file tồn tại
+                filePaths.RemoveAll(fp => !System.IO.File.Exists(fp));
+                if (filePaths.Count == 0)
                 {
-                    ShowError(LanguageManager.L("MSG_COPY_COMP_FILE_NOT_FOUND", filePath)); return;
+                    ShowError(LanguageManager.L("MSG_COPY_COMP_FILE_NOT_FOUND", "")); return;
                 }
 
-                Clipboard.SetText(ClipboardPrefix + filePath);
+                // Lưu vào clipboard - format: PREFIX + path1|path2 + "##" + mat1|mat2
+                // Matrix serialize: 16 số double cách nhau bằng ","
+                var matrices = new System.Collections.Generic.List<string>();
+                if (activeDoc.SelectSet != null && activeDoc.SelectSet.Count >= 1)
+                {
+                    for (int i = 1; i <= activeDoc.SelectSet.Count; i++)
+                    {
+                        try
+                        {
+                            var occ = GetOccurrenceFromObject(activeDoc.SelectSet[i]);
+                            if (occ != null)
+                            {
+                                double[] cells = new double[16];
+                                occ.Transformation.GetMatrixData(ref cells);
+                                matrices.Add(string.Join(",", System.Array.ConvertAll(cells, c => c.ToString("R"))));
+                            }
+                            else matrices.Add("");
+                        }
+                        catch { matrices.Add(""); }
+                    }
+                }
+                // Pad matrices nếu ít hơn filePaths
+                while (matrices.Count < filePaths.Count) matrices.Add("");
 
-                // Hiện thông báo nếu setting cho phép
+                string clipData = ClipboardPrefix
+                    + string.Join("|", filePaths)
+                    + "##"
+                    + string.Join("|", matrices);
+                Clipboard.SetText(clipData);
+
                 var settings = OpenCadSettings.Load();
                 if (settings.ShowCopyNotification)
                 {
+                    string names = string.Join("\n", filePaths.ConvertAll(System.IO.Path.GetFileName));
                     bool dontShowAgain = ShowNotifyWithCheckbox(
-                        LanguageManager.L("MSG_COPY_COMP_SUCCESS", System.IO.Path.GetFileName(filePath)),
+                        LanguageManager.L("MSG_COPY_COMP_SUCCESS", names),
                         LanguageManager.L("TITLE_COPY_COMP"));
-
-                    if (dontShowAgain)
-                    {
-                        settings.ShowCopyNotification = false;
-                        settings.Save();
-                    }
+                    if (dontShowAgain) { settings.ShowCopyNotification = false; settings.Save(); }
                 }
             }
             catch (Exception ex)
@@ -107,10 +138,21 @@ namespace OpenCadDrawingAddin.Logic
                     return;
                 }
 
-                string filePath = clipText.Substring(ClipboardPrefix.Length);
-                if (!System.IO.File.Exists(filePath))
+                // Tách paths và matrices từ clipboard
+                string payload = clipText.Substring(ClipboardPrefix.Length);
+                string[] parts = payload.Split(new[] { "##" }, StringSplitOptions.None);
+                string[] filePaths = parts[0].Split(new[] { '|' }, StringSplitOptions.RemoveEmptyEntries);
+                string[] matrixStrs = parts.Length > 1
+                    ? parts[1].Split(new[] { '|' }, StringSplitOptions.None)
+                    : new string[0];
+
+                // Kiểm tra tất cả file tồn tại
+                foreach (var fp in filePaths)
                 {
-                    ShowError(LanguageManager.L("MSG_PASTE_COMP_FILE_NOT_FOUND", filePath)); return;
+                    if (!System.IO.File.Exists(fp))
+                    {
+                        ShowError(LanguageManager.L("MSG_PASTE_COMP_FILE_NOT_FOUND", fp)); return;
+                    }
                 }
 
                 Document activeDoc = _app.ActiveDocument;
@@ -120,22 +162,43 @@ namespace OpenCadDrawingAddin.Logic
                 }
 
                 var asmDoc = activeDoc as AssemblyDocument;
-                string shortName = System.IO.Path.GetFileName(filePath);
                 string notifyMsg;
 
-                if (preSelected != null)
+                if (preSelected != null && filePaths.Length == 1)
                 {
-                    // Có selection → Replace: lưu vị trí cũ → delete → add mới tại đúng vị trí
+                    // Replace chỉ hoạt động khi chọn 1 component và 1 file
                     Matrix savedMatrix = preSelected.Transformation;
                     preSelected.Delete();
-                    asmDoc.ComponentDefinition.Occurrences.Add(filePath, savedMatrix);
-                    notifyMsg = LanguageManager.L("MSG_PLACE_COMP_REPLACED", shortName);
+                    asmDoc.ComponentDefinition.Occurrences.Add(filePaths[0], savedMatrix);
+                    notifyMsg = LanguageManager.L("MSG_PLACE_COMP_REPLACED",
+                        System.IO.Path.GetFileName(filePaths[0]));
                 }
                 else
                 {
-                    // Không có selection → Add vào Camera.Target
-                    asmDoc.ComponentDefinition.Occurrences.Add(filePath, BuildPlacementMatrix());
-                    notifyMsg = LanguageManager.L("MSG_PASTE_COMP_SUCCESS", shortName);
+                    TransientGeometry tg = _app.TransientGeometry;
+                    for (int i = 0; i < filePaths.Length; i++)
+                    {
+                        Matrix mat = BuildPlacementMatrix();
+                        // Dùng matrix gốc nếu có → giữ vị trí tương đối giữa các part
+                        if (i < matrixStrs.Length && !string.IsNullOrEmpty(matrixStrs[i]))
+                        {
+                            try
+                            {
+                                double[] cells = System.Array.ConvertAll(
+                                    matrixStrs[i].Split(','), double.Parse);
+                                if (cells.Length == 16)
+                                {
+                                    mat = tg.CreateMatrix();
+                                    mat.PutMatrixData(ref cells);
+                                }
+                            }
+                            catch { }
+                        }
+                        asmDoc.ComponentDefinition.Occurrences.Add(filePaths[i], mat);
+                    }
+
+                    string names = string.Join(", ", System.Array.ConvertAll(filePaths, System.IO.Path.GetFileName));
+                    notifyMsg = LanguageManager.L("MSG_PASTE_COMP_SUCCESS", names);
                 }
 
                 var settings = OpenCadSettings.Load();
