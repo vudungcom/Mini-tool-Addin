@@ -4,7 +4,7 @@
 ; Version: 1.0 - Fixed for Inventor 2024+
 ; ============================================================
 
-#define MyAppName "MiniTool Add-in for Inventor"
+#define MyAppName "MiniTool Add-in"
 #define MyAppVersion "1.0"
 #define MyAppPublisher "Kane"
 #define MyAppURL "mailto:replacefile.addin@gmail.com"

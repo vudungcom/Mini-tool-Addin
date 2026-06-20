@@ -26,7 +26,9 @@ namespace OpenCadDrawingAddin
         private ButtonDefinition m_createDwgButton;  // [NEW v1.2] Create DWG button
         private ButtonDefinition m_copyComponentButton;  // [NEW v1.3] Copy Component (cross-screen)
         private ButtonDefinition m_pasteComponentButton; // [NEW v1.3] Paste Component (cross-screen)
+        private ButtonDefinition m_autoHoleNoteButton;   // [NEW v1.5] Auto Hole Note button
         private ApplicationEvents m_appEvents;           // [NEW v1.4] IDW Auto Check event
+        public static Inventor.Application InventorApplication { get; private set; }
 
         public static bool IsVietnamese => LanguageManager.CurrentLanguage == "VN";
 
@@ -38,20 +40,6 @@ namespace OpenCadDrawingAddin
         // ICON HELPER
         // ============================================================
 
-        /// <summary>
-        /// Load icon từ file bên cạnh DLL.
-        /// Inventor yêu cầu IPictureDisp (COM) cho icon của ButtonDefinition.
-        /// stdole.IPictureDisp được convert từ System.Drawing.Image.
-        /// </summary>
-        /// <summary>
-        /// Load icon từ Embedded Resource trong Assembly.
-        /// File phải được set Build Action = Embedded Resource trong project.
-        /// Resource name format: {DefaultNamespace}.Resources.{fileName}
-        /// </summary>
-        /// <summary>
-        /// Tạo icon từ emoji Unicode - không cần file icon bên ngoài.
-        /// Windows 8.1+ có Segoe UI Emoji font built-in.
-        /// </summary>
         private static object MakeEmojiIcon(string emoji, int size)
         {
             try
@@ -87,6 +75,7 @@ namespace OpenCadDrawingAddin
         private static object _iconPlace16, _iconPlace32;
         private static object _iconSettings16, _iconSettings32;
         private static object _iconAbout16, _iconAbout32;
+        private static object _iconAutoHole16, _iconAutoHole32;  // [NEW v1.5]
 
         private static void EnsureIcons()
         {
@@ -100,6 +89,8 @@ namespace OpenCadDrawingAddin
             _iconPlace16 = MakeEmojiIcon("📍", 16); _iconPlace32 = MakeEmojiIcon("📍", 32);
             _iconSettings16 = MakeEmojiIcon("⚙️", 16); _iconSettings32 = MakeEmojiIcon("⚙️", 32);
             _iconAbout16 = MakeEmojiIcon("ℹ️", 16); _iconAbout32 = MakeEmojiIcon("ℹ️", 32);
+            // [NEW v1.5] icon Auto Hole Note
+            _iconAutoHole16 = MakeEmojiIcon("⊙", 16); _iconAutoHole32 = MakeEmojiIcon("⊙", 32);
         }
 
         private class AxHostConverter : System.Windows.Forms.AxHost
@@ -115,11 +106,11 @@ namespace OpenCadDrawingAddin
         public void Activate(ApplicationAddInSite addInSiteObject, bool firstTime)
         {
             m_inventorApplication = addInSiteObject.Application;
+            InventorApplication = m_inventorApplication; // [NEW v1.5]
 
             try { OpenCadSettings.LoadAndApplyLanguage(); } catch { }
             try { CreateUserInterface(); } catch { }
 
-            // [NEW v1.4] Hook event khi mở document để tự động check IDW
             try
             {
                 m_appEvents = m_inventorApplication.ApplicationEvents;
@@ -154,14 +145,15 @@ namespace OpenCadDrawingAddin
             if (m_myButton != null) { m_myButton.Delete(); m_myButton = null; }
             if (m_settingsButton != null) { m_settingsButton.Delete(); m_settingsButton = null; }
             if (m_aboutButton != null) { m_aboutButton.Delete(); m_aboutButton = null; }
-            if (m_bomButton != null) { m_bomButton.Delete(); m_bomButton = null; }        // [NEW]
-            if (m_nameUpdateButton != null) { m_nameUpdateButton.Delete(); m_nameUpdateButton = null; } // [NEW]
-            if (m_saveIdwButton != null) { m_saveIdwButton.Delete(); m_saveIdwButton = null; }    // [NEW]
-            if (m_checkRefButton != null) { m_checkRefButton.Delete(); m_checkRefButton = null; }   // [NEW]
-            if (m_createDwgButton != null) { m_createDwgButton.Delete(); m_createDwgButton = null; } // [NEW v1.2]
-            if (m_copyComponentButton != null) { m_copyComponentButton.Delete(); m_copyComponentButton = null; } // [NEW v1.3]
-            if (m_pasteComponentButton != null) { m_pasteComponentButton.Delete(); m_pasteComponentButton = null; } // [NEW v1.3]
-            // [NEW v1.4] Unhook IDW check event
+            if (m_bomButton != null) { m_bomButton.Delete(); m_bomButton = null; }
+            if (m_nameUpdateButton != null) { m_nameUpdateButton.Delete(); m_nameUpdateButton = null; }
+            if (m_saveIdwButton != null) { m_saveIdwButton.Delete(); m_saveIdwButton = null; }
+            if (m_checkRefButton != null) { m_checkRefButton.Delete(); m_checkRefButton = null; }
+            if (m_createDwgButton != null) { m_createDwgButton.Delete(); m_createDwgButton = null; }
+            if (m_copyComponentButton != null) { m_copyComponentButton.Delete(); m_copyComponentButton = null; }
+            if (m_pasteComponentButton != null) { m_pasteComponentButton.Delete(); m_pasteComponentButton = null; }
+            // [NEW v1.5]
+            if (m_autoHoleNoteButton != null) { m_autoHoleNoteButton.Delete(); m_autoHoleNoteButton = null; }
             try { if (m_appEvents != null) { m_appEvents.OnOpenDocument -= OnOpenDocument_IdwAutoCheck; m_appEvents = null; } } catch { }
             if (m_inventorApplication != null) { Marshal.ReleaseComObject(m_inventorApplication); m_inventorApplication = null; }
             GC.Collect();
@@ -174,7 +166,6 @@ namespace OpenCadDrawingAddin
         {
             ControlDefinitions controlDefs = m_inventorApplication.CommandManager.ControlDefinitions;
 
-            // Load icon một lần, dùng chung cho tất cả buttons
             EnsureIcons();
 
             m_myButton = controlDefs.AddButtonDefinition(
@@ -233,6 +224,14 @@ namespace OpenCadDrawingAddin
                 "Place Component", _iconPlace16, _iconPlace32);
             m_pasteComponentButton.OnExecute += m_pasteComponentButton_OnExecute;
 
+            // [NEW v1.5] Auto Hole Note button (Drawing ribbon)
+            m_autoHoleNoteButton = controlDefs.AddButtonDefinition(
+                "Auto Hole", "OCDAAutoHoleNoteCmd", CommandTypesEnum.kQueryOnlyCmdType,
+                GenerateClientId("OCDAAutoHoleNoteCmd"),
+                "Auto fill hole notes (M-tap / Phi) from STEP drawing view.",
+                "Auto Hole Note", _iconAutoHole16, _iconAutoHole32);
+            m_autoHoleNoteButton.OnExecute += m_autoHoleNoteButton_OnExecute;
+
             m_settingsButton = controlDefs.AddButtonDefinition(
                 "Settings", "OCDASettingsCmd", CommandTypesEnum.kQueryOnlyCmdType,
                 GenerateClientId("OCDASettingsCmd"),
@@ -250,8 +249,6 @@ namespace OpenCadDrawingAddin
 
             AddPanelToRibbon("Assembly", "id_TabAssemble", "{A7F3B8D1-2C4E-4A9F-8E2B-6D1F5C3A9E72}");
             AddPanelToRibbon("Part", "id_TabModel", "{A7F3B8D1-2C4E-4A9F-8E2B-6D1F5C3A9E73}");
-
-            // [NEW] Drawing ribbon - thử lần lượt các tab ID phổ biến
             AddDrawingRibbonPanel();
         }
 
@@ -270,7 +267,6 @@ namespace OpenCadDrawingAddin
 
                 if (drawingOnly)
                 {
-                    // [NEW] Drawing ribbon: chỉ hiện Save IDW + separator + Settings/About
                     if (!ButtonExists(panel, m_saveIdwButton)) panel.CommandControls.AddButton(m_saveIdwButton, false);
                     panel.CommandControls.AddSeparator();
                     if (!ButtonExists(panel, m_settingsButton)) panel.CommandControls.AddButton(m_settingsButton, false);
@@ -278,15 +274,13 @@ namespace OpenCadDrawingAddin
                 }
                 else
                 {
-                    // Assembly / Part ribbon: đầy đủ các nút chức năng
                     if (!ButtonExists(panel, m_myButton)) panel.CommandControls.AddButton(m_myButton, false);
                     if (!ButtonExists(panel, m_bomButton)) panel.CommandControls.AddButton(m_bomButton, false);
                     if (!ButtonExists(panel, m_nameUpdateButton)) panel.CommandControls.AddButton(m_nameUpdateButton, false);
                     if (!ButtonExists(panel, m_saveIdwButton)) panel.CommandControls.AddButton(m_saveIdwButton, false);
                     if (!ButtonExists(panel, m_checkRefButton)) panel.CommandControls.AddButton(m_checkRefButton, false);
-                    if (!ButtonExists(panel, m_createDwgButton)) panel.CommandControls.AddButton(m_createDwgButton, false); // [NEW v1.2]
+                    if (!ButtonExists(panel, m_createDwgButton)) panel.CommandControls.AddButton(m_createDwgButton, false);
 
-                    // [NEW v1.3] Copy/Paste Component - cột riêng
                     if (!ButtonExists(panel, m_copyComponentButton)) panel.CommandControls.AddButton(m_copyComponentButton, false);
                     if (!ButtonExists(panel, m_pasteComponentButton)) panel.CommandControls.AddButton(m_pasteComponentButton, false);
 
@@ -299,7 +293,6 @@ namespace OpenCadDrawingAddin
             catch { }
         }
 
-        // [NEW] Thêm panel vào Drawing ribbon - thử lần lượt các tab ID
         private void AddDrawingRibbonPanel()
         {
             try
@@ -308,11 +301,10 @@ namespace OpenCadDrawingAddin
                 string panelId = "id_Panel_OpenCadTools_Drawing";
                 string panelGuid = "{A7F3B8D1-2C4E-4A9F-8E2B-6D1F5C3A9E74}";
 
-                // Thử lần lượt các tab ID phổ biến của Drawing ribbon trong Inventor
                 string[] tabIds = {
-                    "id_TabPlaceViews",  // [CONFIRMED] Place Views - đúng tab ID
-                    "id_TabAnnotate",    // Annotate - fallback
-                    "id_TabTools"        // Tools - fallback cuối
+                    "id_TabPlaceViews",
+                    "id_TabAnnotate",
+                    "id_TabTools"
                 };
 
                 RibbonPanel panel = null;
@@ -324,16 +316,18 @@ namespace OpenCadDrawingAddin
                         try { panel = tab.RibbonPanels.Add("Mini Tool", panelId, panelGuid); }
                         catch { try { panel = tab.RibbonPanels[panelId]; } catch { } }
 
-                        if (panel != null) break; // Thành công, dừng vòng lặp
+                        if (panel != null) break;
                     }
-                    catch { continue; } // Tab ID này không tồn tại, thử cái tiếp
+                    catch { continue; }
                 }
 
                 if (panel == null) return;
 
-                // Drawing panel: Save IDW + Create DWG + separator + Settings/About
+                // Drawing panel: Save IDW + Create DWG + Auto Hole Note + separator + Settings/About
                 if (!ButtonExists(panel, m_saveIdwButton)) panel.CommandControls.AddButton(m_saveIdwButton, false);
-                if (!ButtonExists(panel, m_createDwgButton)) panel.CommandControls.AddButton(m_createDwgButton, false); // [NEW v1.2]
+                if (!ButtonExists(panel, m_createDwgButton)) panel.CommandControls.AddButton(m_createDwgButton, false);
+                // [NEW v1.5]
+                if (!ButtonExists(panel, m_autoHoleNoteButton)) panel.CommandControls.AddButton(m_autoHoleNoteButton, false);
                 panel.CommandControls.AddSeparator();
                 if (!ButtonExists(panel, m_settingsButton)) panel.CommandControls.AddButton(m_settingsButton, false);
                 if (!ButtonExists(panel, m_aboutButton)) panel.CommandControls.AddButton(m_aboutButton, false);
@@ -380,9 +374,6 @@ namespace OpenCadDrawingAddin
             catch (Exception ex) { LicenseHelper.WriteLog("Error running Open CAD Drawing", ex); }
         }
 
-        // [NEW v1.2] Handler cho Create DWG button
-        // - Drawing (IDW): xuất file hiện tại trực tiếp sang DWG
-        // - Assembly: xuất theo List file đã cấu hình trong Settings
         private void m_createDwgButton_OnExecute(NameValueMap Context)
         {
             try
@@ -403,7 +394,6 @@ namespace OpenCadDrawingAddin
             }
         }
 
-        // [NEW v1.3] Handler cho Copy Component button (cross-screen)
         private void m_copyComponentButton_OnExecute(NameValueMap Context)
         {
             try
@@ -414,13 +404,10 @@ namespace OpenCadDrawingAddin
             catch (Exception ex) { LicenseHelper.WriteLog("Error running Copy Component", ex); }
         }
 
-        // [NEW v1.3] Handler cho Paste Component button (cross-screen)
         private void m_pasteComponentButton_OnExecute(NameValueMap Context)
         {
             try
             {
-                // Capture selection NGAY TẠI ĐÂY trước khi Inventor kịp clear SelectSet
-                // khi button được click. Truyền thẳng vào PasteComponent.
                 ComponentOccurrence preSelected = null;
                 try
                 {
@@ -435,7 +422,47 @@ namespace OpenCadDrawingAddin
             }
             catch (Exception ex) { LicenseHelper.WriteLog("Error running Paste Component", ex); }
         }
-        // Logic từ file name_update.iLogicVb
+
+        // [NEW v1.5] Handler cho Auto Hole Note button
+        private void m_autoHoleNoteButton_OnExecute(NameValueMap Context)
+        {
+            try
+            {
+                var drawDoc = m_inventorApplication.ActiveDocument as DrawingDocument;
+                if (drawDoc == null)
+                {
+                    MessageBox.Show("Hay mo file IDW truoc khi chay Auto Hole Note.",
+                        "Auto Hole Note", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                DrawingView view = null;
+                try
+                {
+                    view = m_inventorApplication.CommandManager.Pick(
+                        SelectionFilterEnum.kDrawingViewFilter,
+                        "Click vao view can quet lo:") as DrawingView;
+                }
+                catch { return; }
+
+                if (view == null) return;
+
+                // Load thong so user da chinh trong tab Settings
+                var settings = OpenCadSettings.Load();
+                var logic = new AutoHoleNoteLogic(m_inventorApplication);
+                logic.Run(view,
+                    settings.HoleNoteTextHeightMm,
+                    settings.HoleNoteClusterRadiusMm,
+                    settings.HoleNoteTolTap);
+            }
+            catch (Exception ex)
+            {
+                LicenseHelper.WriteLog("Error running Auto Hole Note", ex);
+                MessageBox.Show("Loi: " + ex.Message,
+                    "Auto Hole Note", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
         private void m_nameUpdateButton_OnExecute(NameValueMap Context)
         {
             try
@@ -444,7 +471,6 @@ namespace OpenCadDrawingAddin
 
                 if (activeDoc.DocumentType == DocumentTypeEnum.kPartDocumentObject)
                 {
-                    // Part: cập nhật DisplayName từ tên file
                     PartDocument doc = (PartDocument)activeDoc;
                     string newName = doc.FullFileName.Substring(doc.FullFileName.LastIndexOf("\\") + 1);
                     newName = newName.Substring(0, newName.LastIndexOf("."));
@@ -454,7 +480,6 @@ namespace OpenCadDrawingAddin
                 }
                 else if (activeDoc.DocumentType == DocumentTypeEnum.kAssemblyDocumentObject)
                 {
-                    // Assembly: cập nhật tên tất cả occurrences đệ quy
                     AssemblyDocument adoc = (AssemblyDocument)activeDoc;
                     NameUpdateReplace(adoc.ComponentDefinition.Occurrences);
                     MessageBox.Show(LanguageManager.L("MSG_NAME_UPDATE_ALL_DONE"), LanguageManager.L("TITLE_NAME_UPDATE"),
@@ -473,7 +498,6 @@ namespace OpenCadDrawingAddin
             }
         }
 
-        // Helper đệ quy cho Name Update (tương đương Function Replace trong iLogic)
         private string[] _nameUpdatePaths = null;
         private int[] _nameUpdateIndex = null;
         private int _nameUpdateCount = 0;
@@ -492,7 +516,7 @@ namespace OpenCadDrawingAddin
             {
                 try
                 {
-                    Document doc = (Document)occ.Definition.Document; // [FIX CS0266]
+                    Document doc = (Document)occ.Definition.Document;
                     string newName = doc.FullFileName.Substring(doc.FullFileName.LastIndexOf("\\") + 1);
                     newName = newName.Substring(0, newName.LastIndexOf("."));
                     if (string.IsNullOrEmpty(newName)) newName = "empty";
@@ -513,7 +537,6 @@ namespace OpenCadDrawingAddin
 
                     if (doc.DocumentType == DocumentTypeEnum.kAssemblyDocumentObject)
                     {
-                        // [FIX CS0266] Documents.Open trả về object, cần cast về Document trước
                         AssemblyDocument subAdoc = (AssemblyDocument)(Document)m_inventorApplication.Documents.Open(doc.FullFileName, false);
                         NameUpdateReplace(subAdoc.ComponentDefinition.Occurrences);
                     }
@@ -524,8 +547,6 @@ namespace OpenCadDrawingAddin
             if (isRoot) { _nameUpdatePaths = null; _nameUpdateIndex = null; _nameUpdateCount = 0; }
         }
 
-        // [NEW] Handler cho Save IDW button
-        // Logic từ file Save_idw_and_ipt_same_location.txt
         private void m_saveIdwButton_OnExecute(NameValueMap Context)
         {
             try
@@ -541,9 +562,6 @@ namespace OpenCadDrawingAddin
 
                 DrawingDocument dwgDoc = (DrawingDocument)activeDoc;
 
-                // Lấy model document và path
-                // [FIX CS1061] DrawingDocument không có ModelDocument trong C# API
-                // Phải lấy qua sheet đầu tiên → DrawingView đầu tiên → ReferencedDocument
                 Document modelDoc;
                 string modelPath;
                 try
@@ -559,7 +577,6 @@ namespace OpenCadDrawingAddin
                     return;
                 }
 
-                // Tạo đường dẫn .idw cùng thư mục với model
                 string savePath = modelPath.Substring(0, modelPath.Length - 4) + ".idw";
 
                 try
@@ -580,11 +597,10 @@ namespace OpenCadDrawingAddin
                 MessageBox.Show(LanguageManager.L("MSG_PROCESSING_ERROR") + ex.Message, LanguageManager.L("TITLE_ERROR"), MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
-        private void m_settingsButton_OnExecute(NameValueMap Context) { using (var frm = new SettingsForm()) { frm.ShowDialog(); } }
-        private void m_aboutButton_OnExecute(NameValueMap Context) { using (var frm = new AboutBoxForm(true)) { frm.ShowDialog(); } } // [RESTORED]
 
-        // [NEW] Handler cho Check Reference button
-        // Logic từ Check_Reference.txt (iLogic)
+        private void m_settingsButton_OnExecute(NameValueMap Context) { using (var frm = new SettingsForm()) { frm.ShowDialog(); } }
+        private void m_aboutButton_OnExecute(NameValueMap Context) { using (var frm = new AboutBoxForm(true)) { frm.ShowDialog(); } }
+
         private void m_checkRefButton_OnExecute(NameValueMap Context)
         {
             try
@@ -598,7 +614,6 @@ namespace OpenCadDrawingAddin
                     return;
                 }
 
-                // Load exclude list từ settings
                 var settings = OpenCadSettings.Load();
                 var excludeList = new System.Collections.Generic.List<string>();
 
@@ -612,12 +627,10 @@ namespace OpenCadDrawingAddin
                     }
                 }
 
-                // Scan assembly
                 string refList = "";
                 AssemblyDocument asmDoc = (AssemblyDocument)activeDoc;
                 CheckRefOccurrences(asmDoc.ComponentDefinition.Occurrences, ref refList, excludeList);
 
-                // Hiển thị kết quả
                 if (string.IsNullOrEmpty(refList))
                 {
                     MessageBox.Show(
@@ -651,7 +664,6 @@ namespace OpenCadDrawingAddin
             }
         }
 
-        // Helper đệ quy cho Check Reference
         private void CheckRefOccurrences(
             ComponentOccurrences occs,
             ref string refList,
@@ -682,7 +694,6 @@ namespace OpenCadDrawingAddin
                             refList += "\r\n" + occ.Name + "   --> " + ((Document)occ.Definition.Document).FullFileName;
                     }
 
-                    // Đệ quy vào sub-assembly
                     if (occ.DefinitionDocumentType == DocumentTypeEnum.kAssemblyDocumentObject)
                     {
                         AssemblyDocument subAsm = (AssemblyDocument)(Document)occ.Definition.Document;
@@ -693,7 +704,6 @@ namespace OpenCadDrawingAddin
             }
         }
 
-        // [NEW] Handler cho Bom format button
         private void m_bomButton_OnExecute(NameValueMap Context)
         {
             try
@@ -756,7 +766,7 @@ namespace OpenCadDrawingAddin
         private string GenerateClientId(string cmdName) => "{" + this.GetType().GUID.ToString() + "}+" + cmdName;
 
         // ============================================================
-        // AboutBoxForm - ĐÃ FIX LỖI AMBIGUOUS REFERENCE
+        // AboutBoxForm
         // ============================================================
         public class AboutBoxForm : Form
         {
@@ -917,14 +927,12 @@ namespace OpenCadDrawingAddin
                 btnActive.Text = (licInfo.Status == LicenseHelper.LicenseStatus.Active) ? LanguageManager.L("ABOUT_RECHECK") : LanguageManager.L("ABOUT_ACTIVATE");
                 btnActive.BackColor = (licInfo.Status == LicenseHelper.LicenseStatus.Active) ? System.Drawing.Color.LightGreen : System.Drawing.Color.LightYellow;
 
-                // Cập nhật helpUrl và otherAddinUrl từ server response
                 if (upInfo != null)
                 {
                     if (!string.IsNullOrEmpty(upInfo.HelpUrl)) helpUrl = upInfo.HelpUrl;
                     if (!string.IsNullOrEmpty(upInfo.OtherAddinUrl)) otherAddinUrl = upInfo.OtherAddinUrl;
                 }
 
-                // Hiện lnkHelp chỉ khi có link
                 lnkHelp.Text = "?";
                 lnkHelp.Visible = !string.IsNullOrEmpty(helpUrl);
             }
@@ -933,7 +941,7 @@ namespace OpenCadDrawingAddin
             private async Task OnActiveClick() { btnActive.Enabled = false; try { await SafeLoadLicenseData(); if (_licInfo.Status == LicenseHelper.LicenseStatus.Active) MessageBox.Show(LanguageManager.L("ABOUT_LICENSE_VALID_MSG", _licInfo.ExpirationDate), "Success"); else MessageBox.Show(LanguageManager.L("ABOUT_LICENSE_INVALID_MSG", _licInfo.Message, _hwId), "Info"); } finally { btnActive.Enabled = true; } }
         }
 
-        // [NEW v1.4] Handler tự động check IDW khi mở document
+        // [NEW v1.4] Handler tu dong check IDW khi mo document
         private void OnOpenDocument_IdwAutoCheck(
             Document documentObject,
             string fullDocumentName,
@@ -944,15 +952,12 @@ namespace OpenCadDrawingAddin
             handlingCode = HandlingCodeEnum.kEventNotHandled;
             try
             {
-                // Chỉ chạy sau khi document đã mở xong (After)
                 if (beforeOrAfter != EventTimingEnum.kAfter) return;
                 if (documentObject?.DocumentType != DocumentTypeEnum.kDrawingDocumentObject) return;
 
-                // Dùng WinForms Timer để chạy trên UI thread (STA) sau 1.5s
-                // Task.ContinueWith() chạy background thread → không access được Inventor COM
                 var timer = new System.Windows.Forms.Timer();
                 timer.Interval = 1500;
-                var docRef = documentObject; // capture
+                var docRef = documentObject;
                 timer.Tick += (s, e) =>
                 {
                     timer.Stop();
