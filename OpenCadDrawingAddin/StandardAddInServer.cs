@@ -263,7 +263,6 @@ namespace OpenCadDrawingAddin
 
             AddPanelToRibbon("Assembly", "id_TabAssemble", "{A7F3B8D1-2C4E-4A9F-8E2B-6D1F5C3A9E72}");
             AddPanelToRibbon("Part", "id_TabModel", "{A7F3B8D1-2C4E-4A9F-8E2B-6D1F5C3A9E73}");
-            // AddDrawingRibbonPanel(); // Save IDW and Create DWG should only appear on Drawing ribbon
             AddDrawingRibbonPanel();
         }
 
@@ -485,6 +484,22 @@ namespace OpenCadDrawingAddin
         {
             try
             {
+                // [v1.7] Neu dang co assembly duoc chon -> TU DOC BOM data ngay tai
+                // process nay (trong RAM cua no) roi push DATA vao bridge. Process kia
+                // doc lai data do, khong tu mo file -> tranh 2 process doc cung file
+                // ra ket qua khac nhau (do Vault cache).
+                try
+                {
+                    var asm = GetSelectedAssemblyForBridge();
+                    if (asm != null)
+                    {
+                        var logic = new Logic.BomCompareLogic(m_inventorApplication);
+                        var data = logic.ReadBomData(asm);
+                        Logic.BomCompareBridge.Push(data);
+                    }
+                }
+                catch { }
+
                 // Neu form da mo san -> bring to front, khong mo them
                 if (_bomCmpFormInstance != null && !_bomCmpFormInstance.IsDisposed)
                 {
@@ -504,6 +519,48 @@ namespace OpenCadDrawingAddin
                 MessageBox.Show("Loi: " + ex.Message,
                     "BOM Compare", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+        }
+
+        /// <summary>
+        /// [v1.7] Lay AssemblyDocument dang chon (cho bridge push BOM data).
+        /// Uu tien selection trong browser (sub-asm), fallback ActiveDocument neu la IAM.
+        /// Tra ve null neu khong co assembly nao dang chon.
+        /// </summary>
+        private AssemblyDocument GetSelectedAssemblyForBridge()
+        {
+            try
+            {
+                var doc = m_inventorApplication.ActiveDocument;
+                if (doc == null) return null;
+
+                if (doc.SelectSet != null && doc.SelectSet.Count >= 1)
+                {
+                    for (int i = 1; i <= doc.SelectSet.Count; i++)
+                    {
+                        var sel = doc.SelectSet[i];
+                        if (sel is ComponentOccurrence occ)
+                        {
+                            try
+                            {
+                                var occDoc = (Document)occ.Definition.Document;
+                                if (occDoc.DocumentType == DocumentTypeEnum.kAssemblyDocumentObject)
+                                    return (AssemblyDocument)occDoc;
+                            }
+                            catch { }
+                        }
+                        if (sel is AssemblyComponentDefinition asmDef)
+                        {
+                            try { return (AssemblyDocument)asmDef.Document; }
+                            catch { }
+                        }
+                    }
+                }
+
+                if (doc.DocumentType == DocumentTypeEnum.kAssemblyDocumentObject)
+                    return (AssemblyDocument)doc;
+            }
+            catch { }
+            return null;
         }
 
         private void m_nameUpdateButton_OnExecute(NameValueMap Context)

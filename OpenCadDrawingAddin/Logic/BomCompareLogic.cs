@@ -34,43 +34,106 @@ namespace OpenCadDrawingAddin.Logic
 
         public void Run(AssemblyDocument asm1, AssemblyDocument asm2)
         {
-            string name1 = System.IO.Path.GetFileNameWithoutExtension(asm1.FullFileName);
-            string name2 = System.IO.Path.GetFileNameWithoutExtension(asm2.FullFileName);
+            // Doc BOM data tu 2 assembly (trong RAM process hien tai)
+            var data1 = ReadBomData(asm1);
+            var data2 = ReadBomData(asm2);
+            RunFromData(data1, data2, System.IO.Path.GetDirectoryName(asm1.FullFileName));
+        }
 
-            // === 1. Build tree de quy ===
-            var tree1 = BuildTree(asm1.ComponentDefinition.Occurrences, 0);
-            var tree2 = BuildTree(asm2.ComponentDefinition.Occurrences, 0);
+        // ============================================================
+        // [v1.7] DOC BOM DATA TU ASSEMBLY (trong RAM process hien tai)
+        // Tach rieng de moi process tu doc BOM cua file no dang mo,
+        // ghi ra bridge, process kia doc lai - tranh doc nham file cua process khac.
+        // ============================================================
 
-            // === 2. Flatten parts de quy ===
+        public BomData ReadBomData(AssemblyDocument asm)
+        {
+            var data = new BomData();
+            data.Name = System.IO.Path.GetFileNameWithoutExtension(asm.FullFileName);
+            data.FullPath = asm.FullFileName;
+
+            // Tree de quy -> luu flat list (Name, Level, IsAssembly) theo thu tu duyet
+            var tree = BuildTree(asm.ComponentDefinition.Occurrences, 0);
+            FlattenTreeToData(tree, data.TreeNodes);
+
+            // Parts flatten
+            var parts = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+            FlattenParts(asm.ComponentDefinition.Occurrences, parts, 1);
+            foreach (var kv in parts)
+                data.Parts.Add(new PartCount { Name = kv.Key, Qty = kv.Value });
+
+            return data;
+        }
+
+        private void FlattenTreeToData(List<TreeNode> nodes, List<TreeNodeData> output)
+        {
+            foreach (var n in nodes)
+            {
+                output.Add(new TreeNodeData { Name = n.Name, Level = n.Level, IsAssembly = n.IsAssembly });
+                FlattenTreeToData(n.Children, output);
+            }
+        }
+
+        // Dung lai cay tu flat list (de so sanh)
+        private List<TreeNode> RebuildTreeFromData(List<TreeNodeData> flat)
+        {
+            var roots = new List<TreeNode>();
+            var stack = new Stack<TreeNode>();
+
+            foreach (var nd in flat)
+            {
+                var node = new TreeNode { Name = nd.Name, Level = nd.Level, IsAssembly = nd.IsAssembly };
+
+                // Pop ve dung cap cha
+                while (stack.Count > 0 && stack.Peek().Level >= node.Level)
+                    stack.Pop();
+
+                if (stack.Count == 0)
+                    roots.Add(node);
+                else
+                    stack.Peek().Children.Add(node);
+
+                stack.Push(node);
+            }
+            return roots;
+        }
+
+        // ============================================================
+        // [v1.7] SO SANH TU 2 BOM DATA (da doc san)
+        // ============================================================
+
+        public void RunFromData(BomData data1, BomData data2, string preferredDir)
+        {
+            string name1 = data1.Name;
+            string name2 = data2.Name;
+
+            // Dung lai cay tu data
+            var tree1 = RebuildTreeFromData(data1.TreeNodes);
+            var tree2 = RebuildTreeFromData(data2.TreeNodes);
+
+            // Parts -> dict
             var parts1 = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
             var parts2 = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
-            FlattenParts(asm1.ComponentDefinition.Occurrences, parts1, 1);
-            FlattenParts(asm2.ComponentDefinition.Occurrences, parts2, 1);
+            foreach (var p in data1.Parts) parts1[p.Name] = p.Qty;
+            foreach (var p in data2.Parts) parts2[p.Name] = p.Qty;
 
-            // === 3. Xac dinh output path ===
-            string outputDir = System.IO.Path.GetDirectoryName(asm1.FullFileName);
+            // Output path
+            string outputDir = preferredDir;
+            if (string.IsNullOrEmpty(outputDir) || !CanWriteToDirectory(outputDir))
+                outputDir = System.Environment.GetFolderPath(System.Environment.SpecialFolder.Desktop);
+
             string outputName = "BOMCompare_" + name1 + "_vs_" + name2 + ".xlsx";
             foreach (char c in System.IO.Path.GetInvalidFileNameChars())
                 outputName = outputName.Replace(c.ToString(), "_");
             string outputPath = System.IO.Path.Combine(outputDir, outputName);
 
-            // Neu khong ghi duoc vao thu muc assembly (read-only Vault), fallback ra Desktop
-            if (!CanWriteToDirectory(outputDir))
-            {
-                outputDir = System.Environment.GetFolderPath(System.Environment.SpecialFolder.Desktop);
-                outputPath = System.IO.Path.Combine(outputDir, outputName);
-            }
-
             EnsureFileNotLocked(outputPath);
 
-            // === 4. Build data cho 2 sheet ===
             var treeRows = CompareTrees(tree1, tree2);
             var partRows = ComparePartsRows(parts1, parts2);
 
-            // === 5. Viet file .xlsx ===
             XlsxWriter.Write(outputPath, name1, name2, treeRows, partRows);
 
-            // === 6. Mo file luon, khong hien thong bao ===
             try { System.Diagnostics.Process.Start(outputPath); }
             catch { }
         }
@@ -365,6 +428,31 @@ namespace OpenCadDrawingAddin.Logic
             public string Note1 = "", Note2 = "";
             public CellColor Note1Color = CellColor.None;
             public CellColor Note2Color = CellColor.None;
+        }
+
+        // ============================================================
+        // [v1.7] BOM DATA - serialize duoc de ghi/doc qua bridge file
+        // ============================================================
+
+        public class BomData
+        {
+            public string Name = "";
+            public string FullPath = "";
+            public List<TreeNodeData> TreeNodes = new List<TreeNodeData>();
+            public List<PartCount> Parts = new List<PartCount>();
+        }
+
+        public class TreeNodeData
+        {
+            public string Name = "";
+            public int Level;
+            public bool IsAssembly;
+        }
+
+        public class PartCount
+        {
+            public string Name = "";
+            public int Qty;
         }
     }
 }

@@ -57,6 +57,7 @@
   <ItemGroup>
     <Compile Include="CrossScreenCopyPasteLogic.cs" />
     <Compile Include="Logic\AutoHoleNoteLogic.cs" />
+    <Compile Include="Logic\BomCompareBridge.cs" />
     <Compile Include="Logic\BomCompareForm.cs">
       <SubType>Form</SubType>
     </Compile>
