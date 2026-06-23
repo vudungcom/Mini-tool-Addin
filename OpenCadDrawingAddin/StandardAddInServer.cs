@@ -263,6 +263,7 @@ namespace OpenCadDrawingAddin
 
             AddPanelToRibbon("Assembly", "id_TabAssemble", "{A7F3B8D1-2C4E-4A9F-8E2B-6D1F5C3A9E72}");
             AddPanelToRibbon("Part", "id_TabModel", "{A7F3B8D1-2C4E-4A9F-8E2B-6D1F5C3A9E73}");
+            // AddDrawingRibbonPanel(); // Save IDW and Create DWG should only appear on Drawing ribbon
             AddDrawingRibbonPanel();
         }
 
@@ -291,9 +292,7 @@ namespace OpenCadDrawingAddin
                     if (!ButtonExists(panel, m_myButton)) panel.CommandControls.AddButton(m_myButton, false);
                     if (!ButtonExists(panel, m_bomButton)) panel.CommandControls.AddButton(m_bomButton, false);
                     if (!ButtonExists(panel, m_nameUpdateButton)) panel.CommandControls.AddButton(m_nameUpdateButton, false);
-                    if (!ButtonExists(panel, m_saveIdwButton)) panel.CommandControls.AddButton(m_saveIdwButton, false);
                     if (!ButtonExists(panel, m_checkRefButton)) panel.CommandControls.AddButton(m_checkRefButton, false);
-                    if (!ButtonExists(panel, m_createDwgButton)) panel.CommandControls.AddButton(m_createDwgButton, false);
 
                     if (!ButtonExists(panel, m_copyComponentButton)) panel.CommandControls.AddButton(m_copyComponentButton, false);
                     if (!ButtonExists(panel, m_pasteComponentButton)) panel.CommandControls.AddButton(m_pasteComponentButton, false);
