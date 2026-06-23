@@ -27,6 +27,7 @@ namespace OpenCadDrawingAddin
         private ButtonDefinition m_copyComponentButton;  // [NEW v1.3] Copy Component (cross-screen)
         private ButtonDefinition m_pasteComponentButton; // [NEW v1.3] Paste Component (cross-screen)
         private ButtonDefinition m_autoHoleNoteButton;   // [NEW v1.5] Auto Hole Note button
+        private ButtonDefinition m_bomCompareButton;     // [NEW v1.6] BOM Compare button
         private ApplicationEvents m_appEvents;           // [NEW v1.4] IDW Auto Check event
         public static Inventor.Application InventorApplication { get; private set; }
 
@@ -76,6 +77,7 @@ namespace OpenCadDrawingAddin
         private static object _iconSettings16, _iconSettings32;
         private static object _iconAbout16, _iconAbout32;
         private static object _iconAutoHole16, _iconAutoHole32;  // [NEW v1.5]
+        private static object _iconBomCmp16, _iconBomCmp32;      // [NEW v1.6]
 
         private static void EnsureIcons()
         {
@@ -91,6 +93,8 @@ namespace OpenCadDrawingAddin
             _iconAbout16 = MakeEmojiIcon("ℹ️", 16); _iconAbout32 = MakeEmojiIcon("ℹ️", 32);
             // [NEW v1.5] icon Auto Hole Note
             _iconAutoHole16 = MakeEmojiIcon("⊙", 16); _iconAutoHole32 = MakeEmojiIcon("⊙", 32);
+            // [NEW v1.6] icon BOM Compare
+            _iconBomCmp16 = MakeEmojiIcon("🔀", 16); _iconBomCmp32 = MakeEmojiIcon("🔀", 32);
         }
 
         private class AxHostConverter : System.Windows.Forms.AxHost
@@ -154,6 +158,8 @@ namespace OpenCadDrawingAddin
             if (m_pasteComponentButton != null) { m_pasteComponentButton.Delete(); m_pasteComponentButton = null; }
             // [NEW v1.5]
             if (m_autoHoleNoteButton != null) { m_autoHoleNoteButton.Delete(); m_autoHoleNoteButton = null; }
+            // [NEW v1.6]
+            if (m_bomCompareButton != null) { m_bomCompareButton.Delete(); m_bomCompareButton = null; }
             try { if (m_appEvents != null) { m_appEvents.OnOpenDocument -= OnOpenDocument_IdwAutoCheck; m_appEvents = null; } } catch { }
             if (m_inventorApplication != null) { Marshal.ReleaseComObject(m_inventorApplication); m_inventorApplication = null; }
             GC.Collect();
@@ -232,6 +238,14 @@ namespace OpenCadDrawingAddin
                 "Auto Hole Note", _iconAutoHole16, _iconAutoHole32);
             m_autoHoleNoteButton.OnExecute += m_autoHoleNoteButton_OnExecute;
 
+            // [NEW v1.6] BOM Compare button (Assembly/Part ribbon)
+            m_bomCompareButton = controlDefs.AddButtonDefinition(
+                "BOM Cmp", "OCDABomCompareCmd", CommandTypesEnum.kQueryOnlyCmdType,
+                GenerateClientId("OCDABomCompareCmd"),
+                "Compare BOM between 2 assemblies (tree + parts).",
+                "BOM Compare", _iconBomCmp16, _iconBomCmp32);
+            m_bomCompareButton.OnExecute += m_bomCompareButton_OnExecute;
+
             m_settingsButton = controlDefs.AddButtonDefinition(
                 "Settings", "OCDASettingsCmd", CommandTypesEnum.kQueryOnlyCmdType,
                 GenerateClientId("OCDASettingsCmd"),
@@ -283,6 +297,9 @@ namespace OpenCadDrawingAddin
 
                     if (!ButtonExists(panel, m_copyComponentButton)) panel.CommandControls.AddButton(m_copyComponentButton, false);
                     if (!ButtonExists(panel, m_pasteComponentButton)) panel.CommandControls.AddButton(m_pasteComponentButton, false);
+
+                    // [NEW v1.6] BOM Compare
+                    if (!ButtonExists(panel, m_bomCompareButton)) panel.CommandControls.AddButton(m_bomCompareButton, false);
 
                     panel.CommandControls.AddSeparator();
 
@@ -460,6 +477,33 @@ namespace OpenCadDrawingAddin
                 LicenseHelper.WriteLog("Error running Auto Hole Note", ex);
                 MessageBox.Show("Loi: " + ex.Message,
                     "Auto Hole Note", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        // [NEW v1.6] Handler cho BOM Compare button
+        private static BomCompareForm _bomCmpFormInstance = null;
+        private void m_bomCompareButton_OnExecute(NameValueMap Context)
+        {
+            try
+            {
+                // Neu form da mo san -> bring to front, khong mo them
+                if (_bomCmpFormInstance != null && !_bomCmpFormInstance.IsDisposed)
+                {
+                    _bomCmpFormInstance.BringToFront();
+                    _bomCmpFormInstance.Activate();
+                    return;
+                }
+
+                _bomCmpFormInstance = new BomCompareForm(m_inventorApplication);
+                _bomCmpFormInstance.FormClosed += (s, e) => _bomCmpFormInstance = null;
+                // Show non-modal -> user co the switch tab Inventor
+                _bomCmpFormInstance.Show();
+            }
+            catch (Exception ex)
+            {
+                LicenseHelper.WriteLog("Error running BOM Compare", ex);
+                MessageBox.Show("Loi: " + ex.Message,
+                    "BOM Compare", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 

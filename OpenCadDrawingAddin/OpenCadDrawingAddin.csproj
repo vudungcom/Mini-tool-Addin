@@ -52,11 +52,17 @@
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
+    <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CrossScreenCopyPasteLogic.cs" />
     <Compile Include="Logic\AutoHoleNoteLogic.cs" />
+    <Compile Include="Logic\BomCompareForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Logic\BomCompareLogic.cs" />
     <Compile Include="Logic\IdwAutoCheckLogic.cs" />
+    <Compile Include="Logic\XlsxWriter.cs" />
     <Compile Include="StandardAddInServer.cs" />
     <Compile Include="LanguageManager.cs" />
     <Compile Include="SettingsForm.cs">
