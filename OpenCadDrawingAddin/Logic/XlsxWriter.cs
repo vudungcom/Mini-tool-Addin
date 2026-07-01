@@ -92,8 +92,8 @@ namespace OpenCadDrawingAddin.Logic
             sb.Append("<workbook xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\" ");
             sb.Append("xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\">");
             sb.Append("<sheets>");
-            sb.Append("<sheet name=\"Tree Compare\" sheetId=\"1\" r:id=\"rId2\"/>");
-            sb.Append("<sheet name=\"Part Compare\" sheetId=\"2\" r:id=\"rId3\"/>");
+            sb.Append("<sheet name=\"" + XmlEscape(OpenCadDrawingAddin.LanguageManager.L("BOMCMP_SHEET_TREE")) + "\" sheetId=\"1\" r:id=\"rId2\"/>");
+            sb.Append("<sheet name=\"" + XmlEscape(OpenCadDrawingAddin.LanguageManager.L("BOMCMP_SHEET_PART")) + "\" sheetId=\"2\" r:id=\"rId3\"/>");
             sb.Append("</sheets>");
             sb.Append("</workbook>");
             return sb.ToString();
@@ -157,10 +157,10 @@ namespace OpenCadDrawingAddin.Logic
             sb.Append("<worksheet xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\">");
 
             // Tinh do rong cot tu du lieu
-            int maxA = ("BOM 1: " + name1).Length;
-            int maxB = "Status".Length;
-            int maxC = ("BOM 2: " + name2).Length;
-            int maxD = "Status".Length;
+            int maxA = (OpenCadDrawingAddin.LanguageManager.L("BOMCMP_TITLE") + " 1: " + name1).Length;
+            int maxB = OpenCadDrawingAddin.LanguageManager.L("BOMCMP_COL_STATUS").Length;
+            int maxC = (OpenCadDrawingAddin.LanguageManager.L("BOMCMP_TITLE") + " 2: " + name2).Length;
+            int maxD = OpenCadDrawingAddin.LanguageManager.L("BOMCMP_COL_STATUS").Length;
             foreach (var r in rows)
             {
                 if (r.Name1 != null && r.Name1.Length > maxA) maxA = r.Name1.Length;
@@ -178,10 +178,10 @@ namespace OpenCadDrawingAddin.Logic
 
             // Header row 1
             sb.Append("<row r=\"1\">");
-            sb.Append(InlineStrCell("A1", "BOM 1: " + name1, 1));
-            sb.Append(InlineStrCell("B1", "Status", 1));
-            sb.Append(InlineStrCell("C1", "BOM 2: " + name2, 1));
-            sb.Append(InlineStrCell("D1", "Status", 1));
+            sb.Append(InlineStrCell("A1", OpenCadDrawingAddin.LanguageManager.L("BOMCMP_TITLE") + " 1: " + name1, 1));
+            sb.Append(InlineStrCell("B1", OpenCadDrawingAddin.LanguageManager.L("BOMCMP_COL_STATUS"), 1));
+            sb.Append(InlineStrCell("C1", OpenCadDrawingAddin.LanguageManager.L("BOMCMP_TITLE") + " 2: " + name2, 1));
+            sb.Append(InlineStrCell("D1", OpenCadDrawingAddin.LanguageManager.L("BOMCMP_COL_STATUS"), 1));
             sb.Append("</row>");
 
             int r2 = 2;
@@ -211,10 +211,10 @@ namespace OpenCadDrawingAddin.Logic
             sb.Append("<worksheet xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\">");
 
             // Tinh do rong cot
-            int maxA = ("BOM 1: " + name1).Length;
-            int maxB = 6; // "Qty" header + so
-            int maxC = "Khong co trong bang 2".Length;
-            int maxD = ("BOM 2: " + name2).Length;
+            int maxA = (OpenCadDrawingAddin.LanguageManager.L("BOMCMP_TITLE") + " 1: " + name1).Length;
+            int maxB = 6; // OpenCadDrawingAddin.LanguageManager.L("BOMCMP_COL_QTY") header + so
+            int maxC = OpenCadDrawingAddin.LanguageManager.L("BOMCMP_NOTE_NOT_IN", "2").Length;
+            int maxD = (OpenCadDrawingAddin.LanguageManager.L("BOMCMP_TITLE") + " 2: " + name2).Length;
             int maxE = 6;
             int maxF = maxC;
             foreach (var r in rows)
@@ -235,18 +235,18 @@ namespace OpenCadDrawingAddin.Logic
 
             // Header row 1: ten BOM
             sb.Append("<row r=\"1\">");
-            sb.Append(InlineStrCell("A1", "BOM 1: " + name1, 1));
-            sb.Append(InlineStrCell("D1", "BOM 2: " + name2, 1));
+            sb.Append(InlineStrCell("A1", OpenCadDrawingAddin.LanguageManager.L("BOMCMP_TITLE") + " 1: " + name1, 1));
+            sb.Append(InlineStrCell("D1", OpenCadDrawingAddin.LanguageManager.L("BOMCMP_TITLE") + " 2: " + name2, 1));
             sb.Append("</row>");
 
             // Header row 2: column titles
             sb.Append("<row r=\"2\">");
-            sb.Append(InlineStrCell("A2", "Part Name", 1));
-            sb.Append(InlineStrCell("B2", "Qty", 1));
-            sb.Append(InlineStrCell("C2", "Note", 1));
-            sb.Append(InlineStrCell("D2", "Part Name", 1));
-            sb.Append(InlineStrCell("E2", "Qty", 1));
-            sb.Append(InlineStrCell("F2", "Note", 1));
+            sb.Append(InlineStrCell("A2", OpenCadDrawingAddin.LanguageManager.L("BOMCMP_COL_PART_NAME"), 1));
+            sb.Append(InlineStrCell("B2", OpenCadDrawingAddin.LanguageManager.L("BOMCMP_COL_QTY"), 1));
+            sb.Append(InlineStrCell("C2", OpenCadDrawingAddin.LanguageManager.L("BOMCMP_COL_NOTE"), 1));
+            sb.Append(InlineStrCell("D2", OpenCadDrawingAddin.LanguageManager.L("BOMCMP_COL_PART_NAME"), 1));
+            sb.Append(InlineStrCell("E2", OpenCadDrawingAddin.LanguageManager.L("BOMCMP_COL_QTY"), 1));
+            sb.Append(InlineStrCell("F2", OpenCadDrawingAddin.LanguageManager.L("BOMCMP_COL_NOTE"), 1));
             sb.Append("</row>");
 
             int r2 = 3;

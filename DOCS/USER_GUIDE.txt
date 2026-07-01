@@ -1,0 +1,105 @@
+Mini-Tool Add-in — User Guide (version 2.1)
+
+Overview
+- Add-in: Open CAD Drawing Add-in (Mini-Tool)
+- Version: 2.1.0.0
+- Location of settings: %APPDATA%\\InventorAddins\\ocda_settings.xml
+- License/cache files: %APPDATA%\\InventorAddins\\ocda_cfg.dat, ocda_init.dat, ocda_log.txt
+
+Main features
+1) Open CAD (Open corresponding CAD drawing)
+   - Buttons: "Open CAD" (available on Assembly / Part ribbons)
+   - Behavior:
+     - If current document is a Part: uses the part file name.
+     - If current document is an Assembly: you must select exactly one occurrence → uses that component's file name.
+     - The add-in searches CAD file in the configured CAD folder(s) (see Settings).
+     - CAD file name construction:
+         base = <part file name without extension>
+         if UseRevisionSuffix is true and the Revision Number from Inventor Summary Information is a natural positive integer (regex: ^[1-9][0-9]*$), the suffix "-<revision>" is appended.
+         otherwise no revision suffix is appended.
+     - CAD extension taken from settings (default: .dwg).
+   - Settings required:
+     - CadFolderPaths (one or multiple folders). In the old single-folder UI this maps to CadFolderPath.
+     - UseRevisionSuffix (bool)
+     - CadExtension (string, e.g. ".dwg")
+
+2) Save IDW
+   - Button: "Save IDW" — only appears on the Drawing ribbon (when a drawing is opened)
+   - Behavior:
+     - When active drawing (.idw) is open, the add-in finds the referenced model in the first view and saves the drawing to the same folder as the model with .idw extension.
+   - Conditions:
+     - The command operates only on drawing documents. If invoked from Part/Assembly it will warn and not run.
+
+3) Create DWG
+   - Button: "Create DWG" — only appears on the Drawing ribbon for drawings; when used from assembly it will run the assembly export logic.
+   - Behavior:
+     - If called on a drawing it exports current IDW to DWG.
+     - If called on an assembly it exports according to the Create DWG list/settings.
+   - Settings (OpenCadSettings): CreateDwgIniPath, CreateDwgListPath, CreateDwgOutputPath.
+
+4) Name Update
+   - Updates display names of parts/occurrences from file names (Part: sets DisplayName; Assembly: recurses occurrences).
+
+5) Check Reference
+   - Scans assembly for occurrences with BOMStructure = Reference and writes a report file <AssemblyName>_ReferenceCheck.txt in the assembly folder.
+   - You can set an exclude list file path in settings (CheckRefExcludeListPath) — lines are treated case-insensitively.
+
+6) Copy / Place component (cross-screen)
+   - Copy: copies absolute path of selected component.
+   - Place: inserts copied component into active assembly.
+   - Notifications controlled by settings: ShowCopyNotification, ShowPasteNotification.
+
+7) Auto IDW Check (v1.4)
+   - When a drawing is opened, add-in may automatically run checks (IdwAutoCheckLogic) after 1.5s if enabled in settings: AutoCheckDrawingName, AutoCheckAppearance.
+
+8) Auto Hole Note (v1.5)
+   - Button available on Drawing ribbon: "Auto Hole". Runs AutoHoleNoteLogic on a selected drawing view.
+   - Settings controlling behavior: HoleNoteTextHeightMm, HoleNoteClusterRadiusMm, HoleNoteTolTap.
+
+9) BOM Compare (v1.6)
+   - Compare BOM between two assemblies (tree + parts) — available on Assembly/Part ribbons.
+
+License and Update behavior
+- License logic is in: OpenCadDrawingAddin/Logic/LicenseHelper.cs
+- Add-in version is read from assembly (AssemblyInfo) for update checks and tracking.
+- Version in this build: 2.1.0.0
+- User-Agent used for remote checks: "OpenCadDrawingAddin/2.1"
+- Force-update: server may respond with forceUpdate=true; LicenseHelper.SetForceUpdate will enforce blocking of commands if required. You can check LicenseHelper.IsForceUpdate and LicenseHelper.IsBlocked in code.
+
+Developer / Build notes
+- Project: OpenCadDrawingAddin (Assembly name: MiniTool)
+- Target framework: .NET Framework 4.8
+- Building while Inventor is running may fail because the add-in DLL is copied to Inventor Addins folder and can be locked. Two options:
+  1) Close Inventor before building (recommended during development edition updates).
+  2) Build without automatic deploy: pass MSBuild property DeployToInventor=false or avoid the project target that copies to %APPDATA%\\Autodesk\\Inventor 2024\\Addins. Example:
+     msbuild OpenCadDrawingAddin.csproj /t:Build /p:Configuration=Release /p:Platform=x64 /p:DeployToInventor=false
+- If you prefer automatic deployment, set /p:DeployToInventor=true, but ensure Inventor is not running or the file won't be overwritten.
+
+Changed files in this release (high-level)
+- OpenCadDrawingAddin/Properties/AssemblyInfo.cs — AssemblyVersion/AssemblyFileVersion -> 2.1.0.0
+- OpenCadDrawingAddin/Logic/LicenseHelper.cs — User-Agent strings updated to 2.1
+- OpenCadDrawingAddin/Logic/OpenCadLogic.cs — Revision suffix rule: only natural positive integers (regex ^[1-9][0-9]*$) will be appended; others ignored.
+- OpenCadDrawingAddin/StandardAddInServer.cs — moved Save IDW and Create DWG so they only appear on Drawing ribbon; other minor UI changes.
+
+How to validate / checklist (quick)
+- Build the project (close Inventor or use DeployToInventor=false).
+- Open Inventor and load the add-in (copy DLL + .addin if not using deploy).
+- Open a Part: click "Open CAD" → verify it looks up CAD file in configured folder(s).
+- Open an Assembly: select exactly 1 occurrence and click "Open CAD".
+- Set UseRevisionSuffix = true and test revision values:
+   - If part/occ Revision Number = "1" or "10" → CAD file name should include "-1" or "-10".
+   - If Revision Number = "R01", "01", "A", "R1" or blank → no suffix should be appended.
+- Open a Drawing (.idw): verify "Save IDW", "Create DWG" and "Auto Hole" buttons appear in Drawing ribbon.
+- Test Save IDW: on a drawing referencing a model, Save IDW should create a .idw in the model folder.
+- Check license UI: Open About (AboutBoxForm in StandardAddInServer.cs) → click Check Update, Check License.
+
+Support / Troubleshooting
+- Logs: %APPDATA%\\InventorAddins\\ocda_log.txt (LicenseHelper.WriteLog)
+- Settings: %APPDATA%\\InventorAddins\\ocda_settings.xml
+- If a feature does not appear, confirm you are in the correct document type (Drawing vs Part/Assembly) and that the ribbon/tab exists in Inventor version.
+
+If you want, I can:
+- Try to disable automatic deploy in the .csproj so build won't fail (I attempted but did not change it programmatically). If you want that edit, confirm and I will update the project file.
+- Run a full build here (but build may fail if Inventor locks the deployed DLL).
+
+End of guide.

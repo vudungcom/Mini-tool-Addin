@@ -175,8 +175,23 @@ namespace OpenCadDrawingAddin.Logic
 
                     if (isAsm)
                     {
-                        var subAsm = (AssemblyDocument)occDoc;
-                        node.Children = BuildTree(subAsm.ComponentDefinition.Occurrences, level + 1);
+                        // [FIX-TREE BOM-STRUCTURE] Ton trong BOM Structure giong Part Compare.
+                        // Reference               -> bo ca cum (khong dua vao cay).
+                        // Purchased / Inseparable -> hien 1 dong duy nhat, KHONG bung con (Children rong).
+                        // Normal / Phantom / Varies -> de quy nhu cu.
+                        BOMStructureEnum bomStruct = BOMStructureEnum.kNormalBOMStructure;
+                        try { bomStruct = occ.BOMStructure; } catch { }
+
+                        if (bomStruct == BOMStructureEnum.kReferenceBOMStructure)
+                            continue;   // cum reference -> khong them node
+
+                        if (bomStruct != BOMStructureEnum.kPurchasedBOMStructure &&
+                            bomStruct != BOMStructureEnum.kInseparableBOMStructure)
+                        {
+                            var subAsm = (AssemblyDocument)occDoc;
+                            node.Children = BuildTree(subAsm.ComponentDefinition.Occurrences, level + 1);
+                        }
+                        // Purchased/Inseparable: giu node, Children rong -> hien nhu 1 leaf .iam
                     }
 
                     list.Add(node);
@@ -210,6 +225,29 @@ namespace OpenCadDrawingAddin.Logic
 
                     if (occDoc.DocumentType == DocumentTypeEnum.kAssemblyDocumentObject)
                     {
+                        // [FIX-PART BOM-STRUCTURE] Doc BOM Structure cua cum truoc khi de quy.
+                        // Reference               -> loai bo ca cum (giong part Reference ben duoi).
+                        // Purchased / Inseparable -> coi nhu 1 leaf part (lay ten .iam), KHONG de quy.
+                        //   => khac phuc loi no tung cum mua / khong tach roi thanh part con.
+                        // Normal / Phantom / Varies -> de quy nhu cu (con duoc gom len).
+                        BOMStructureEnum asmStruct = BOMStructureEnum.kNormalBOMStructure;
+                        try { asmStruct = occ.BOMStructure; } catch { }
+
+                        if (asmStruct == BOMStructureEnum.kReferenceBOMStructure)
+                            continue;   // cum reference -> bo qua
+
+                        if (asmStruct == BOMStructureEnum.kPurchasedBOMStructure ||
+                            asmStruct == BOMStructureEnum.kInseparableBOMStructure)
+                        {
+                            // Ghi cum nhu 1 leaf part (dung ten .iam), khong bung con
+                            if (result.ContainsKey(fileName))
+                                result[fileName] += multiplier;
+                            else
+                                result[fileName] = multiplier;
+                            continue;   // DUNG de quy
+                        }
+
+                        // Normal / Phantom / Varies -> de quy nhu cu
                         var subAsm = (AssemblyDocument)occDoc;
                         FlattenParts(subAsm.ComponentDefinition.Occurrences, result, multiplier);
                     }
@@ -329,17 +367,17 @@ namespace OpenCadDrawingAddin.Logic
                     pr.Qty1 = sorted1[i].Value;
                     if (!parts2.TryGetValue(pr.Name1, out int q2))
                     {
-                        pr.Note1 = "Khong co trong bang 2";
+                        pr.Note1 = OpenCadDrawingAddin.LanguageManager.L("BOMCMP_NOTE_NOT_IN", "2");
                         pr.Note1Color = CellColor.Red;
                     }
                     else if (pr.Qty1 != q2)
                     {
-                        pr.Note1 = "Khac so luong";
+                        pr.Note1 = OpenCadDrawingAddin.LanguageManager.L("BOMCMP_NOTE_DIFF_QTY");
                         pr.Note1Color = CellColor.Yellow;
                     }
                     else
                     {
-                        pr.Note1 = "Giong nhau";
+                        pr.Note1 = OpenCadDrawingAddin.LanguageManager.L("BOMCMP_NOTE_SAME");
                         pr.Note1Color = CellColor.None;
                     }
                     pr.Has1 = true;
@@ -352,17 +390,17 @@ namespace OpenCadDrawingAddin.Logic
                     pr.Qty2 = sorted2[i].Value;
                     if (!parts1.TryGetValue(pr.Name2, out int q1))
                     {
-                        pr.Note2 = "Khong co trong bang 1";
+                        pr.Note2 = OpenCadDrawingAddin.LanguageManager.L("BOMCMP_NOTE_NOT_IN", "1");
                         pr.Note2Color = CellColor.Red;
                     }
                     else if (pr.Qty2 != q1)
                     {
-                        pr.Note2 = "Khac so luong";
+                        pr.Note2 = OpenCadDrawingAddin.LanguageManager.L("BOMCMP_NOTE_DIFF_QTY");
                         pr.Note2Color = CellColor.Yellow;
                     }
                     else
                     {
-                        pr.Note2 = "Giong nhau";
+                        pr.Note2 = OpenCadDrawingAddin.LanguageManager.L("BOMCMP_NOTE_SAME");
                         pr.Note2Color = CellColor.None;
                     }
                     pr.Has2 = true;

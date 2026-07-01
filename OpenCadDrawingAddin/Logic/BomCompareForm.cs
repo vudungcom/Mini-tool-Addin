@@ -53,7 +53,7 @@ namespace OpenCadDrawingAddin
 
         private void InitializeComponent()
         {
-            this.Text = "BOM Compare";
+            this.Text = LanguageManager.L("BOMCMP_TITLE");
             this.Size = new Size(620, 280);
             this.StartPosition = FormStartPosition.CenterScreen;
             this.FormBorderStyle = FormBorderStyle.FixedToolWindow;
@@ -68,8 +68,7 @@ namespace OpenCadDrawingAddin
 
             lblHint = new Label
             {
-                Text = "Cung 1 cua so: chon IAM/sub-asm roi bam Pick.\n" +
-                       "Khac cua so: chon IAM o cua so kia roi bam nut 'BOM Cmp' - o nay se tu dien.",
+                Text = LanguageManager.L("BOMCMP_HINT"),
                 Location = new Point(x, y),
                 Size = new Size(585, 36),
                 ForeColor = Color.DimGray,
@@ -80,7 +79,7 @@ namespace OpenCadDrawingAddin
 
             lblAsm1 = new Label
             {
-                Text = "Assembly 1:",
+                Text = LanguageManager.L("BOMCMP_ASM1"),
                 Location = new Point(x, y + 4),
                 Size = new Size(85, 20),
                 Font = new Font("Segoe UI", 9F, FontStyle.Bold)
@@ -99,7 +98,7 @@ namespace OpenCadDrawingAddin
 
             lblPath1 = new Label
             {
-                Text = "(chua chon)",
+                Text = LanguageManager.L("BOMCMP_NOT_SELECTED"),
                 Location = new Point(x + 180, y + 4),
                 Size = new Size(410, 20),
                 ForeColor = Color.Gray,
@@ -110,7 +109,7 @@ namespace OpenCadDrawingAddin
 
             lblAsm2 = new Label
             {
-                Text = "Assembly 2:",
+                Text = LanguageManager.L("BOMCMP_ASM2"),
                 Location = new Point(x, y + 4),
                 Size = new Size(85, 20),
                 Font = new Font("Segoe UI", 9F, FontStyle.Bold)
@@ -129,7 +128,7 @@ namespace OpenCadDrawingAddin
 
             lblPath2 = new Label
             {
-                Text = "(chua chon)",
+                Text = LanguageManager.L("BOMCMP_NOT_SELECTED"),
                 Location = new Point(x + 180, y + 4),
                 Size = new Size(410, 20),
                 ForeColor = Color.Gray,
@@ -140,7 +139,7 @@ namespace OpenCadDrawingAddin
 
             btnCompare = new Button
             {
-                Text = "Compare",
+                Text = LanguageManager.L("BOMCMP_TITLE"),
                 Location = new Point(x + 300, y),
                 Size = new Size(130, 32),
                 BackColor = Color.LightGreen,
@@ -194,7 +193,7 @@ namespace OpenCadDrawingAddin
 
         private void SetSlotFromBridge(int slot, BomCompareLogic.BomData data)
         {
-            string display = "\u21BB " + Path.GetFileName(data.FullPath) + "  (tu cua so khac)";
+            string display = LanguageManager.L("BOMCMP_FROM_OTHER", Path.GetFileName(data.FullPath));
 
             if (slot == 1)
             {
@@ -221,14 +220,14 @@ namespace OpenCadDrawingAddin
             var (data, err) = ReadSelectedBom();
             if (data == null)
             {
-                MessageBox.Show(err ?? "Khong doc duoc BOM.",
-                    "BOM Compare", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show(err ?? LanguageManager.L("BOMCMP_NO_BOM"),
+                    LanguageManager.L("BOMCMP_TITLE"), MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
             if (DataPathEquals(data, _data2))
             {
-                MessageBox.Show("Trung voi Assembly 2. Chon file khac.",
+                MessageBox.Show(LanguageManager.L("BOMCMP_SAME_FILE", "2"),
                     "BOM Compare", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
@@ -256,7 +255,7 @@ namespace OpenCadDrawingAddin
 
             if (DataPathEquals(data, _data1))
             {
-                MessageBox.Show("Trung voi Assembly 1. Chon file khac.",
+                MessageBox.Show(LanguageManager.L("BOMCMP_SAME_FILE", "1"),
                     "BOM Compare", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
@@ -288,7 +287,7 @@ namespace OpenCadDrawingAddin
             }
             catch (Exception ex)
             {
-                return (null, "Loi khi doc BOM: " + ex.Message);
+                return (null, LanguageManager.L("MSG_HOLE_ERROR", ex.Message));
             }
         }
 
@@ -300,7 +299,7 @@ namespace OpenCadDrawingAddin
                 var doc = _app.ActiveDocument;
                 if (doc == null)
                 {
-                    err = "Khong co document nao dang mo trong cua so nay.";
+                    err = LanguageManager.L("BOMCMP_NO_DOC");
                     return null;
                 }
 
@@ -317,7 +316,7 @@ namespace OpenCadDrawingAddin
                                 var occDoc = (Inventor.Document)occ.Definition.Document;
                                 if (occDoc.DocumentType == Inventor.DocumentTypeEnum.kAssemblyDocumentObject)
                                     return (Inventor.AssemblyDocument)occDoc;
-                                err = "Occurrence da chon la Part, khong phai Assembly.";
+                                err = LanguageManager.L("BOMCMP_OCC_IS_PART");
                                 return null;
                             }
                             catch { }
@@ -334,13 +333,12 @@ namespace OpenCadDrawingAddin
                 if (doc.DocumentType == Inventor.DocumentTypeEnum.kAssemblyDocumentObject)
                     return (Inventor.AssemblyDocument)doc;
 
-                err = "Active document khong phai Assembly (.iam).\n" +
-                      "Chon tab IAM hoac click sub-asm trong browser.";
+                err = LanguageManager.L("BOMCMP_NOT_ASM");
                 return null;
             }
             catch (Exception ex)
             {
-                err = "Loi khi lay assembly: " + ex.Message;
+                err = LanguageManager.L("MSG_HOLE_ERROR", ex.Message);
                 return null;
             }
         }
@@ -359,7 +357,7 @@ namespace OpenCadDrawingAddin
             if (_data1 == null || _data2 == null) return;
 
             btnCompare.Enabled = false;
-            btnCompare.Text = "Comparing...";
+            btnCompare.Text = LanguageManager.L("BOMCMP_COMPARING");
             this.Cursor = Cursors.WaitCursor;
             try
             {

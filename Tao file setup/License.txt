@@ -1,13 +1,14 @@
-END-USER LICENSE AGREEMENT (EULA)
-MINI TOOL ADD-IN FOR AUTODESK INVENTOR
+MASTER END-USER LICENSE AGREEMENT (EULA) & PUBLISHER PRIVACY POLICY
+APPLICABLE TO ALL SOFTWARE & ADD-INS DEVELOPED BY REPLACE FILE TOOL
 
 =======================================================================
 ENGLISH VERSION
 
-PLEASE READ THIS AGREEMENT CAREFULLY BEFORE INSTALLING THE SOFTWARE.
+PLEASE READ THIS AGREEMENT CAREFULLY BEFORE INSTALLING OR USING THE SOFTWARE.
 
-By installing, copying, or using this software, you agree to be bound
-by the terms of this agreement.
+By installing, copying, or using any software application, add-in, plugin, 
+or script developed by Replace File Tool, you agree to be bound by the terms 
+of this agreement.
 
 1. LICENSE GRANT
 You are granted a non-exclusive, non-transferable license to install
@@ -16,160 +17,181 @@ This license does not permit redistribution, resale, or sublicensing
 of the software.
 
 2. DESCRIPTION OF SOFTWARE
-Mini Tool Add-in for Autodesk Inventor provides the following features:
-  - Open CAD: Opens the corresponding CAD drawing file for the active
-    Inventor document.
-  - BOM Format: Applies BOM customization from a user-defined XML file.
-  - Name Update: Updates display names of parts and occurrences from
-    their file names.
-  - Save IDW: Saves the drawing file (.idw) to the same folder as the
-    referenced model file.
-  - Check Reference: Scans assemblies for occurrences with BOM
-    Structure set to Reference.
+This Agreement applies to all software products, computer programs, desktop 
+applications, add-ins, and automation scripts developed by Replace File Tool 
+for computer-aided design (CAD) environments (including but not limited to 
+Autodesk® Inventor® and AutoCAD®), hereinafter collectively referred to as 
+"the Software". Specific features, commands, and functionalities of each 
+individual software product are detailed in their respective official store 
+listings or included user documentation.
 
-3. PRIVACY AND DATA COLLECTION (IMPORTANT)
+3. PRIVACY AND DATA COLLECTION POLICY (IMPORTANT)
 
   A. LICENSE VALIDATION:
-  The software generates a unique encrypted identifier (Hardware ID)
+  The Software generates a unique encrypted identifier (Hardware ID)
   based on your computer's hardware information. This identifier is
   sent to our server solely to verify your activation status
   (Active / Trial / Expired).
   We DO NOT collect sensitive personal data, design file names,
-  drawing content, or any proprietary engineering information.
+  drawing content, or any proprietary engineering CAD geometry.
 
   B. ANONYMOUS USAGE TRACKING:
-  To help improve the software, certain technical information may be
+  To help improve product stability, certain technical information may be
   sent anonymously, including:
-    - Windows version and Autodesk Inventor version in use.
-    - Public IP address (for geographic region identification only).
-    - Usage counters for main functions.
-    - Error logs if the software encounters issues.
+    - Operating System version and host CAD software version in use.
+    - Public IP address (strictly for geographic region identification).
+    - Execution counters for primary commands.
+    - Diagnostic error logs if the Software encounters unhandled exceptions.
 
-  All data collected is used solely for software improvement purposes
-  and is never shared with third parties.
+  C. THIRD-PARTY DATA PROTECTION:
+  We do not sell, trade, rent, or share any user data with third-party 
+  advertising networks, data brokers, or marketing agencies. Any cloud 
+  infrastructure or server providers used solely to process license 
+  activation requests act strictly as secure data processors and 
+  provide the same level of data protection as stated in this policy.
 
-BY CLICKING THE "I ACCEPT" BUTTON DURING INSTALLATION, YOU ACKNOWLEDGE
-THAT YOU HAVE READ, UNDERSTOOD, AND AGREED TO ALLOW THE SOFTWARE TO
-SEND THE INFORMATION DESCRIBED ABOVE.
+  D. DATA RETENTION AND DELETION POLICY:
+  Server activation logs and anonymous diagnostic telemetry are retained 
+  on our servers for a maximum of 30 days for debugging and stability 
+  purposes, after which they are permanently and automatically purged. 
+  License records tied to the encrypted Hardware ID are retained 
+  strictly for the active duration of the user's software subscription.
+
+  E. REVOKING CONSENT AND DATA REMOVAL REQUESTS:
+  Users can revoke consent and stop all local background data processes 
+  immediately by disabling or uninstalling the Software via the host 
+  application's Add-in Manager or Windows Apps & Features. To request the 
+  immediate manual deletion of your registered Hardware ID or IP records 
+  from our server database, please send an explicit request to: 
+  replacefile.addin@gmail.com with the subject line "Data Deletion Request".
+
+BY CLICKING "I ACCEPT" DURING INSTALLATION OR BY USING THE SOFTWARE, YOU 
+ACKNOWLEDGE THAT YOU HAVE READ, UNDERSTOOD, AND AGREED TO THESE TERMS.
 
 4. INTELLECTUAL PROPERTY
-This software and all associated documentation are protected by
-copyright law. All rights not expressly granted herein are reserved
-by the author.
+The Software and all associated documentation are protected by copyright law. 
+All rights not expressly granted herein are reserved by the author.
 
 5. RESTRICTIONS
 You may not:
-  - Reverse engineer, decompile, or disassemble the software.
-  - Remove or alter any proprietary notices or labels.
-  - Use the software for any unlawful purpose.
+  - Reverse engineer, decompile, or disassemble the Software.
+  - Remove or alter any proprietary notices, branding, or labels.
+  - Use the Software for any unlawful or unauthorized purpose.
 
 6. DISCLAIMER OF WARRANTY
-THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND,
-EXPRESS OR IMPLIED. THE AUTHOR MAKES NO WARRANTIES REGARDING
-MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, OR
-NON-INFRINGEMENT. THE AUTHOR IS NOT RESPONSIBLE FOR ANY DAMAGES
-(INCLUDING DATA LOSS OR BUSINESS INTERRUPTION) ARISING FROM THE
-USE OF THIS SOFTWARE.
+THE SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
+IMPLIED. THE AUTHOR MAKES NO WARRANTIES REGARDING MERCHANTABILITY, FITNESS 
+FOR A PARTICULAR PURPOSE, OR NON-INFRINGEMENT. THE AUTHOR IS NOT RESPONSIBLE 
+FOR ANY DAMAGES (INCLUDING DATA LOSS OR BUSINESS INTERRUPTION) ARISING FROM 
+THE USE OF THE SOFTWARE.
 
 7. UPDATES AND SUPPORT
-The author may provide updates or patches at their discretion.
-Support is provided on a best-effort basis via the contact
-information below.
+The author may provide software updates, enhancements, or patches at their 
+discretion. Support is provided on a best-effort basis via the channels below.
 
 8. TERMINATION
-This license is effective until terminated. It will terminate
-automatically if you fail to comply with any term of this agreement.
+This license is effective until terminated. It will terminate automatically 
+without notice if you fail to comply with any term of this agreement.
 
 9. GOVERNING LAW
-This agreement shall be governed by applicable law. Any disputes
-arising under this agreement shall be resolved in accordance with
-applicable jurisdiction.
+This agreement shall be governed by applicable laws. Any disputes arising 
+under this agreement shall be resolved in the appropriate jurisdiction.
 
-CONTACT
-For licensing inquiries or support, please contact:
+CONTACT INFORMATION
+For licensing inquiries, data deletion requests, or technical support:
   Email: replacefile.addin@gmail.com
   Telegram: t.me/replacefile
 
 =======================================================================
-PHIEN BAN TIENG VIET (VIETNAMESE VERSION)
+PHIÊN BẢN TIẾNG VIỆT (VIETNAMESE VERSION)
 
-THOA THUAN CAP PHEP NGUOI DUNG CUOI
-MINI TOOL ADD-IN FOR AUTODESK INVENTOR
+THÓA THUẬN CẤP PHÉP NGƯỜI DÙNG CUỐI (EULA) & CHÍNH SÁCH QUYỀN RIÊNG TƯ CHUNG
+ÁP DỤNG CHO TẤT CẢ PHẦN MỀM & ADD-IN PHÁT TRIỂN BỞI REPLACE FILE TOOL
 
-VUI LONG DOC KY THOA THUAN NAY TRUOC KHI CAI DAT PHAN MEM.
+VUI LÒNG ĐỌC KỸ THÓA THUẬN NÀY TRƯỚC KHI CÀI ĐẶT HOẶC SỬ DỤNG PHẦN MỀM.
 
-Bang viec cai dat, sao chep hoac su dung phan mem nay, ban dong y
-chiu su rang buoc cua cac dieu khoan trong thoa thuan nay.
+Bằng việc cài đặt, sao chép hoặc sử dụng bất kỳ ứng dụng, add-in, plugin 
+hay script nào được phát triển bởi Replace File Tool, bạn đồng ý chịu sự 
+ràng buộc của các điều khoản trong thỏa thuận này.
 
-1. QUYEN CAP PHEP
-Ban duoc cap quyen khong doc quyen, khong chuyen nhuong de cai dat
-va su dung phan mem nay tren mot may tinh ca nhan hoac may tram lam
-viec. Giay phep nay khong cho phep phan phoi lai, ban lai hoac cap
-phep phu.
+1. QUYỀN CẤP PHÉP
+Bạn được cấp quyền không độc quyền, không chuyển nhượng để cài đặt và sử 
+dụng phần mềm này trên một máy tính cá nhân hoặc máy trạm. Giấy phép này 
+không cho phép phân phối lại, bán lại hoặc cấp phép phụ dưới mọi hình thức.
 
-2. MO TA PHAN MEM
-Mini Tool Add-in for Autodesk Inventor cung cap cac tinh nang sau:
-  - Open CAD: Mo file ban ve CAD tuong ung voi tai lieu Inventor
-    dang mo.
-  - BOM Format: Ap dung tuy chinh BOM tu file XML do nguoi dung
-    dinh nghia.
-  - Name Update: Cap nhat ten hien thi cua cac part va occurrence
-    tu ten file.
-  - Save IDW: Luu file ban ve (.idw) vao cung thu muc voi file
-    model duoc tham chieu.
-  - Check Reference: Quet assembly de tim cac occurrence co BOM
-    Structure = Reference.
+2. MÔ TẢ PHẦN MỀM
+Thỏa thuận này áp dụng cho tất cả các sản phẩm phần mềm, chương trình máy tính, 
+ứng dụng desktop, add-in và tập lệnh tự động hóa được phát triển bởi 
+Replace File Tool dành cho các môi trường thiết kế hỗ trợ bởi máy tính (CAD) 
+(bao gồm nhưng không giới hạn ở Autodesk® Inventor® và AutoCAD®), sau đây 
+được gọi chung là "Phần mềm". Các tính năng, lệnh và công dụng chi tiết của 
+từng sản phẩm cụ thể được mô tả trên trang phát hành chính thức hoặc tài liệu 
+hướng dẫn đi kèm sản phẩm đó.
 
-3. QUYEN RIENG TU VA THU THAP DU LIEU (QUAN TRONG)
+3. QUYỀN RIÊNG TƯ VÀ THU THẬP DỮ LIỆU (QUAN TRỌNG)
 
-  A. XAC THUC BAN QUYEN (LICENSE CHECK):
-  Phan mem tao mot dinh danh ma hoa duy nhat (Hardware ID) dua tren
-  thong tin phan cung may tinh cua ban. Dinh danh nay duoc gui den
-  may chu cua chung toi chi de xac minh trang thai kich hoat
-  (Active / Trial / Expired).
-  Chung toi KHONG thu thap du lieu ca nhan nhay cam, ten file thiet
-  ke, noi dung ban ve hoac bat ky thong tin ky thuat doc quyen nao.
+  A. XÁC THỰC BẢN QUYỀN (LICENSE CHECK):
+  Phần mềm tạo một định danh mã hóa duy nhất (Hardware ID) dựa trên thông 
+  tin phần cứng máy tính của bạn. Định danh này được gửi đến máy chủ của 
+  chúng tôi chỉ để xác minh trạng thái kích hoạt (Active / Trial / Expired).
+  Chúng tôi KHÔNG thu thập dữ liệu cá nhân nhạy cảm, tên file thiết kế, 
+  nội dung bản vẽ hoặc bất kỳ dữ liệu hình học CAD độc quyền nào.
 
-  B. THEO DOI SU DUNG AN DANH (TRACKING):
-  De giup cai thien phan mem, mot so thong tin ky thuat co the duoc
-  gui an danh, bao gom:
-    - Phien ban Windows va phien ban Autodesk Inventor dang su dung.
-    - Dia chi IP cong khai (chi de xac dinh khu vuc dia ly).
-    - So lan su dung cac chuc nang chinh (Usage Counter).
-    - Bao cao loi (Error Logs) neu phan mem gap su co.
+  B. THEO DÕI SỬ DỤNG ẨN DANH (TRACKING):
+  Để hỗ trợ cải thiện độ ổn định, một số thông tin kỹ thuật có thể được gửi 
+  ẩn danh, bao gồm:
+    - Phiên bản Hệ điều hành và phiên bản phần mềm CAD nền đang sử dụng.
+    - Địa chỉ IP công khai (chỉ nhằm mục đích xác định khu vực địa lý).
+    - Số lần thực thi các lệnh tính năng chính.
+    - Nhật ký lỗi chẩn đoán nếu Phần mềm gặp sự cố ngoài tầm kiểm soát.
 
-  Toan bo du lieu thu thap duoc chi su dung cho muc dich cai thien
-  phan mem va khong bao gio duoc chia se voi ben thu ba.
+  C. BẢO VỆ DỮ LIỆU TỪ BÊN THỨ BA:
+  Chúng tôi không bán, trao đổi, cho thuê hoặc chia sẻ dữ liệu người dùng 
+  với các mạng quảng cáo hay bên môi giới dữ liệu. Các đối tác hạ tầng 
+  máy chủ đám mây được sử dụng để xử lý kích hoạt bản quyền cam kết tuân 
+  thủ cùng cấp độ bảo mật dữ liệu như được nêu trong chính sách này.
 
-BANG VIEC NHAN NUT "I ACCEPT" (TOI DONG Y) TRONG QUA TRINH CAI DAT,
-BAN XAC NHAN RANG BAN DA DOC, HIEU VA DONG Y CHO PHEP PHAN MEM GUI
-CAC THONG TIN NEU TREN.
+  D. CHÍNH SÁCH LƯU TRỮ VÀ XÓA DỮ LIỆU:
+  Nhật ký kích hoạt trên máy chủ và dữ liệu chẩn đoán lỗi ẩn danh được lưu 
+  trữ tối đa trong 30 ngày nhằm mục đích gỡ lỗi, sau đó sẽ được tự động xóa 
+  vĩnh viễn. Các bản ghi bản quyền gắn liền với Hardware ID đã mã hóa chỉ 
+  được lưu trữ trong suốt thời gian gói thuê bao của người dùng còn hiệu lực.
 
-4. SO HUU TRI TUE
-Phan mem nay va tat ca tai lieu lien quan duoc bao ho boi luat ban
-quyen. Moi quyen chua duoc cap cu the deu thuoc ve tac gia.
+  E. RÚT LẠI ĐỒNG Ý VÀ YÊU CẦU XÓA DỮ LIỆU:
+  Người dùng có thể rút lại sự đồng ý và dừng toàn bộ tiến trình gửi dữ liệu 
+  nền ngay lập tức bằng cách vô hiệu hóa hoặc gỡ bỏ Phần mềm thông qua trình 
+  quản lý Add-in của phần mềm nền hoặc mục Apps & Features của Windows. Để yêu 
+  cầu xóa thủ công ngay lập tức Hardware ID hoặc bản ghi IP khỏi cơ sở dữ liệu 
+  máy chủ, vui lòng gửi email đến: replacefile.addin@gmail.com với tiêu đề 
+  "Data Deletion Request".
 
-5. HAN CHE SU DUNG
-Ban khong duoc:
-  - Dao nguoc, dich nguoc ma hay thao ro phan mem.
-  - Xoa hoac thay doi bat ky thong bao so huu nao.
-  - Su dung phan mem cho bat ky muc dich bat hop phap nao.
+BẰNG VIỆC NHẤN "I ACCEPT" TRONG QUÁ TRÌNH CÀI ĐẶT HOẶC SỬ DỤNG PHẦN MỀM, BẠN 
+XÁC NHẬN RẰNG BẠN ĐÃ ĐỌC, HIỂU VÀ ĐỒNG Ý VỚI CÁC ĐIỀU KHOẢN NÀY.
 
-6. TU CHOI BAO DAM
-PHAN MEM NAY DUOC CUNG CAP "NGUYEN TRANG" (AS IS) KHONG CO BAO DAM
-DUOI BAT KY HINH THUC NAO. TAC GIA KHONG CHIU TRACH NHIEM VE BAT KY
-THIET HAI NAO (BAO GOM MAT MAT DU LIEU HOAC GIAN DOAN KINH DOANH)
-PHAT SINH TU VIEC SU DUNG PHAN MEM NAY.
+4. SỞ HỮU TRÍ TUỆ
+Phần mềm và tất cả tài liệu liên quan được bảo hộ bởi luật bản quyền. Mọi quyền 
+chưa được cấp cụ thể ở đây đều thuộc quyền sở hữu của tác giả.
 
-7. CAP NHAT VA HO TRO
-Tac gia co the cung cap cap nhat hoac ban va theo tuy y. Ho tro duoc
-cung cap theo kha nang thong qua thong tin lien he ben duoi.
+5. HẠN CHẾ SỬ DỤNG
+Bạn không được:
+  - Đảo ngược, dịch ngược mã hay tháo rời Phần mềm.
+  - Xóa hoặc thay đổi các thông báo sở hữu, nhãn hiệu hoặc logo.
+  - Sử dụng Phần mềm cho bất kỳ mục đích bất hợp pháp hoặc trái phép nào.
 
-8. CHAM DUT
-Giay phep nay co hieu luc cho den khi bi cham dut. No se tu dong
-cham dut neu ban vi pham bat ky dieu khoan nao cua thoa thuan nay.
+6. TỪ CHỐI BẢO ĐẢM
+PHẦN MỀM ĐƯỢC CUNG CẤP "NGUYÊN TRẠNG" (AS IS) KHÔNG CÓ BẢO ĐẢM DƯỚI BẤT KỲ 
+HÌNH THỨC NÀO. TÁC GIẢ KHÔNG CHỊU TRÁCH NHIỆM VỀ BẤT KỲ THIỆT HẠI NÀO (BAO GỒM 
+MẤT MÁT DỮ LIỆU HOẶC GIÁN ĐOẠN KINH DOANH) PHÁT SINH TỪ VIỆC SỬ DỤNG PHẦN MỀM.
 
-LIEN HE
-Moi thac mac ve ban quyen hoac ho tro, vui long lien he:
+7. CẬP NHẬT VÀ HỖ TRỢ
+Tác giả có thể cung cấp các bản cập nhật hoặc bản vá theo tùy ý. Hỗ trợ kỹ 
+thuật được cung cấp theo khả năng thông qua các kênh liên hệ bên dưới.
+
+8. CHẤM DỨT
+Giấy phép này có hiệu lực cho đến khi bị chấm dứt. Thỏa thuận sẽ tự động chấm 
+dứt không cần thông báo trước nếu bạn vi phạm bất kỳ điều khoản nào.
+
+THÔNG TIN LIÊN HỆ
+Mọi thắc mắc về bản quyền, yêu cầu xóa dữ liệu hoặc hỗ trợ kỹ thuật:
   Email: replacefile.addin@gmail.com
   Telegram: t.me/replacefile

@@ -5,7 +5,7 @@ namespace OpenCadDrawingAddin
 {
     /// <summary>
     /// Quản lý đa ngôn ngữ (i18n) cho Mini Tool Add-in
-    /// Version 1.2 - Thêm Create DWG keys
+    /// Version 2.0 - Thêm BOM Compare + Auto Hole Note
     /// </summary>
     public static class LanguageManager
     {
@@ -48,7 +48,7 @@ namespace OpenCadDrawingAddin
                     ["MSG_LICENSE_INVALID"] = "License is not valid or has expired.\nPlease activate through 'About / License' button.",
 
                     // === SETTINGS FORM ===
-                    ["SETTINGS_TITLE"] = "Settings - Mini Tool v1.0",
+                    ["SETTINGS_TITLE"] = "Settings - Mini Tool v2.0",
                     ["TAB_SETTINGS"] = "CAD Drawing",
                     ["TAB_LANGUAGE"] = "Language",
                     ["TAB_BOM"] = "BOM Format",
@@ -212,6 +212,40 @@ namespace OpenCadDrawingAddin
                     ["MSG_IDW_NAME_MISMATCH"] = "DRAWING NAME MISMATCH\n    IDW   : \"{0}\"\n    Model : \"{1}\" (Sheet: {2})\n\n",
                     ["MSG_IDW_MATERIAL_MISMATCH"] = "MATERIAL MISMATCH\n    Part      : {0}\n    Model     : \"{1}\"\n    iProperty : \"{2}\"\n\n",
                     ["MSG_IDW_APPEARANCE_MISMATCH"] = "APPEARANCE MISMATCH\n    Part      : {0}\n    Model     : \"{1}\"\n    iProperty : \"{2}\"\n\n",
+
+                    // === BOM COMPARE === [NEW v2.0]
+                    ["BOMCMP_TITLE"] = "BOM Compare",
+                    ["BOMCMP_HINT"] = "Same window: select IAM/sub-asm then click Pick.\nOther window: select IAM there, click 'BOM Cmp' - auto fills here.",
+                    ["BOMCMP_ASM1"] = "Assembly 1:",
+                    ["BOMCMP_ASM2"] = "Assembly 2:",
+                    ["BOMCMP_NOT_SELECTED"] = "(not selected)",
+                    ["BOMCMP_FROM_OTHER"] = "\u21BB {0}  (from other window)",
+                    ["BOMCMP_SAME_FILE"] = "Same as Assembly {0}. Please choose a different file.",
+                    ["BOMCMP_NO_BOM"] = "Cannot read BOM.",
+                    ["BOMCMP_NO_DOC"] = "No document is open in this window.",
+                    ["BOMCMP_NOT_ASM"] = "Active document is not an Assembly (.iam).\nSelect an IAM tab or click a sub-asm in the browser.",
+                    ["BOMCMP_OCC_IS_PART"] = "Selected occurrence is a Part, not an Assembly.",
+                    ["BOMCMP_COMPARING"] = "Comparing...",
+                    ["BOMCMP_LOADING"] = "Loading...",
+                    ["BOMCMP_SHEET_TREE"] = "Tree Compare",
+                    ["BOMCMP_SHEET_PART"] = "Part Compare",
+                    ["BOMCMP_COL_STATUS"] = "Status",
+                    ["BOMCMP_COL_PART_NAME"] = "Part Name",
+                    ["BOMCMP_COL_QTY"] = "Qty",
+                    ["BOMCMP_COL_NOTE"] = "Note",
+                    ["BOMCMP_NOTE_SAME"] = "Same",
+                    ["BOMCMP_NOTE_DIFF_QTY"] = "Different qty",
+                    ["BOMCMP_NOTE_NOT_IN"] = "Not in table {0}",
+
+                    // === AUTO HOLE NOTE === [NEW v2.0]
+                    ["TAB_AUTO_HOLE"] = "Auto Hole",
+                    ["LBL_HOLE_TEXT_HEIGHT"] = "Text height (mm):",
+                    ["LBL_HOLE_CLUSTER_RADIUS"] = "Cluster radius (mm):",
+                    ["LBL_HOLE_TAP_TOL"] = "Tap tolerance (x0.01mm):",
+                    ["BTN_HOLE_RUN"] = "Run",
+                    ["MSG_HOLE_NEED_IDW"] = "Please open an IDW file before running Auto Hole Note.",
+                    ["MSG_HOLE_PICK_VIEW"] = "Click on the view to scan holes:",
+                    ["MSG_HOLE_ERROR"] = "Error: {0}",
                 },
 
                 // ========================================
@@ -234,7 +268,7 @@ namespace OpenCadDrawingAddin
                     ["MSG_FILE_NOT_FOUND"] = "Không tìm thấy file CAD.\nĐường dẫn đã kiểm tra: {0}",
                     ["MSG_LICENSE_INVALID"] = "License không hợp lệ hoặc đã hết hạn.\nVui lòng kích hoạt qua nút 'About / License'.",
 
-                    ["SETTINGS_TITLE"] = "Cài đặt - Mini Tool v1.0",
+                    ["SETTINGS_TITLE"] = "Cài đặt - Mini Tool v2.0",
                     ["TAB_SETTINGS"] = "CAD Drawing",
                     ["TAB_LANGUAGE"] = "Ngôn ngữ",
                     ["TAB_BOM"] = "BOM Format",
@@ -393,6 +427,40 @@ namespace OpenCadDrawingAddin
                     ["MSG_IDW_NAME_MISMATCH"] = "TÊN FILE KHÔNG KHỚP\n    IDW   : \"{0}\"\n    Model : \"{1}\" (Sheet: {2})\n\n",
                     ["MSG_IDW_MATERIAL_MISMATCH"] = "MATERIAL KHÔNG KHỚP\n    Part      : {0}\n    Model     : \"{1}\"\n    iProperty : \"{2}\"\n\n",
                     ["MSG_IDW_APPEARANCE_MISMATCH"] = "APPEARANCE KHÔNG KHỚP\n    Part      : {0}\n    Model     : \"{1}\"\n    iProperty : \"{2}\"\n\n",
+
+                    // === BOM COMPARE === [NEW v2.0]
+                    ["BOMCMP_TITLE"] = "So sanh BOM",
+                    ["BOMCMP_HINT"] = "Cung cua so: chon IAM/sub-asm roi bam Pick.\nKhac cua so: chon IAM o cua so kia roi bam 'BOM Cmp' - o nay tu dien.",
+                    ["BOMCMP_ASM1"] = "Ban lap 1:",
+                    ["BOMCMP_ASM2"] = "Ban lap 2:",
+                    ["BOMCMP_NOT_SELECTED"] = "(chua chon)",
+                    ["BOMCMP_FROM_OTHER"] = "\u21BB {0}  (tu cua so khac)",
+                    ["BOMCMP_SAME_FILE"] = "Trung voi Ban lap {0}. Chon file khac.",
+                    ["BOMCMP_NO_BOM"] = "Khong doc duoc BOM.",
+                    ["BOMCMP_NO_DOC"] = "Khong co document nao dang mo trong cua so nay.",
+                    ["BOMCMP_NOT_ASM"] = "Document hien tai khong phai Assembly (.iam).\nChon tab IAM hoac click sub-asm trong browser.",
+                    ["BOMCMP_OCC_IS_PART"] = "Occurrence da chon la Part, khong phai Assembly.",
+                    ["BOMCMP_COMPARING"] = "Dang so sanh...",
+                    ["BOMCMP_LOADING"] = "Dang tai...",
+                    ["BOMCMP_SHEET_TREE"] = "So sanh cum",
+                    ["BOMCMP_SHEET_PART"] = "So sanh chi tiet",
+                    ["BOMCMP_COL_STATUS"] = "Trang thai",
+                    ["BOMCMP_COL_PART_NAME"] = "Ten Part",
+                    ["BOMCMP_COL_QTY"] = "SL",
+                    ["BOMCMP_COL_NOTE"] = "Ghi chu",
+                    ["BOMCMP_NOTE_SAME"] = "Giong nhau",
+                    ["BOMCMP_NOTE_DIFF_QTY"] = "Khac so luong",
+                    ["BOMCMP_NOTE_NOT_IN"] = "Khong co trong bang {0}",
+
+                    // === AUTO HOLE NOTE === [NEW v2.0]
+                    ["TAB_AUTO_HOLE"] = "Auto Hole",
+                    ["LBL_HOLE_TEXT_HEIGHT"] = "Chieu cao chu (mm):",
+                    ["LBL_HOLE_CLUSTER_RADIUS"] = "Ban kinh gom cum (mm):",
+                    ["LBL_HOLE_TAP_TOL"] = "Dung sai ren (x0.01mm):",
+                    ["BTN_HOLE_RUN"] = "Chay",
+                    ["MSG_HOLE_NEED_IDW"] = "Hay mo file IDW truoc khi chay Auto Hole Note.",
+                    ["MSG_HOLE_PICK_VIEW"] = "Click vao view can quet lo:",
+                    ["MSG_HOLE_ERROR"] = "Loi: {0}",
                 },
 
                 // ========================================
@@ -415,7 +483,7 @@ namespace OpenCadDrawingAddin
                     ["MSG_FILE_NOT_FOUND"] = "CADファイルが見つかりません。\n確認したパス: {0}",
                     ["MSG_LICENSE_INVALID"] = "ライセンスが無効または期限切れです。\n'About / License'ボタンからアクティベートしてください。",
 
-                    ["SETTINGS_TITLE"] = "設定 - Mini Tool v1.0",
+                    ["SETTINGS_TITLE"] = "設定 - Mini Tool v2.0",
                     ["TAB_SETTINGS"] = "CAD Drawing",
                     ["TAB_LANGUAGE"] = "言語",
                     ["TAB_BOM"] = "BOM Format",
@@ -529,6 +597,40 @@ namespace OpenCadDrawingAddin
                     ["MSG_IDW_NAME_MISMATCH"] = "ファイル名の不一致\n    IDW   : \"{0}\"\n    Model : \"{1}\" (Sheet: {2})\n\n",
                     ["MSG_IDW_MATERIAL_MISMATCH"] = "マテリアルの不一致\n    Part      : {0}\n    Model     : \"{1}\"\n    iProperty : \"{2}\"\n\n",
                     ["MSG_IDW_APPEARANCE_MISMATCH"] = "外観の不一致\n    Part      : {0}\n    Model     : \"{1}\"\n    iProperty : \"{2}\"\n\n",
+
+                    // === BOM COMPARE === [NEW v2.0]
+                    ["BOMCMP_TITLE"] = "BOM比較",
+                    ["BOMCMP_HINT"] = "同じウィンドウ: IAM/サブアセンブリを選択してPickをクリック。\n別ウィンドウ: そのウィンドウでIAMを選択し「BOM Cmp」ボタンをクリック — 自動入力されます。",
+                    ["BOMCMP_ASM1"] = "アセンブリ1:",
+                    ["BOMCMP_ASM2"] = "アセンブリ2:",
+                    ["BOMCMP_NOT_SELECTED"] = "(未選択)",
+                    ["BOMCMP_FROM_OTHER"] = "\u21BB {0}  (他のウィンドウから)",
+                    ["BOMCMP_SAME_FILE"] = "アセンブリ{0}と同じです。別のファイルを選択してください。",
+                    ["BOMCMP_NO_BOM"] = "BOMを読み取れませんでした。",
+                    ["BOMCMP_NO_DOC"] = "このウィンドウにドキュメントが開かれていません。",
+                    ["BOMCMP_NOT_ASM"] = "アクティブドキュメントはアセンブリ(.iam)ではありません。\nIAMタブを選択するかブラウザでサブアセンブリをクリック。",
+                    ["BOMCMP_OCC_IS_PART"] = "選択したオカレンスはアセンブリではなくパーツです。",
+                    ["BOMCMP_COMPARING"] = "比較中...",
+                    ["BOMCMP_LOADING"] = "読み込み中...",
+                    ["BOMCMP_SHEET_TREE"] = "ツリー比較",
+                    ["BOMCMP_SHEET_PART"] = "パーツ比較",
+                    ["BOMCMP_COL_STATUS"] = "ステータス",
+                    ["BOMCMP_COL_PART_NAME"] = "パーツ名",
+                    ["BOMCMP_COL_QTY"] = "数量",
+                    ["BOMCMP_COL_NOTE"] = "備考",
+                    ["BOMCMP_NOTE_SAME"] = "一致",
+                    ["BOMCMP_NOTE_DIFF_QTY"] = "数量が異なる",
+                    ["BOMCMP_NOTE_NOT_IN"] = "表{0}にありません",
+
+                    // === AUTO HOLE NOTE === [NEW v2.0]
+                    ["TAB_AUTO_HOLE"] = "Auto Hole",
+                    ["LBL_HOLE_TEXT_HEIGHT"] = "文字高さ (mm):",
+                    ["LBL_HOLE_CLUSTER_RADIUS"] = "クラスタ半径 (mm):",
+                    ["LBL_HOLE_TAP_TOL"] = "タップ公差 (x0.01mm):",
+                    ["BTN_HOLE_RUN"] = "実行",
+                    ["MSG_HOLE_NEED_IDW"] = "Auto Hole Noteを実行する前にIDWファイルを開いてください。",
+                    ["MSG_HOLE_PICK_VIEW"] = "穴をスキャンするビューをクリック:",
+                    ["MSG_HOLE_ERROR"] = "エラー: {0}",
                 },
 
                 // ========================================
@@ -551,7 +653,7 @@ namespace OpenCadDrawingAddin
                     ["MSG_FILE_NOT_FOUND"] = "CAD 파일을 찾을 수 없습니다.\n확인한 경로: {0}",
                     ["MSG_LICENSE_INVALID"] = "라이선스가 유효하지 않거나 만료되었습니다.\n'About / License' 버튼을 통해 활성화하세요.",
 
-                    ["SETTINGS_TITLE"] = "설정 - Mini Tool v1.0",
+                    ["SETTINGS_TITLE"] = "설정 - Mini Tool v2.0",
                     ["TAB_SETTINGS"] = "CAD Drawing",
                     ["TAB_LANGUAGE"] = "언어",
                     ["TAB_BOM"] = "BOM Format",
@@ -665,6 +767,40 @@ namespace OpenCadDrawingAddin
                     ["MSG_IDW_NAME_MISMATCH"] = "파일명 불일치\n    IDW   : \"{0}\"\n    Model : \"{1}\" (Sheet: {2})\n\n",
                     ["MSG_IDW_MATERIAL_MISMATCH"] = "재질 불일치\n    Part      : {0}\n    Model     : \"{1}\"\n    iProperty : \"{2}\"\n\n",
                     ["MSG_IDW_APPEARANCE_MISMATCH"] = "외관 불일치\n    Part      : {0}\n    Model     : \"{1}\"\n    iProperty : \"{2}\"\n\n",
+
+                    // === BOM COMPARE === [NEW v2.0]
+                    ["BOMCMP_TITLE"] = "BOM 비교",
+                    ["BOMCMP_HINT"] = "같은 창: IAM/하위 어셈블리를 선택하고 Pick을 클릭.\n다른 창: 다른 창에서 IAM을 선택하고 'BOM Cmp' 버튼을 클릭 — 자동으로 채워집니다.",
+                    ["BOMCMP_ASM1"] = "어셈블리 1:",
+                    ["BOMCMP_ASM2"] = "어셈블리 2:",
+                    ["BOMCMP_NOT_SELECTED"] = "(선택 안 됨)",
+                    ["BOMCMP_FROM_OTHER"] = "\u21BB {0}  (다른 창에서)",
+                    ["BOMCMP_SAME_FILE"] = "어셈블리 {0}과(와) 동일합니다. 다른 파일을 선택하세요.",
+                    ["BOMCMP_NO_BOM"] = "BOM을 읽을 수 없습니다.",
+                    ["BOMCMP_NO_DOC"] = "이 창에 열려 있는 문서가 없습니다.",
+                    ["BOMCMP_NOT_ASM"] = "활성 문서가 어셈블리(.iam)가 아닙니다.\nIAM 탭을 선택하거나 브라우저에서 하위 어셈블리를 클릭하세요.",
+                    ["BOMCMP_OCC_IS_PART"] = "선택한 항목이 어셈블리가 아닌 부품입니다.",
+                    ["BOMCMP_COMPARING"] = "비교 중...",
+                    ["BOMCMP_LOADING"] = "로딩 중...",
+                    ["BOMCMP_SHEET_TREE"] = "트리 비교",
+                    ["BOMCMP_SHEET_PART"] = "부품 비교",
+                    ["BOMCMP_COL_STATUS"] = "상태",
+                    ["BOMCMP_COL_PART_NAME"] = "부품명",
+                    ["BOMCMP_COL_QTY"] = "수량",
+                    ["BOMCMP_COL_NOTE"] = "비고",
+                    ["BOMCMP_NOTE_SAME"] = "동일",
+                    ["BOMCMP_NOTE_DIFF_QTY"] = "수량 다름",
+                    ["BOMCMP_NOTE_NOT_IN"] = "표 {0}에 없음",
+
+                    // === AUTO HOLE NOTE === [NEW v2.0]
+                    ["TAB_AUTO_HOLE"] = "Auto Hole",
+                    ["LBL_HOLE_TEXT_HEIGHT"] = "텍스트 높이 (mm):",
+                    ["LBL_HOLE_CLUSTER_RADIUS"] = "클러스터 반경 (mm):",
+                    ["LBL_HOLE_TAP_TOL"] = "탭 공차 (x0.01mm):",
+                    ["BTN_HOLE_RUN"] = "실행",
+                    ["MSG_HOLE_NEED_IDW"] = "Auto Hole Note를 실행하기 전에 IDW 파일을 열어주세요.",
+                    ["MSG_HOLE_PICK_VIEW"] = "홀을 스캔할 뷰를 클릭:",
+                    ["MSG_HOLE_ERROR"] = "오류: {0}",
                 },
 
                 // ========================================
@@ -687,7 +823,7 @@ namespace OpenCadDrawingAddin
                     ["MSG_FILE_NOT_FOUND"] = "未找到CAD文件。\n已检查路径：{0}",
                     ["MSG_LICENSE_INVALID"] = "许可证无效或已过期。\n请通过'About / License'按钮激活。",
 
-                    ["SETTINGS_TITLE"] = "设置 - Mini Tool v1.0",
+                    ["SETTINGS_TITLE"] = "设置 - Mini Tool v2.0",
                     ["TAB_SETTINGS"] = "CAD Drawing",
                     ["TAB_LANGUAGE"] = "语言",
                     ["TAB_BOM"] = "BOM Format",
@@ -801,6 +937,40 @@ namespace OpenCadDrawingAddin
                     ["MSG_IDW_NAME_MISMATCH"] = "文件名不匹配\n    IDW   : \"{0}\"\n    Model : \"{1}\" (Sheet: {2})\n\n",
                     ["MSG_IDW_MATERIAL_MISMATCH"] = "材质不匹配\n    Part      : {0}\n    Model     : \"{1}\"\n    iProperty : \"{2}\"\n\n",
                     ["MSG_IDW_APPEARANCE_MISMATCH"] = "外观不匹配\n    Part      : {0}\n    Model     : \"{1}\"\n    iProperty : \"{2}\"\n\n",
+
+                    // === BOM COMPARE === [NEW v2.0]
+                    ["BOMCMP_TITLE"] = "BOM对比",
+                    ["BOMCMP_HINT"] = "同一窗口：选择IAM/子装配后点击Pick。\n不同窗口：在另一窗口选择IAM，点击'BOM Cmp'按钮 — 自动填入。",
+                    ["BOMCMP_ASM1"] = "装配体 1:",
+                    ["BOMCMP_ASM2"] = "装配体 2:",
+                    ["BOMCMP_NOT_SELECTED"] = "(未选择)",
+                    ["BOMCMP_FROM_OTHER"] = "\u21BB {0}  (来自其他窗口)",
+                    ["BOMCMP_SAME_FILE"] = "与装配体{0}相同。请选择不同的文件。",
+                    ["BOMCMP_NO_BOM"] = "无法读取BOM。",
+                    ["BOMCMP_NO_DOC"] = "此窗口中没有打开的文档。",
+                    ["BOMCMP_NOT_ASM"] = "当前文档不是装配体(.iam)。\n请选择IAM选项卡或在浏览器中点击子装配。",
+                    ["BOMCMP_OCC_IS_PART"] = "所选项是零件，不是装配体。",
+                    ["BOMCMP_COMPARING"] = "对比中...",
+                    ["BOMCMP_LOADING"] = "加载中...",
+                    ["BOMCMP_SHEET_TREE"] = "树形对比",
+                    ["BOMCMP_SHEET_PART"] = "零件对比",
+                    ["BOMCMP_COL_STATUS"] = "状态",
+                    ["BOMCMP_COL_PART_NAME"] = "零件名",
+                    ["BOMCMP_COL_QTY"] = "数量",
+                    ["BOMCMP_COL_NOTE"] = "备注",
+                    ["BOMCMP_NOTE_SAME"] = "相同",
+                    ["BOMCMP_NOTE_DIFF_QTY"] = "数量不同",
+                    ["BOMCMP_NOTE_NOT_IN"] = "不在表{0}中",
+
+                    // === AUTO HOLE NOTE === [NEW v2.0]
+                    ["TAB_AUTO_HOLE"] = "Auto Hole",
+                    ["LBL_HOLE_TEXT_HEIGHT"] = "文字高度 (mm):",
+                    ["LBL_HOLE_CLUSTER_RADIUS"] = "聚类半径 (mm):",
+                    ["LBL_HOLE_TAP_TOL"] = "丝锥公差 (x0.01mm):",
+                    ["BTN_HOLE_RUN"] = "运行",
+                    ["MSG_HOLE_NEED_IDW"] = "运行Auto Hole Note前请先打开IDW文件。",
+                    ["MSG_HOLE_PICK_VIEW"] = "点击要扫描孔的视图:",
+                    ["MSG_HOLE_ERROR"] = "错误: {0}",
                 },
 
                 // ========================================
@@ -823,7 +993,7 @@ namespace OpenCadDrawingAddin
                     ["MSG_FILE_NOT_FOUND"] = "Archivo CAD no encontrado.\nRuta verificada: {0}",
                     ["MSG_LICENSE_INVALID"] = "La licencia no es válida o ha expirado.\nActive a través del botón 'About / License'.",
 
-                    ["SETTINGS_TITLE"] = "Configuración - Mini Tool v1.0",
+                    ["SETTINGS_TITLE"] = "Configuración - Mini Tool v2.0",
                     ["TAB_SETTINGS"] = "CAD Drawing",
                     ["TAB_LANGUAGE"] = "Idioma",
                     ["TAB_BOM"] = "BOM Format",
@@ -937,6 +1107,40 @@ namespace OpenCadDrawingAddin
                     ["MSG_IDW_NAME_MISMATCH"] = "Nombre no coincide\n    IDW   : \"{0}\"\n    Model : \"{1}\" (Sheet: {2})\n\n",
                     ["MSG_IDW_MATERIAL_MISMATCH"] = "Material no coincide\n    Part      : {0}\n    Model     : \"{1}\"\n    iProperty : \"{2}\"\n\n",
                     ["MSG_IDW_APPEARANCE_MISMATCH"] = "Apariencia no coincide\n    Part      : {0}\n    Model     : \"{1}\"\n    iProperty : \"{2}\"\n\n",
+
+                    // === BOM COMPARE === [NEW v2.0]
+                    ["BOMCMP_TITLE"] = "Comparar BOM",
+                    ["BOMCMP_HINT"] = "Misma ventana: seleccione IAM/sub-ensamblaje y haga clic en Pick.\nOtra ventana: seleccione IAM allí y haga clic en 'BOM Cmp' — se autocompleta aquí.",
+                    ["BOMCMP_ASM1"] = "Ensamblaje 1:",
+                    ["BOMCMP_ASM2"] = "Ensamblaje 2:",
+                    ["BOMCMP_NOT_SELECTED"] = "(no seleccionado)",
+                    ["BOMCMP_FROM_OTHER"] = "\u21BB {0}  (de otra ventana)",
+                    ["BOMCMP_SAME_FILE"] = "Igual que Ensamblaje {0}. Elija un archivo diferente.",
+                    ["BOMCMP_NO_BOM"] = "No se puede leer BOM.",
+                    ["BOMCMP_NO_DOC"] = "No hay documentos abiertos en esta ventana.",
+                    ["BOMCMP_NOT_ASM"] = "El documento activo no es un Ensamblaje (.iam).\nSeleccione una pestaña IAM o haga clic en un sub-ensamblaje.",
+                    ["BOMCMP_OCC_IS_PART"] = "La selección es una Pieza, no un Ensamblaje.",
+                    ["BOMCMP_COMPARING"] = "Comparando...",
+                    ["BOMCMP_LOADING"] = "Cargando...",
+                    ["BOMCMP_SHEET_TREE"] = "Comparar árbol",
+                    ["BOMCMP_SHEET_PART"] = "Comparar piezas",
+                    ["BOMCMP_COL_STATUS"] = "Estado",
+                    ["BOMCMP_COL_PART_NAME"] = "Nombre de pieza",
+                    ["BOMCMP_COL_QTY"] = "Cant.",
+                    ["BOMCMP_COL_NOTE"] = "Nota",
+                    ["BOMCMP_NOTE_SAME"] = "Iguales",
+                    ["BOMCMP_NOTE_DIFF_QTY"] = "Cantidad diferente",
+                    ["BOMCMP_NOTE_NOT_IN"] = "No está en tabla {0}",
+
+                    // === AUTO HOLE NOTE === [NEW v2.0]
+                    ["TAB_AUTO_HOLE"] = "Auto Hole",
+                    ["LBL_HOLE_TEXT_HEIGHT"] = "Altura de texto (mm):",
+                    ["LBL_HOLE_CLUSTER_RADIUS"] = "Radio de agrupación (mm):",
+                    ["LBL_HOLE_TAP_TOL"] = "Tolerancia de rosca (x0.01mm):",
+                    ["BTN_HOLE_RUN"] = "Ejecutar",
+                    ["MSG_HOLE_NEED_IDW"] = "Abra un archivo IDW antes de ejecutar Auto Hole Note.",
+                    ["MSG_HOLE_PICK_VIEW"] = "Haga clic en la vista para escanear agujeros:",
+                    ["MSG_HOLE_ERROR"] = "Error: {0}",
                 },
 
                 // ========================================
@@ -959,7 +1163,7 @@ namespace OpenCadDrawingAddin
                     ["MSG_FILE_NOT_FOUND"] = "Arquivo CAD não encontrado.\nCaminho verificado: {0}",
                     ["MSG_LICENSE_INVALID"] = "A licença não é válida ou expirou.\nAtive através do botão 'About / License'.",
 
-                    ["SETTINGS_TITLE"] = "Configurações - Mini Tool v1.0",
+                    ["SETTINGS_TITLE"] = "Configurações - Mini Tool v2.0",
                     ["TAB_SETTINGS"] = "CAD Drawing",
                     ["TAB_LANGUAGE"] = "Idioma",
                     ["TAB_BOM"] = "BOM Format",
@@ -1073,6 +1277,40 @@ namespace OpenCadDrawingAddin
                     ["MSG_IDW_NAME_MISMATCH"] = "Nome não coincide\n    IDW   : \"{0}\"\n    Model : \"{1}\" (Sheet: {2})\n\n",
                     ["MSG_IDW_MATERIAL_MISMATCH"] = "Material não coincide\n    Part      : {0}\n    Model     : \"{1}\"\n    iProperty : \"{2}\"\n\n",
                     ["MSG_IDW_APPEARANCE_MISMATCH"] = "Aparência não coincide\n    Part      : {0}\n    Model     : \"{1}\"\n    iProperty : \"{2}\"\n\n",
+
+                    // === BOM COMPARE === [NEW v2.0]
+                    ["BOMCMP_TITLE"] = "Comparar BOM",
+                    ["BOMCMP_HINT"] = "Mesma janela: selecione IAM/sub-conjunto e clique em Pick.\nOutra janela: selecione IAM lá e clique no botão 'BOM Cmp' — preenchimento automático aqui.",
+                    ["BOMCMP_ASM1"] = "Conjunto 1:",
+                    ["BOMCMP_ASM2"] = "Conjunto 2:",
+                    ["BOMCMP_NOT_SELECTED"] = "(não selecionado)",
+                    ["BOMCMP_FROM_OTHER"] = "\u21BB {0}  (de outra janela)",
+                    ["BOMCMP_SAME_FILE"] = "Igual ao Conjunto {0}. Escolha um arquivo diferente.",
+                    ["BOMCMP_NO_BOM"] = "Não é possível ler BOM.",
+                    ["BOMCMP_NO_DOC"] = "Nenhum documento aberto nesta janela.",
+                    ["BOMCMP_NOT_ASM"] = "O documento ativo não é um Conjunto (.iam).\nSelecione uma aba IAM ou clique em um sub-conjunto no navegador.",
+                    ["BOMCMP_OCC_IS_PART"] = "A seleção é uma Peça, não um Conjunto.",
+                    ["BOMCMP_COMPARING"] = "Comparando...",
+                    ["BOMCMP_LOADING"] = "Carregando...",
+                    ["BOMCMP_SHEET_TREE"] = "Comparar árvore",
+                    ["BOMCMP_SHEET_PART"] = "Comparar peças",
+                    ["BOMCMP_COL_STATUS"] = "Status",
+                    ["BOMCMP_COL_PART_NAME"] = "Nome da peça",
+                    ["BOMCMP_COL_QTY"] = "Qtd.",
+                    ["BOMCMP_COL_NOTE"] = "Nota",
+                    ["BOMCMP_NOTE_SAME"] = "Iguais",
+                    ["BOMCMP_NOTE_DIFF_QTY"] = "Quantidade diferente",
+                    ["BOMCMP_NOTE_NOT_IN"] = "Não está na tabela {0}",
+
+                    // === AUTO HOLE NOTE === [NEW v2.0]
+                    ["TAB_AUTO_HOLE"] = "Auto Hole",
+                    ["LBL_HOLE_TEXT_HEIGHT"] = "Altura do texto (mm):",
+                    ["LBL_HOLE_CLUSTER_RADIUS"] = "Raio de agrupamento (mm):",
+                    ["LBL_HOLE_TAP_TOL"] = "Tolerância de rosca (x0.01mm):",
+                    ["BTN_HOLE_RUN"] = "Executar",
+                    ["MSG_HOLE_NEED_IDW"] = "Abra um arquivo IDW antes de executar Auto Hole Note.",
+                    ["MSG_HOLE_PICK_VIEW"] = "Clique na vista para escanear furos:",
+                    ["MSG_HOLE_ERROR"] = "Erro: {0}",
                 },
             };
 

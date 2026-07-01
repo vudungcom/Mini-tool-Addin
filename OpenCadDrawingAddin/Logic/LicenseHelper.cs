@@ -599,7 +599,7 @@ namespace OpenCadDrawingAddin.Logic
                 using (HttpClient client = new HttpClient())
                 {
                     client.Timeout = TimeSpan.FromSeconds(15);
-                    client.DefaultRequestHeaders.Add("User-Agent", "OpenCadDrawingAddin/1.0");
+                    client.DefaultRequestHeaders.Add("User-Agent", "OpenCadDrawingAddin/2.1");
 
                     string jsonResponse = await client.GetStringAsync(requestUrl);
                     var newInfo = ParseApiResponse(jsonResponse);
@@ -977,7 +977,7 @@ namespace OpenCadDrawingAddin.Logic
                 using (HttpClient client = new HttpClient())
                 {
                     client.Timeout = TimeSpan.FromSeconds(15);
-                    client.DefaultRequestHeaders.Add("User-Agent", "OpenCadDrawingAddin/1.0");
+                    client.DefaultRequestHeaders.Add("User-Agent", "OpenCadDrawingAddin/2.1");
 
                     string jsonResponse = await client.GetStringAsync(requestUrl);
 

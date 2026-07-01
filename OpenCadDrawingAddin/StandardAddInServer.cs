@@ -446,8 +446,8 @@ namespace OpenCadDrawingAddin
                 var drawDoc = m_inventorApplication.ActiveDocument as DrawingDocument;
                 if (drawDoc == null)
                 {
-                    MessageBox.Show("Hay mo file IDW truoc khi chay Auto Hole Note.",
-                        "Auto Hole Note", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    MessageBox.Show(LanguageManager.L("MSG_HOLE_NEED_IDW"),
+                        LanguageManager.L("TAB_AUTO_HOLE"), MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
 
@@ -456,7 +456,7 @@ namespace OpenCadDrawingAddin
                 {
                     view = m_inventorApplication.CommandManager.Pick(
                         SelectionFilterEnum.kDrawingViewFilter,
-                        "Click vao view can quet lo:") as DrawingView;
+                        LanguageManager.L("MSG_HOLE_PICK_VIEW")) as DrawingView;
                 }
                 catch { return; }
 
@@ -473,8 +473,8 @@ namespace OpenCadDrawingAddin
             catch (Exception ex)
             {
                 LicenseHelper.WriteLog("Error running Auto Hole Note", ex);
-                MessageBox.Show("Loi: " + ex.Message,
-                    "Auto Hole Note", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(LanguageManager.L("MSG_HOLE_ERROR", ex.Message),
+                    LanguageManager.L("TAB_AUTO_HOLE"), MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
