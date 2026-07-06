@@ -58,9 +58,13 @@ namespace OpenCadDrawingAddin.Logic
         public bool AutoCheckAppearance { get; set; } = true;
 
         // [NEW v1.5] Auto Hole Note
-        public double HoleNoteTextHeightMm { get; set; } = 1.5;
+        public double HoleNoteTextHeightMm { get; set; } = 3.0;
         public double HoleNoteClusterRadiusMm { get; set; } = 30.0;
         public double HoleNoteTolTap { get; set; } = 0.15;
+
+        // [AUTO-SIZE] Neu true, textH & clusterR duoc tinh tu view.Scale luc Run
+        // (bo qua gia tri manual o 2 o tren). Base: view scale 1:4 -> text 3mm, cluster 30mm.
+        public bool HoleNoteAutoSize { get; set; } = true;
 
         // ============================================================
         // PATHS
@@ -124,9 +128,12 @@ namespace OpenCadDrawingAddin.Logic
                 settings.AutoCheckAppearance = ParseBool(root.Element("AutoCheckAppearance"), true);
 
                 // [NEW v1.5] Auto Hole Note
-                settings.HoleNoteTextHeightMm = ParseDouble(root.Element("HoleNoteTextHeightMm"), 1.5);
+                settings.HoleNoteTextHeightMm = ParseDouble(root.Element("HoleNoteTextHeightMm"), 3.0);
                 settings.HoleNoteClusterRadiusMm = ParseDouble(root.Element("HoleNoteClusterRadiusMm"), 30.0);
                 settings.HoleNoteTolTap = ParseDouble(root.Element("HoleNoteTolTap"), 0.15);
+
+                // [AUTO-SIZE]
+                settings.HoleNoteAutoSize = ParseBool(root.Element("HoleNoteAutoSize"), true);
             }
             catch (Exception ex)
             {
@@ -165,7 +172,9 @@ namespace OpenCadDrawingAddin.Logic
                         // [NEW v1.5] Auto Hole Note
                         new XElement("HoleNoteTextHeightMm", HoleNoteTextHeightMm),
                         new XElement("HoleNoteClusterRadiusMm", HoleNoteClusterRadiusMm),
-                        new XElement("HoleNoteTolTap", HoleNoteTolTap)
+                        new XElement("HoleNoteTolTap", HoleNoteTolTap),
+                        // [AUTO-SIZE]
+                        new XElement("HoleNoteAutoSize", HoleNoteAutoSize)
                     )
                 );
                 xml.Save(_settingsPath);

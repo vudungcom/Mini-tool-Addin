@@ -67,6 +67,8 @@ namespace OpenCadDrawingAddin
         private NumericUpDown nudClusterRadius;
         private NumericUpDown nudTolTap;
         private Button btnRunAutoHoleNote;
+        // [AUTO-SIZE] CheckBox bat/tat che do tu dong tinh theo view.Scale
+        private CheckBox chkHoleNoteAutoSize;
 
         // Bottom buttons
         private Button btnSave;
@@ -596,6 +598,18 @@ namespace OpenCadDrawingAddin
             tabAutoHoleNote.Controls.Add(lblTitle);
             y += 30;
 
+            // [AUTO-SIZE] --- CheckBox Auto Size ---
+            chkHoleNoteAutoSize = new CheckBox
+            {
+                Text = "Auto size theo scale cua view (base @ view 1:4)",
+                Location = new Point(x, y),
+                Size = new Size(430, 22),
+                Font = new Font("Segoe UI", 9F, FontStyle.Bold),
+                ForeColor = Color.DarkSlateBlue
+            };
+            tabAutoHoleNote.Controls.Add(chkHoleNoteAutoSize);
+            y += 28;
+
             // --- Text Height ---
             var lblTextHeight = new Label
             {
@@ -614,17 +628,28 @@ namespace OpenCadDrawingAddin
                 Maximum = 5.0M,
                 DecimalPlaces = 1,
                 Increment = 0.5M,
-                Value = 1.5M,
+                Value = 3.0M,
                 Font = new Font("Segoe UI", 9F)
             };
             tabAutoHoleNote.Controls.Add(nudTextHeight);
+
+            // [AUTO-SIZE] Label default ben phai
+            var lblTextDefault = new Label
+            {
+                Text = "(Default: 3.0)",
+                Location = new Point(x + 240, y),
+                Size = new Size(120, 22),
+                ForeColor = Color.Gray,
+                Font = new Font("Segoe UI", 8F, FontStyle.Italic)
+            };
+            tabAutoHoleNote.Controls.Add(lblTextDefault);
             y += 28;
 
             var lblTextHint = new Label
             {
-                Text = "Chieu cao chu tren sheet (mm). Default: 1.5",
+                Text = "Chieu cao chu tren sheet (mm) @ view scale 1:4. Auto se scale tu day.",
                 Location = new Point(x, y),
-                Size = new Size(400, 16),
+                Size = new Size(430, 16),
                 ForeColor = Color.Gray,
                 Font = new Font("Segoe UI", 8F, FontStyle.Italic)
             };
@@ -653,13 +678,24 @@ namespace OpenCadDrawingAddin
                 Font = new Font("Segoe UI", 9F)
             };
             tabAutoHoleNote.Controls.Add(nudClusterRadius);
+
+            // [AUTO-SIZE] Label default ben phai
+            var lblClusterDefault = new Label
+            {
+                Text = "(Default: 30)",
+                Location = new Point(x + 240, y),
+                Size = new Size(120, 22),
+                ForeColor = Color.Gray,
+                Font = new Font("Segoe UI", 8F, FontStyle.Italic)
+            };
+            tabAutoHoleNote.Controls.Add(lblClusterDefault);
             y += 28;
 
             var lblClusterHint = new Label
             {
-                Text = "Lo cung loai cach nhau <= radius nay -> gom 1 cum (Nx M4). Default: 30",
+                Text = "Radius gom cum (mm) @ view scale 1:4. Auto se scale tu day.",
                 Location = new Point(x, y),
-                Size = new Size(400, 16),
+                Size = new Size(430, 16),
                 ForeColor = Color.Gray,
                 Font = new Font("Segoe UI", 8F, FontStyle.Italic)
             };
@@ -688,6 +724,17 @@ namespace OpenCadDrawingAddin
                 Font = new Font("Segoe UI", 9F)
             };
             tabAutoHoleNote.Controls.Add(nudTolTap);
+
+            // [AUTO-SIZE] Label default ben phai
+            var lblTolDefault = new Label
+            {
+                Text = "(Default: 15)",
+                Location = new Point(x + 240, y),
+                Size = new Size(120, 22),
+                ForeColor = Color.Gray,
+                Font = new Font("Segoe UI", 8F, FontStyle.Italic)
+            };
+            tabAutoHoleNote.Controls.Add(lblTolDefault);
             y += 28;
 
             var lblTolHint = new Label
@@ -784,6 +831,9 @@ namespace OpenCadDrawingAddin
             nudClusterRadius.Value = (decimal)Math.Max(5, Math.Min(200, _settings.HoleNoteClusterRadiusMm));
             nudTolTap.Value = (decimal)Math.Max(1, Math.Min(50, _settings.HoleNoteTolTap * 100));
 
+            // [AUTO-SIZE]
+            chkHoleNoteAutoSize.Checked = _settings.HoleNoteAutoSize;
+
             // Select current language
             string currentLang = _settings.Language;
             for (int i = 0; i < lstLanguages.Items.Count; i++)
@@ -828,6 +878,9 @@ namespace OpenCadDrawingAddin
             _settings.HoleNoteTextHeightMm = (double)nudTextHeight.Value;
             _settings.HoleNoteClusterRadiusMm = (double)nudClusterRadius.Value;
             _settings.HoleNoteTolTap = (double)nudTolTap.Value / 100.0;
+
+            // [AUTO-SIZE]
+            _settings.HoleNoteAutoSize = chkHoleNoteAutoSize.Checked;
 
             if (lstLanguages.SelectedItem != null)
             {
@@ -982,6 +1035,19 @@ namespace OpenCadDrawingAddin
             double textH = (double)nudTextHeight.Value;
             double clusterR = (double)nudClusterRadius.Value;
             double tolTap = (double)nudTolTap.Value / 100.0;
+
+            // [AUTO-SIZE] Neu bat Auto -> textH & clusterR o UI la BASE @ 1:4.
+            // ComputeAutoSize scale tu base theo view.Scale, lam tron & clamp.
+            // Tap tolerance khong lien quan hien thi -> khong scale.
+            if (chkHoleNoteAutoSize.Checked)
+            {
+                AutoHoleNoteLogic.ComputeAutoSize(
+                    view.Scale,
+                    (double)nudTextHeight.Value,        // base text @ 1:4
+                    (double)nudClusterRadius.Value,     // base cluster @ 1:4
+                    out textH,
+                    out clusterR);
+            }
 
             var logic = new AutoHoleNoteLogic(inventorApp);
             logic.Run(view, textH, clusterR, tolTap);
