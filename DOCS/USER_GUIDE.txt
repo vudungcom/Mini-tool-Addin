@@ -1,8 +1,8 @@
-Mini-Tool Add-in — User Guide (version 2.1)
+Mini-Tool Add-in — User Guide (version 2.2)
 
 Overview
 - Add-in: Open CAD Drawing Add-in (Mini-Tool)
-- Version: 2.1.0.0
+- Version: 2.2.0.0
 - Location of settings: %APPDATA%\\InventorAddins\\ocda_settings.xml
 - License/cache files: %APPDATA%\\InventorAddins\\ocda_cfg.dat, ocda_init.dat, ocda_log.txt
 
@@ -63,7 +63,7 @@ License and Update behavior
 - License logic is in: OpenCadDrawingAddin/Logic/LicenseHelper.cs
 - Add-in version is read from assembly (AssemblyInfo) for update checks and tracking.
 - Version in this build: 2.1.0.0
-- User-Agent used for remote checks: "OpenCadDrawingAddin/2.1"
+- User-Agent used for remote checks: "OpenCadDrawingAddin/2.2"
 - Force-update: server may respond with forceUpdate=true; LicenseHelper.SetForceUpdate will enforce blocking of commands if required. You can check LicenseHelper.IsForceUpdate and LicenseHelper.IsBlocked in code.
 
 Developer / Build notes

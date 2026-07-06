@@ -5,7 +5,7 @@
 ; ============================================================
 
 #define MyAppName "MiniTool Add-in"
-#define MyAppVersion "2.0"
+#define MyAppVersion "2.2"
 #define MyAppPublisher "Kane"
 #define MyAppURL "mailto:replacefile.addin@gmail.com"
 
