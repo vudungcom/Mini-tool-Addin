@@ -90,8 +90,12 @@ namespace OpenCadDrawingAddin.Logic
             double fontSizeCm = textHeightMm / 10.0;
             double charW = fontSizeCm * 0.65;
             double textH = fontSizeCm;
-            string fontStr = fontSizeCm.ToString("0.000",
-                System.Globalization.CultureInfo.InvariantCulture);
+            // [LOCALE-FIX] Inventor <StyleOverride FontSize="..."> parse theo CurrentCulture cua HDH,
+            // KHONG phai InvariantCulture. Truoc day dung "0.000" + Invariant -> may vi-VN (decimal=',')
+            // reject dot -> E_INVALIDARG. Fix: format theo CurrentCulture + kem don vi " mm" (Inventor
+            // accept unit string, khong phu thuoc doc units). Da verify tren en-US va vi-VN.
+            string fontStr = textHeightMm.ToString("0.###",
+                System.Globalization.CultureInfo.CurrentCulture) + " mm";
 
             // === 1. Quet lo ===
             var holes = ScanHoles(view, tolTap, TolRound);
@@ -154,6 +158,8 @@ namespace OpenCadDrawingAddin.Logic
 
                 var placedBbox = new List<(double x1, double y1, double x2, double y2)>();
                 int noteCount = 0;
+                int failCount = 0;                    // [DEBUG] dem so add fail
+                string firstAddError = null;          // [DEBUG] loi dau tien de show cho user
 
                 foreach (var cluster in clusters)
                 {
@@ -247,7 +253,13 @@ namespace OpenCadDrawingAddin.Logic
                         placedBbox.Add((bxMin, byMin, bxMax, byMax));
                         noteCount++;
                     }
-                    catch { }
+                    catch (Exception exAdd)
+                    {
+                        // [DEBUG] Log loi dau tien de biet root cause khi 0 note ra
+                        failCount++;
+                        if (firstAddError == null)
+                            firstAddError = exAdd.GetType().Name + ": " + exAdd.Message;
+                    }
                 }
 
                 // [ATTACH-VIEW] Thoat sketch edit truoc khi End Transaction
@@ -258,16 +270,31 @@ namespace OpenCadDrawingAddin.Logic
 
                 trans.End();
 
+                // [DEBUG] Neu co add fail -> hien loi cu the de biet root cause
+                string modeMsg;
+                if (sketch != null)
+                    modeMsg = "Text da gan vao view (dich view -> text di theo).";
+                else
+                    modeMsg = "Note tren sheet (fallback - khong dinh view).";
+
+                string errMsg = "";
+                if (failCount > 0)
+                {
+                    errMsg = $"\n\n[!] {failCount} note them THAT BAI.\nLoi dau tien:\n{firstAddError}";
+                }
+
+                var icon = (noteCount == 0)
+                    ? System.Windows.Forms.MessageBoxIcon.Warning
+                    : System.Windows.Forms.MessageBoxIcon.Information;
+
                 System.Windows.Forms.MessageBox.Show(
                     $"Da them {noteCount} note.\n" +
                     $"Tong: {holes.Count} lo, {clusters.Count} cum.\n" +
-                    (sketch != null
-                        ? "Text da gan vao view (dich view -> text di theo).\n"
-                        : "Note tren sheet (fallback - khong dinh view).\n") +
+                    modeMsg + errMsg + "\n\n" +
                     "Ctrl+Z de xoa toan bo va chay lai.",
                     "Auto Hole Note",
                     System.Windows.Forms.MessageBoxButtons.OK,
-                    System.Windows.Forms.MessageBoxIcon.Information);
+                    icon);
             }
             catch (Exception ex)
             {
