@@ -90,12 +90,14 @@ namespace OpenCadDrawingAddin.Logic
             double fontSizeCm = textHeightMm / 10.0;
             double charW = fontSizeCm * 0.65;
             double textH = fontSizeCm;
-            // [LOCALE-FIX] Inventor <StyleOverride FontSize="..."> parse theo CurrentCulture cua HDH,
-            // KHONG phai InvariantCulture. Truoc day dung "0.000" + Invariant -> may vi-VN (decimal=',')
-            // reject dot -> E_INVALIDARG. Fix: format theo CurrentCulture + kem don vi " mm" (Inventor
-            // accept unit string, khong phu thuoc doc units). Da verify tren en-US va vi-VN.
-            string fontStr = textHeightMm.ToString("0.###",
-                System.Globalization.CultureInfo.CurrentCulture) + " mm";
+            // [LOCALE-FIX v2] Inventor <StyleOverride FontSize="..."> parse theo CurrentCulture:
+            // - en-US: "0.300" OK, "0,300" FAIL
+            // - vi-VN: "0,300" OK, "0.300" FAIL (E_INVALIDARG)
+            // Fix: giu NGUYEN gia tri so (fontSizeCm, don vi cm internal cua Inventor), chi doi
+            // decimal separator theo CurrentCulture. KHONG them " mm" - lam Inventor parse sai
+            // unit gay chu to vo. Value dung nhu ban goc chay OK tren en-US suot.
+            string fontStr = fontSizeCm.ToString("0.000",
+                System.Globalization.CultureInfo.CurrentCulture);
 
             // === 1. Quet lo ===
             var holes = ScanHoles(view, tolTap, TolRound);
