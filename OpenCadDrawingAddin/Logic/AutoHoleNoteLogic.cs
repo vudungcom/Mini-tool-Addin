@@ -388,17 +388,18 @@ namespace OpenCadDrawingAddin.Logic
         }
 
         /// <summary>
-        /// Phan loai lo:
-        /// - Duong kinh nguyen (+-tolRound) -> Phi (lo tron)
-        /// - Duong kinh le + match bang tap -> Mx
-        /// - Khong match -> Phi le
+        /// Phan loai lo: [FIX v1.6]
+        /// - Check TAP TRUOC (pitch diameter la so le rat dac trung, khong the trung lo tron)
+        /// - Khong match tap -> LUON la lo tron, hien dia thuc te (format 0.##)
+        /// Ly do doi thu tu: v1.5 round integer truoc -> Ø6.5 truot round
+        /// (|6.5-6|=0.5 > tolRound 0.05) -> roi vao tap check -> match nham M8 (6.647).
+        /// Ban chat vat ly: lo tap = pitch diameter so le (M8=6.647, M6=4.917...),
+        /// lo tron = so "dep" (x.0 hoac x.5). Neu khong khop bang tap thi CHAC CHAN la lo tron.
+        /// tolRound giu lai de compatible chu ky method, khong con dung.
         /// </summary>
         private static string ClassifyHole(double diaMm, double tolTap, double tolRound)
         {
-            double rounded = Math.Round(diaMm);
-            if (Math.Abs(diaMm - rounded) < tolRound)
-                return "\u00D8" + ((int)rounded).ToString();
-
+            // [FIX v1.6] Check TAP TABLE truoc
             double bestDiff = double.MaxValue;
             string bestName = null;
             foreach (var (dia, name) in TapTable)
@@ -408,7 +409,10 @@ namespace OpenCadDrawingAddin.Logic
             }
             if (bestName != null) return bestName;
 
-            return "\u00D8" + diaMm.ToString("0.0",
+            // [FIX v1.6] Khong match tap -> lo tron, format "0.##":
+            // - Toi da 2 chu so thap phan
+            // - Bo trailing zero: 3.0 -> "Ø3", 6.50 -> "Ø6.5", 3.25 -> "Ø3.25"
+            return "\u00D8" + diaMm.ToString("0.##",
                 System.Globalization.CultureInfo.InvariantCulture);
         }
 

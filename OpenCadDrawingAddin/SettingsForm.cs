@@ -720,7 +720,7 @@ namespace OpenCadDrawingAddin
                 Maximum = 50,
                 DecimalPlaces = 0,
                 Increment = 1,
-                Value = 15,
+                Value = 8,  // [FIX v1.6] 15 -> 8 (0.08mm) de tranh Ø6.5 (lo tron) match nham M8 (pitch 6.647)
                 Font = new Font("Segoe UI", 9F)
             };
             tabAutoHoleNote.Controls.Add(nudTolTap);
@@ -728,7 +728,7 @@ namespace OpenCadDrawingAddin
             // [AUTO-SIZE] Label default ben phai
             var lblTolDefault = new Label
             {
-                Text = "(Default: 15)",
+                Text = "(Default: 8)",  // [FIX v1.6] 15 -> 8
                 Location = new Point(x + 240, y),
                 Size = new Size(120, 22),
                 ForeColor = Color.Gray,
@@ -739,7 +739,7 @@ namespace OpenCadDrawingAddin
 
             var lblTolHint = new Label
             {
-                Text = "Sai so match lo ren (don vi 0.01mm). 15 = +-0.15mm. Default: 15",
+                Text = "Sai so match lo ren (don vi 0.01mm). 8 = +-0.08mm. Default: 8",  // [FIX v1.6] 15 -> 8
                 Location = new Point(x, y),
                 Size = new Size(400, 16),
                 ForeColor = Color.Gray,
