@@ -48,6 +48,7 @@ namespace OpenCadDrawingAddin
         private Button btnCreateDwgIniBrowse;
         private TextBox txtCreateDwgListPath;
         private Button btnCreateDwgListBrowse;
+        private CheckBox chkBatchExportAll; // [NEW v1.7]
         private TextBox txtCreateDwgOutputPath;
         private Button btnCreateDwgOutputBrowse;
 
@@ -444,7 +445,24 @@ namespace OpenCadDrawingAddin
                 Font = new Font("Segoe UI", 8F, FontStyle.Italic)
             };
             tabCreateDwg.Controls.Add(lblListHint);
-            y += 30;
+            y += 25;
+
+            // [NEW v1.7] Checkbox Export All
+            chkBatchExportAll = new CheckBox
+            {
+                Text = LanguageManager.L("CHK_BATCH_EXPORT_ALL"),
+                Location = new Point(x, y),
+                Size = new Size(400, 22),
+                Font = new Font("Segoe UI", 9F)
+            };
+            chkBatchExportAll.CheckedChanged += (s, e) =>
+            {
+                bool exportAll = chkBatchExportAll.Checked;
+                txtCreateDwgListPath.Enabled = !exportAll;
+                btnCreateDwgListBrowse.Enabled = !exportAll;
+            };
+            tabCreateDwg.Controls.Add(chkBatchExportAll);
+            y += 28;
 
             var lblOutput = new Label
             {
@@ -819,6 +837,10 @@ namespace OpenCadDrawingAddin
             txtCreateDwgIniPath.Text = _settings.CreateDwgIniPath;
             txtCreateDwgListPath.Text = _settings.CreateDwgListPath;
             txtCreateDwgOutputPath.Text = _settings.CreateDwgOutputPath;
+            // [NEW v1.7]
+            chkBatchExportAll.Checked = _settings.BatchDwgExportAll;
+            txtCreateDwgListPath.Enabled = !_settings.BatchDwgExportAll;
+            btnCreateDwgListBrowse.Enabled = !_settings.BatchDwgExportAll;
 
             chkShowCopyNotify.Checked = _settings.ShowCopyNotification;
             chkShowPasteNotify.Checked = _settings.ShowPasteNotification;
@@ -867,6 +889,7 @@ namespace OpenCadDrawingAddin
             _settings.CreateDwgIniPath = txtCreateDwgIniPath.Text.Trim();
             _settings.CreateDwgListPath = txtCreateDwgListPath.Text.Trim();
             _settings.CreateDwgOutputPath = txtCreateDwgOutputPath.Text.Trim();
+            _settings.BatchDwgExportAll = chkBatchExportAll.Checked; // [NEW v1.7]
 
             _settings.ShowCopyNotification = chkShowCopyNotify.Checked;
             _settings.ShowPasteNotification = chkShowPasteNotify.Checked;

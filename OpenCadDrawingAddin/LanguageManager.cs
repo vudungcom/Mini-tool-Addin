@@ -79,6 +79,7 @@ namespace OpenCadDrawingAddin
                     ["LBL_CREATE_DWG_INI_HINT"] = "Export configuration file for DWG format (from Inventor)",
                     ["LBL_CREATE_DWG_LIST"] = "List File (.txt):",
                     ["LBL_CREATE_DWG_LIST_HINT"] = "File names to export (used in 'Export by List' mode)",
+                    ["CHK_BATCH_EXPORT_ALL"] = "Export All (ignore list, export all IDW found in Assembly)", // [NEW v1.7]
                     ["LBL_CREATE_DWG_OUTPUT"] = "Output Folder:",
                     ["LBL_CREATE_DWG_OUTPUT_HINT"] = "Folder where exported DWG files will be saved",
 
@@ -296,6 +297,7 @@ namespace OpenCadDrawingAddin
                     ["LBL_CREATE_DWG_INI_HINT"] = "File cấu hình xuất DWG (lấy từ Inventor)",
                     ["LBL_CREATE_DWG_LIST"] = "File danh sách (.txt):",
                     ["LBL_CREATE_DWG_LIST_HINT"] = "Tên file cần xuất (dùng khi chọn 'Xuất theo danh sách')",
+                    ["CHK_BATCH_EXPORT_ALL"] = "Xuất tất cả (bỏ qua list, xuất toàn bộ IDW trong bản lắp)", // [NEW v1.7]
                     ["LBL_CREATE_DWG_OUTPUT"] = "Thư mục lưu DWG:",
                     ["LBL_CREATE_DWG_OUTPUT_HINT"] = "Thư mục lưu các file DWG được xuất ra",
 

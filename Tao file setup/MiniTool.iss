@@ -1,11 +1,11 @@
 ; ============================================================
 ; MINI TOOL ADD-IN - INNO SETUP SCRIPT
 ; Author: Kane
-; Version: 2.0 - Fixed for Inventor 2024+
+; Version: 2.4 - Fixed for Inventor 2024+
 ; ============================================================
 
 #define MyAppName "MiniTool Add-in"
-#define MyAppVersion "2.2"
+#define MyAppVersion "2.4"
 #define MyAppPublisher "Kane"
 #define MyAppURL "mailto:replacefile.addin@gmail.com"
 

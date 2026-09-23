@@ -48,6 +48,7 @@ namespace OpenCadDrawingAddin.Logic
         public string CreateDwgIniPath { get; set; } = "";
         public string CreateDwgListPath { get; set; } = "";
         public string CreateDwgOutputPath { get; set; } = "";
+        public bool BatchDwgExportAll { get; set; } = false; // [NEW v1.7]
 
         // [NEW v1.3] Copy-Paste notifications
         public bool ShowCopyNotification { get; set; } = true;
@@ -118,6 +119,7 @@ namespace OpenCadDrawingAddin.Logic
                 settings.CreateDwgIniPath = (string)root.Element("CreateDwgIniPath") ?? "";
                 settings.CreateDwgListPath = (string)root.Element("CreateDwgListPath") ?? "";
                 settings.CreateDwgOutputPath = (string)root.Element("CreateDwgOutputPath") ?? "";
+                settings.BatchDwgExportAll = ParseBool(root.Element("BatchDwgExportAll"), false); // [NEW v1.7]
 
                 // [NEW v1.3]
                 settings.ShowCopyNotification = ParseBool(root.Element("ShowCopyNotification"), true);
@@ -163,7 +165,8 @@ namespace OpenCadDrawingAddin.Logic
                         new XElement("CreateDwgIniPath", CreateDwgIniPath),
                         new XElement("CreateDwgListPath", CreateDwgListPath),
                         new XElement("CreateDwgOutputPath", CreateDwgOutputPath),
-                        // [NEW v1.3]
+                        new XElement("BatchDwgExportAll", BatchDwgExportAll), // [NEW v1.7]
+                                                                              // [NEW v1.3]
                         new XElement("ShowCopyNotification", ShowCopyNotification),
                         new XElement("ShowPasteNotification", ShowPasteNotification),
                         // [NEW v1.4]

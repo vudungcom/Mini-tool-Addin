@@ -472,15 +472,25 @@ namespace OpenCadDrawingAddin.Logic
                 var selectedSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
                 bool useList = false;
 
-                // Kiểm tra list file
-                bool listExists = !string.IsNullOrEmpty(settings.CreateDwgListPath)
-                                  && File.Exists(settings.CreateDwgListPath);
-                HashSet<string> wantedNames = listExists
-                    ? ReadWantedBaseNamesFromTextFile(settings.CreateDwgListPath)
-                    : new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+                // [NEW v1.7] Đọc cờ Export All từ Settings
+                bool exportAll = settings.BatchDwgExportAll;
 
-                if (wantedNames.Count > 0)
+                if (!exportAll)
                 {
+                    // Kiểm tra list file
+                    bool listExists = !string.IsNullOrEmpty(settings.CreateDwgListPath)
+                                      && File.Exists(settings.CreateDwgListPath);
+                    HashSet<string> wantedNames = listExists
+                        ? ReadWantedBaseNamesFromTextFile(settings.CreateDwgListPath)
+                        : new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+                    if (wantedNames.Count == 0)
+                    {
+                        MessageBox.Show(LanguageManager.L("MSG_CREATE_DWG_NO_LIST"),
+                            LanguageManager.L("TITLE_ERROR"), MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+
                     // Chế độ List: chỉ xuất những tên có trong list
                     useList = true;
                     foreach (string wantedName in wantedNames)
