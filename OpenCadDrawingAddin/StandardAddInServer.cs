@@ -23,7 +23,8 @@ namespace OpenCadDrawingAddin
         private ButtonDefinition m_nameUpdateButton; // [NEW] Name Update button
         private ButtonDefinition m_saveIdwButton;    // [NEW] Save IDW button
         private ButtonDefinition m_checkRefButton;   // [NEW] Check Reference button
-        private ButtonDefinition m_createDwgButton;  // [NEW v1.2] Create DWG button
+        private ButtonDefinition m_createDwgButton;  // [NEW v1.2] Create DWG button (Drawing ribbon)
+        private ButtonDefinition m_batchDwgButton;   // [NEW v1.7] Batch DWG button (Assembly ribbon)
         private ButtonDefinition m_copyComponentButton;  // [NEW v1.3] Copy Component (cross-screen)
         private ButtonDefinition m_pasteComponentButton; // [NEW v1.3] Paste Component (cross-screen)
         private ButtonDefinition m_autoHoleNoteButton;   // [NEW v1.5] Auto Hole Note button
@@ -78,6 +79,7 @@ namespace OpenCadDrawingAddin
         private static object _iconAbout16, _iconAbout32;
         private static object _iconAutoHole16, _iconAutoHole32;  // [NEW v1.5]
         private static object _iconBomCmp16, _iconBomCmp32;      // [NEW v1.6]
+        private static object _iconBatchDwg16, _iconBatchDwg32;  // [NEW v1.7]
 
         private static void EnsureIcons()
         {
@@ -95,6 +97,8 @@ namespace OpenCadDrawingAddin
             _iconAutoHole16 = MakeEmojiIcon("⊙", 16); _iconAutoHole32 = MakeEmojiIcon("⊙", 32);
             // [NEW v1.6] icon BOM Compare
             _iconBomCmp16 = MakeEmojiIcon("🔀", 16); _iconBomCmp32 = MakeEmojiIcon("🔀", 32);
+            // [NEW v1.7] icon Batch DWG
+            _iconBatchDwg16 = MakeEmojiIcon("📦", 16); _iconBatchDwg32 = MakeEmojiIcon("📦", 32);
         }
 
         private class AxHostConverter : System.Windows.Forms.AxHost
@@ -154,6 +158,7 @@ namespace OpenCadDrawingAddin
             if (m_saveIdwButton != null) { m_saveIdwButton.Delete(); m_saveIdwButton = null; }
             if (m_checkRefButton != null) { m_checkRefButton.Delete(); m_checkRefButton = null; }
             if (m_createDwgButton != null) { m_createDwgButton.Delete(); m_createDwgButton = null; }
+            if (m_batchDwgButton != null) { m_batchDwgButton.Delete(); m_batchDwgButton = null; } // [NEW v1.7]
             if (m_copyComponentButton != null) { m_copyComponentButton.Delete(); m_copyComponentButton = null; }
             if (m_pasteComponentButton != null) { m_pasteComponentButton.Delete(); m_pasteComponentButton = null; }
             // [NEW v1.5]
@@ -238,6 +243,14 @@ namespace OpenCadDrawingAddin
                 "Auto Hole Note", _iconAutoHole16, _iconAutoHole32);
             m_autoHoleNoteButton.OnExecute += m_autoHoleNoteButton_OnExecute;
 
+            // [NEW v1.7] Batch DWG button (Assembly ribbon only)
+            m_batchDwgButton = controlDefs.AddButtonDefinition(
+                "Batch DWG", "OCDABatchDwgCmd", CommandTypesEnum.kQueryOnlyCmdType,
+                GenerateClientId("OCDABatchDwgCmd"),
+                "Batch export IDW to DWG from Assembly (list or full).",
+                "Batch DWG", _iconBatchDwg16, _iconBatchDwg32);
+            m_batchDwgButton.OnExecute += m_batchDwgButton_OnExecute;
+
             // [NEW v1.6] BOM Compare button (Assembly/Part ribbon)
             m_bomCompareButton = controlDefs.AddButtonDefinition(
                 "BOM Cmp", "OCDABomCompareCmd", CommandTypesEnum.kQueryOnlyCmdType,
@@ -292,6 +305,10 @@ namespace OpenCadDrawingAddin
                     if (!ButtonExists(panel, m_bomButton)) panel.CommandControls.AddButton(m_bomButton, false);
                     if (!ButtonExists(panel, m_nameUpdateButton)) panel.CommandControls.AddButton(m_nameUpdateButton, false);
                     if (!ButtonExists(panel, m_checkRefButton)) panel.CommandControls.AddButton(m_checkRefButton, false);
+
+                    // [NEW v1.7] Batch DWG — chỉ Assembly
+                    if (ribbonName == "Assembly")
+                        if (!ButtonExists(panel, m_batchDwgButton)) panel.CommandControls.AddButton(m_batchDwgButton, false);
 
                     if (!ButtonExists(panel, m_copyComponentButton)) panel.CommandControls.AddButton(m_copyComponentButton, false);
                     if (!ButtonExists(panel, m_pasteComponentButton)) panel.CommandControls.AddButton(m_pasteComponentButton, false);
@@ -404,6 +421,22 @@ namespace OpenCadDrawingAddin
             catch (Exception ex)
             {
                 LicenseHelper.WriteLog("Error running Create DWG", ex);
+                MessageBox.Show(LanguageManager.L("MSG_PROCESSING_ERROR") + ex.Message,
+                    LanguageManager.L("TITLE_ERROR"), MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        // [NEW v1.7] Batch DWG — xuất hàng loạt từ Assembly
+        private void m_batchDwgButton_OnExecute(NameValueMap Context)
+        {
+            try
+            {
+                var logic = new CreateDwgLogic(m_inventorApplication);
+                logic.RunBatchDwg();
+            }
+            catch (Exception ex)
+            {
+                LicenseHelper.WriteLog("Error running Batch DWG", ex);
                 MessageBox.Show(LanguageManager.L("MSG_PROCESSING_ERROR") + ex.Message,
                     LanguageManager.L("TITLE_ERROR"), MessageBoxButtons.OK, MessageBoxIcon.Error);
             }

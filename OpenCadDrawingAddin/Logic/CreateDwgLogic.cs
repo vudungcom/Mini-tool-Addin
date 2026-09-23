@@ -401,6 +401,222 @@ namespace OpenCadDrawingAddin.Logic
             return result;
         }
 
+        // ============================================================
+        // CHẾ ĐỘ 3: Batch — xuất hàng loạt từ Assembly (nút riêng ở IAM ribbon)
+        // ============================================================
+
+        /// <summary>
+        /// Gọi khi click "Batch DWG" trong môi trường Assembly.
+        /// - List file có nội dung → xuất theo list.
+        /// - List file trống hoặc không tồn tại → xuất toàn bộ IDW tìm được trong Assembly.
+        /// </summary>
+        public void RunBatchDwg()
+        {
+            try
+            {
+                var settings = OpenCadSettings.Load();
+
+                // Validate cấu hình bắt buộc
+                if (string.IsNullOrEmpty(settings.CreateDwgIniPath) || !File.Exists(settings.CreateDwgIniPath))
+                {
+                    MessageBox.Show(LanguageManager.L("MSG_CREATE_DWG_NO_INI"),
+                        LanguageManager.L("TITLE_ERROR"), MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+                if (string.IsNullOrEmpty(settings.CreateDwgOutputPath))
+                {
+                    MessageBox.Show(LanguageManager.L("MSG_CREATE_DWG_NO_OUTPUT"),
+                        LanguageManager.L("TITLE_ERROR"), MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+
+                // Phải đang mở Assembly
+                Document activeDoc = _app.ActiveDocument;
+                if (activeDoc == null || activeDoc.DocumentType != DocumentTypeEnum.kAssemblyDocumentObject)
+                {
+                    MessageBox.Show(LanguageManager.L("MSG_CREATE_DWG_NEED_ASSEMBLY"),
+                        LanguageManager.L("TITLE_WARNING"), MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                AssemblyDocument asmDoc = (AssemblyDocument)activeDoc;
+
+                // Tạo output folder nếu chưa có
+                if (!Directory.Exists(settings.CreateDwgOutputPath))
+                {
+                    try { Directory.CreateDirectory(settings.CreateDwgOutputPath); }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(LanguageManager.L("MSG_CREATE_DWG_CANNOT_CREATE_FOLDER") + ex.Message,
+                            LanguageManager.L("TITLE_ERROR"), MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+                }
+
+                // Quét toàn bộ model trong Assembly
+                var modelMap = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+                var duplicateMap = new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase);
+                CollectAssemblyModelFiles(asmDoc, modelMap, duplicateMap);
+
+                if (modelMap.Count == 0)
+                {
+                    MessageBox.Show(LanguageManager.L("MSG_CREATE_DWG_NO_MODELS"),
+                        LanguageManager.L("TITLE_WARNING"), MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                // Xác định danh sách IDW cần xuất
+                var selectedIdwFiles = new List<string>();
+                var missingNameList = new List<string>();
+                var noIdwNameList = new List<string>();
+                var selectedSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+                bool useList = false;
+
+                // Kiểm tra list file
+                bool listExists = !string.IsNullOrEmpty(settings.CreateDwgListPath)
+                                  && File.Exists(settings.CreateDwgListPath);
+                HashSet<string> wantedNames = listExists
+                    ? ReadWantedBaseNamesFromTextFile(settings.CreateDwgListPath)
+                    : new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+                if (wantedNames.Count > 0)
+                {
+                    // Chế độ List: chỉ xuất những tên có trong list
+                    useList = true;
+                    foreach (string wantedName in wantedNames)
+                    {
+                        if (modelMap.ContainsKey(wantedName))
+                        {
+                            string idwPath = FindIdwInSameFolderOnly(modelMap[wantedName]);
+                            if (!string.IsNullOrEmpty(idwPath))
+                                selectedSet.Add(idwPath);
+                            else
+                                noIdwNameList.Add(wantedName);
+                        }
+                        else
+                        {
+                            missingNameList.Add(wantedName);
+                        }
+                    }
+                }
+                else
+                {
+                    // Chế độ Full: xuất toàn bộ IDW tìm được trong Assembly
+                    foreach (var kvp in modelMap)
+                    {
+                        string idwPath = FindIdwInSameFolderOnly(kvp.Value);
+                        if (!string.IsNullOrEmpty(idwPath))
+                            selectedSet.Add(idwPath);
+                        else
+                            noIdwNameList.Add(kvp.Key);
+                    }
+                }
+
+                selectedIdwFiles.AddRange(selectedSet);
+
+                if (selectedIdwFiles.Count == 0)
+                {
+                    MessageBox.Show(
+                        LanguageManager.L("MSG_CREATE_DWG_NO_MATCH") + "\n" +
+                        LanguageManager.L("MSG_CREATE_DWG_MISSING_IN_ASM") + missingNameList.Count + "\n" +
+                        LanguageManager.L("MSG_CREATE_DWG_NO_IDW_FOR_MODEL") + noIdwNameList.Count,
+                        LanguageManager.L("TITLE_WARNING"), MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                // Preview + xác nhận
+                var preview = new StringBuilder();
+                preview.AppendLine(useList ? "[Mode: List]" : "[Mode: Full Assembly]");
+                preview.AppendLine(LanguageManager.L("MSG_CREATE_DWG_PREVIEW_COUNT") + selectedIdwFiles.Count);
+                preview.AppendLine(LanguageManager.L("MSG_CREATE_DWG_PREVIEW_OUTPUT") + settings.CreateDwgOutputPath);
+                if (useList)
+                {
+                    preview.AppendLine(LanguageManager.L("MSG_CREATE_DWG_MISSING_IN_ASM") + missingNameList.Count);
+                    preview.AppendLine(LanguageManager.L("MSG_CREATE_DWG_NO_IDW_FOR_MODEL") + noIdwNameList.Count);
+                }
+                else
+                {
+                    preview.AppendLine(LanguageManager.L("MSG_CREATE_DWG_NO_IDW_FOR_MODEL") + noIdwNameList.Count);
+                }
+                if (duplicateMap.Count > 0)
+                    preview.AppendLine(LanguageManager.L("MSG_CREATE_DWG_DUPLICATE_WARNING") + duplicateMap.Count);
+                preview.AppendLine();
+                preview.AppendLine(LanguageManager.L("MSG_CREATE_DWG_PREVIEW_FIRST5"));
+                int showCount = Math.Min(5, selectedIdwFiles.Count);
+                for (int i = 0; i < showCount; i++)
+                    preview.AppendLine(" - " + Path.GetFileName(selectedIdwFiles[i]));
+                preview.AppendLine();
+                preview.AppendLine(LanguageManager.L("MSG_CREATE_DWG_CONFIRM_PROMPT"));
+
+                if (MessageBox.Show(preview.ToString(), LanguageManager.L("TITLE_CREATE_DWG_CONFIRM"),
+                    MessageBoxButtons.OKCancel, MessageBoxIcon.Information) != DialogResult.OK)
+                    return;
+
+                // Export
+                int okCount = 0, failCount = 0;
+                var log = new StringBuilder();
+                log.AppendLine("===== BATCH EXPORT IDW TO DWG =====");
+                log.AppendLine("Mode: " + (useList ? "List" : "Full Assembly"));
+                log.AppendLine("Assembly: " + asmDoc.FullFileName);
+                log.AppendLine("INI: " + settings.CreateDwgIniPath);
+                log.AppendLine("Output: " + settings.CreateDwgOutputPath);
+                if (useList) log.AppendLine("List: " + settings.CreateDwgListPath);
+                log.AppendLine();
+
+                foreach (string idwFile in selectedIdwFiles)
+                {
+                    try
+                    {
+                        string dwgPath = Path.Combine(settings.CreateDwgOutputPath,
+                            Path.GetFileNameWithoutExtension(idwFile) + ".dwg");
+                        ExportIdwToDwg(idwFile, dwgPath, settings.CreateDwgIniPath);
+                        log.AppendLine("[OK]  " + idwFile + "\n      -> " + dwgPath);
+                        okCount++;
+                    }
+                    catch (Exception ex)
+                    {
+                        log.AppendLine("[ERR] " + idwFile + "\n      " + ex.Message);
+                        failCount++;
+                    }
+                }
+
+                log.AppendLine("\nTong: " + selectedIdwFiles.Count + " | OK: " + okCount + " | Fail: " + failCount);
+                string logPath = Path.Combine(settings.CreateDwgOutputPath, "BatchExport_IDW_to_DWG_Log.txt");
+                File.WriteAllText(logPath, log.ToString(), Encoding.UTF8);
+
+                var finalMsg = new StringBuilder();
+                finalMsg.AppendLine(LanguageManager.L("MSG_CREATE_DWG_DONE"));
+                finalMsg.AppendLine(LanguageManager.L("MSG_CREATE_DWG_TOTAL") + selectedIdwFiles.Count);
+                finalMsg.AppendLine(LanguageManager.L("MSG_CREATE_DWG_OK") + okCount);
+                finalMsg.AppendLine(LanguageManager.L("MSG_CREATE_DWG_FAIL") + failCount);
+                finalMsg.AppendLine("\nLog: " + logPath);
+
+                if (duplicateMap.Count > 0)
+                {
+                    finalMsg.AppendLine();
+                    finalMsg.AppendLine("⚠ " + LanguageManager.L("MSG_CREATE_DWG_DUPLICATE_WARNING") + duplicateMap.Count);
+                    foreach (var kvp in duplicateMap)
+                    {
+                        finalMsg.AppendLine("  • " + kvp.Key);
+                        foreach (string dp in kvp.Value)
+                            finalMsg.AppendLine("      - " + dp);
+                        if (modelMap.ContainsKey(kvp.Key))
+                            finalMsg.AppendLine("      → " + LanguageManager.L("MSG_CREATE_DWG_DUPLICATE_USED") + modelMap[kvp.Key]);
+                    }
+                }
+
+                MessageBox.Show(finalMsg.ToString(),
+                    LanguageManager.L("TITLE_CREATE_DWG_CONFIRM"), MessageBoxButtons.OK,
+                    duplicateMap.Count > 0 ? MessageBoxIcon.Warning : MessageBoxIcon.Information);
+            }
+            catch (Exception ex)
+            {
+                LicenseHelper.WriteLog("Error in RunBatchDwg", ex);
+                MessageBox.Show(LanguageManager.L("MSG_PROCESSING_ERROR") + ex.Message,
+                    LanguageManager.L("TITLE_ERROR"), MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
         /// <summary>
         /// Export IDW → DWG dùng DWG Translator AddIn của Inventor
         /// GUID: {C24E3AC4-122E-11D5-8E91-0010B541CD80}
